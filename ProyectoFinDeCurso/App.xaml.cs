@@ -1,4 +1,6 @@
-﻿namespace ProyectoFinDeCurso
+﻿using ProyectoFinDeCurso.Pages;
+
+namespace ProyectoFinDeCurso
 {
     public partial class App : Application
     {
@@ -6,7 +8,7 @@
         {
             InitializeComponent();
 
-            MainPage = new AppShell();
+            MainPage = new NavigationPage(new LoginPage());
         }
     }
 }
