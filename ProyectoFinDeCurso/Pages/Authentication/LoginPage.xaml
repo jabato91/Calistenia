@@ -4,7 +4,11 @@
              x:Class="ProyectoFinDeCurso.Pages.LoginPage"
              Title="LoginPage">
     <VerticalStackLayout>
+        <Entry Placeholder="Introduce nombre"
+               TextColor="#4D4040"/>
         <Button Text="Iniciar Sesión"
                 Clicked="LoginButton"/>
+        <Button Text="Registrase"
+                Clicked="RegisterButton"/>
     </VerticalStackLayout>
 </ContentPage>
