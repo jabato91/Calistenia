@@ -15,6 +15,6 @@ public partial class LoginPage : ContentPage
 	}
     private async void RegisterButton(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new RegisterPage()); //Navega hacia la página Home, permitiendo no volver a la página anterior
+        await Navigation.PushAsync(new RegisterPage(new Services.DbService())); //Navega hacia la página Home, permitiendo no volver a la página anterior
     }
 }

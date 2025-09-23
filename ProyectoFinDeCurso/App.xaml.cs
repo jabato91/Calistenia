@@ -4,11 +4,11 @@ namespace ProyectoFinDeCurso
 {
     public partial class App : Application
     {
-        public App()
+        public App(LoginPage loginPage)
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new LoginPage());
+            MainPage = new NavigationPage(loginPage);
         }
     }
 }

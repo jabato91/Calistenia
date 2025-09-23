@@ -4,17 +4,25 @@
              x:Class="ProyectoFinDeCurso.Pages.Authentication.RegisterPage"
              Title="RegisterPage">
     <VerticalStackLayout>
-        <Entry Placeholder="Introduce nombre"
-       TextColor="#4D4040"/>
-        <Entry Placeholder="Introduce primer apellido"
-       TextColor="#4D4040"/>
-        <Entry Placeholder="Introduce segundo apellido"
-       TextColor="#4D4040"/>
-        <Entry Placeholder="Introduce correo electrónico"
-       TextColor="#4D4040"/>
-        <Entry Placeholder="Introduce correo de nuevo"
-       TextColor="#4D4040"/>
-        <Entry Placeholder="Introduce teléfono movil"
-       TextColor="#4D4040"/>
+        <Entry x:Name="nameRegister"
+            Placeholder="Introduce nombre"
+            TextColor="#4D4040"/>
+        <Entry x:Name="firstSurname"
+            Placeholder="Introduce primer apellido"
+            TextColor="#4D4040"/>
+        <Entry x:Name="SecondSurname"
+            Placeholder="Introduce segundo apellido"
+            TextColor="#4D4040"/>
+        <Entry x:Name="email"
+            Placeholder="Introduce correo electrónico"
+            TextColor="#4D4040"/>
+        <Entry x:Name="checkEmail"
+            Placeholder="Introduce correo de nuevo"
+            TextColor="#4D4040"/>
+        <Entry x:Name="phone"
+            Placeholder="Introduce teléfono movil"
+            TextColor="#4D4040"
+            Keyboard="Numeric"/>
+        <Button Text="registrarse" Clicked="RegisterUser"/>
     </VerticalStackLayout>
 </ContentPage>
