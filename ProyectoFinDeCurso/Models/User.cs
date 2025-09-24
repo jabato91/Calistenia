@@ -22,5 +22,8 @@ namespace ProyectoFinDeCurso.Models
 
         [MaxLength(9), Column("Phone")]
         public string Phone { get; set; } = string.Empty;
+
+        [Ignore] // Para que SQLite no intente mapearla
+        public string FullName => $"{Name} {FirstSurname} {SecondSurname}".Trim();
     }
 }
