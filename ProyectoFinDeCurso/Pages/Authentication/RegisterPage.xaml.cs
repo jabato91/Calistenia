@@ -3,6 +3,7 @@ using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.Pages.Main;
 namespace ProyectoFinDeCurso.Pages.Authentication;
+using Microsoft.Maui.Storage;
 
 public partial class RegisterPage : ContentPage
 {
@@ -24,7 +25,7 @@ public partial class RegisterPage : ContentPage
         }
 
         // Validar campos obligatorios
-        if (string.IsNullOrWhiteSpace(nameRegister.Text) ||
+        if (string.IsNullOrWhiteSpace(nameRegister.Text) || //verifica que estén rellenado todos los campos
             string.IsNullOrWhiteSpace(firstSurname.Text) ||
             string.IsNullOrWhiteSpace(SecondSurname.Text) ||
             string.IsNullOrWhiteSpace(email.Text) ||
@@ -34,14 +35,14 @@ public partial class RegisterPage : ContentPage
             return;
         }
 
-        // Validar teléfono (ejemplo: 9 dígitos)
+        // Valida si el teléfono tiene 9 dígitos y solo contiene números
         if (phone.Text.Length != 9 || !phone.Text.All(char.IsDigit))
         {
             await DisplayAlert("Error", "El teléfono debe tener 9 dígitos", "OK");
             return;
         }
 
-        // Crear usuario
+        // Crea modelo del usuario a registrar
         var user = new User
         {
             Name = nameRegister.Text,
@@ -49,9 +50,13 @@ public partial class RegisterPage : ContentPage
             SecondSurname = SecondSurname.Text,
             Email = email.Text,
             Phone = phone.Text,
+            Password = Password.Text
         };
-
+        //Crea usuario en la base de datos
         await _dbService.Create(user);
+
+        await SecureStorage.SetAsync("user_email", email.Text);
+        await SecureStorage.SetAsync("user_id", user.Id.ToString());
 
         await DisplayAlert("Éxito", "Usuario registrado correctamente", "OK");
 

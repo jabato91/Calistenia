@@ -10,5 +10,7 @@
             HorizontalOptions="Center" />
         <Button Text="Usuarios"
         Clicked="UsersBotton"/>
+        <Button Text="Usuarios"
+        Clicked="LogoutButton"/>
     </VerticalStackLayout>
 </ContentPage>

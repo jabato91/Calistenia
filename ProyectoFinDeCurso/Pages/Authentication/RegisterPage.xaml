@@ -19,6 +19,9 @@
         <Entry x:Name="checkEmail"
             Placeholder="Introduce correo de nuevo"
             TextColor="#4D4040"/>
+        <Entry x:Name="Password"
+            Placeholder="Introduce correo de nuevo"
+            TextColor="#4D4040"/>
         <Entry x:Name="phone"
             Placeholder="Introduce teléfono movil"
             TextColor="#4D4040"

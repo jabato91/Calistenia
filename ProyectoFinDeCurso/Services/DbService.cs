@@ -10,8 +10,10 @@ namespace ProyectoFinDeCurso.Services
 
         public DbService()
         {
+            string path = Path.Combine(FileSystem.AppDataDirectory, DB_NAME);
             _connection = new SQLiteAsyncConnection(Path.Combine(FileSystem.AppDataDirectory, DB_NAME)); //crea la conexión a la base de datos
             _connection.CreateTableAsync<User>(); //crea la base de datos si no existe
+            path.ToString();
         }
         public async Task<List<User>> GetUsers() //obtiene todos los usuarios
         {

@@ -5,7 +5,7 @@ namespace ProyectoFinDeCurso.Models
     [Table("User")]
     public class User
     {
-        [PrimaryKey, AutoIncrement, Column("id")]
+        [PrimaryKey, AutoIncrement, Column("Id")]
         public int Id { get; set; }
 
         [Column("Name")]
@@ -19,6 +19,9 @@ namespace ProyectoFinDeCurso.Models
 
         [Column("Email")]
         public string Email { get; set; } = string.Empty;
+
+        [Column("Password")]
+        public string Password { get; set; } = string.Empty;
 
         [MaxLength(9), Column("Phone")]
         public string Phone { get; set; } = string.Empty;
