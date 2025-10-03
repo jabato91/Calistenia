@@ -57,7 +57,7 @@ public partial class RegisterPage : ContentPage
         await _dbService.Create(user);
 
         await SecureStorage.SetAsync("user_email", email.Text);
-        await SecureStorage.SetAsync("user_id", user.Id.ToString());
+        await SecureStorage.SetAsync("user_id", user.UserID.ToString());
 
         await DisplayAlert("Éxito", "Usuario registrado correctamente", "OK");
 

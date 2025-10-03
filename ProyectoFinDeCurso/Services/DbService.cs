@@ -12,32 +12,42 @@ namespace ProyectoFinDeCurso.Services
         {
             string path = Path.Combine(FileSystem.AppDataDirectory, DB_NAME);
             _connection = new SQLiteAsyncConnection(Path.Combine(FileSystem.AppDataDirectory, DB_NAME)); //crea la conexión a la base de datos
-            _connection.CreateTableAsync<User>(); //crea la base de datos si no existe
-            path.ToString();
+            InitTablesAsync();
+        }
+        private async void InitTablesAsync()
+        {
+            await _connection.CreateTableAsync<User>();
+            await _connection.CreateTableAsync<Exercise>();
         }
         public async Task<List<User>> GetUsers() //obtiene todos los usuarios
         {
             return await _connection.Table<User>().ToListAsync();
         }
-
-        public async Task<User> GetById(int id) //obtiene usuario por id
+        public async Task<List<Exercise>> GetEercises() //obtiene todos los usuarios
         {
-            return await _connection.Table<User>().Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await _connection.Table<Exercise>().ToListAsync();
+        }
+        public async Task<User> GetUserById(int id) //obtiene usuario por id
+        {
+            return await _connection.Table<User>().Where(x => x.UserID == id).FirstOrDefaultAsync();
+        }
+        public async Task<Exercise> GetExerciseById(int id) //obtiene ejercicio por id
+        {
+            return await _connection.Table<Exercise>().Where(x => x.execiseID == id).FirstOrDefaultAsync();
+        }
+        public async Task Create(object create) //crea usuario
+        {
+            await _connection.InsertAsync(create);
         }
 
-        public async Task Create(User user) //crea usuario
+        public async Task Update(object update) //actualiza usuario
         {
-            await _connection.InsertAsync(user);
+            await _connection.UpdateAsync(update);
         }
 
-        public async Task Update(User user) //actualiza usuario
+        public async Task Delete(object delete) //elimina usuario
         {
-            await _connection.UpdateAsync(user);
-        }
-
-        public async Task Delete(User user) //elimina usuario
-        {
-            await _connection.DeleteAsync(user);
+            await _connection.DeleteAsync(delete);
         }
     }
 }

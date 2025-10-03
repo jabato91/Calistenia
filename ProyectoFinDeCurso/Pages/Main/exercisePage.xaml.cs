@@ -1,4 +1,5 @@
 using ProyectoFinDeCurso.Services;
+using ProyectoFinDeCurso.ViewModels;
 
 namespace ProyectoFinDeCurso.Pages.Main;
 
@@ -9,5 +10,9 @@ public partial class exercisePage : ContentPage
 	{
 		InitializeComponent();
 		_dbService = dbService;
+		CreateExercises createExercises = new CreateExercises(_dbService);
     }
+
+
+	
 }

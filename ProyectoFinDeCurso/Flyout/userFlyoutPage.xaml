@@ -19,7 +19,7 @@
                         Margin="20,10"/>
                 <Button Text="Rutinas" 
                         FontSize="18"
-                        Clicked="ExercisePage"
+                        Clicked="RoutinesPage"
                         Margin="20,10"/>
                 <Button Text="Cerrar Sesión" 
                         FontSize="18"

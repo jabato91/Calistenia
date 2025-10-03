@@ -34,7 +34,7 @@ public partial class LoginPage : ContentPage
         }
 
         await SecureStorage.SetAsync("user_email", emailInput); //Guarda el email del usuario en el almacenamiento seguro
-        await SecureStorage.SetAsync("user_id", user.Id.ToString()); //Guarda el id del usuario en el almacenamiento seguro
+        await SecureStorage.SetAsync("user_id", user.UserID.ToString()); //Guarda el id del usuario en el almacenamiento seguro
 
         if (Application.Current != null)
         {

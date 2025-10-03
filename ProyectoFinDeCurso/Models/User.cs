@@ -6,8 +6,9 @@ namespace ProyectoFinDeCurso.Models
     [Table("User")]
     public class User
     {
+        
         [PrimaryKey, AutoIncrement, Column("Id")]
-        public int Id { get; set; }
+        public int UserID { get; set; }
 
         [Column("Name")]
         public string Name { get; set; } = string.Empty;
@@ -32,5 +33,7 @@ namespace ProyectoFinDeCurso.Models
 
         [Ignore] // Para que SQLite no intente mapearla
         public string FullName => $"{Name} {FirstSurname} {SecondSurname}".Trim();
+        
+       
     }
 }

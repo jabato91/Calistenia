@@ -48,5 +48,9 @@ public partial class userFlyoutPage : FlyoutPage
         IsPresented = false;
     }
 
-    private void 
-}
+    private void RoutinesPage(object sender, EventArgs e)
+    {
+        this.Detail = new NavigationPage(new RoutinesPage());
+        IsPresented = false;
+    }
+    }
