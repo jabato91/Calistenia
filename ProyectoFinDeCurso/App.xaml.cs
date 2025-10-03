@@ -15,10 +15,14 @@ namespace ProyectoFinDeCurso
         {
             try { 
                 var userId = await SecureStorage.GetAsync("user_id");
-
-                if(!string.IsNullOrEmpty(userId)) 
+                
+                if (!string.IsNullOrEmpty(userId)) 
                 {
-                    MainPage = new NavigationPage(new HomePage());
+                    if (Application.Current != null)
+                    {
+                        Application.Current.MainPage = new ProyectoFinDeCurso.Flyout.userFlyoutPage(new DbService()); //Navega hacia la página Home, permitiendo no volver a la página anterior
+                    }
+                    
                 }
                 else
                 {

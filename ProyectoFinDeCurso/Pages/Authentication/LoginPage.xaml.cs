@@ -35,12 +35,21 @@ public partial class LoginPage : ContentPage
 
         await SecureStorage.SetAsync("user_email", emailInput); //Guarda el email del usuario en el almacenamiento seguro
         await SecureStorage.SetAsync("user_id", user.Id.ToString()); //Guarda el id del usuario en el almacenamiento seguro
-        await Navigation.PushModalAsync(new HomePage()); //Navega hacia la página Home, permitiendo no volver a la página anterior
-	}
+
+        if (Application.Current != null)
+        {
+            Application.Current.MainPage = new ProyectoFinDeCurso.Flyout.userFlyoutPage(new DbService(),user.userType); //Navega hacia la página Home, permitiendo no volver a la página anterior
+        }
+        else
+        {
+            await DisplayAlert("Error", "No se pudo navegar a la página principal. La aplicación no está inicializada.", "OK");
+        }
+    }
     private async void RegisterButton(object sender, EventArgs e)
     {
-        await Navigation.PushModalAsync(new NavigationPage(new RegisterPage(new DbService()))); //Navega hacia la página Home, permitiendo no volver a la página anterior
+        await Navigation.PushAsync(new RegisterPage(new DbService())); //Navega hacia la página Home, permitiendo volver a la página anterior
     }
+
 
 	
 }

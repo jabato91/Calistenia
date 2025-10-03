@@ -50,7 +50,8 @@ public partial class RegisterPage : ContentPage
             SecondSurname = SecondSurname.Text,
             Email = email.Text,
             Phone = phone.Text,
-            Password = Password.Text
+            Password = Password.Text,
+            userType = Enums.userTypeEnum.user
         };
         //Crea usuario en la base de datos
         await _dbService.Create(user);
@@ -67,8 +68,9 @@ public partial class RegisterPage : ContentPage
         email.Text = string.Empty;
         checkEmail.Text = string.Empty;
         phone.Text = string.Empty;
+        Password.Text = string.Empty;
 
-        // ?? Si usas NavigationPage:
-        await Navigation.PopAsync(); // Vuelves a la lista y se recarga
+        await Navigation.PopAsync();
+
     }
 }

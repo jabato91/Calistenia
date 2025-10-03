@@ -9,10 +9,7 @@ public partial class HomePage : ContentPage
 		InitializeComponent();
 	}
 
-    private async void UsersBotton(object sender, EventArgs e)
-    {
-        await Navigation.PushModalAsync(new ListUsers()); 
-    }
+    
     private async void LogoutButton(object sender, EventArgs e)
     {
         SecureStorage.Remove("user_email");

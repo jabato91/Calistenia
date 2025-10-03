@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using ProyectoFinDeCurso.Enums;
+using SQLite;
 
 namespace ProyectoFinDeCurso.Models
 {
@@ -25,6 +26,9 @@ namespace ProyectoFinDeCurso.Models
 
         [MaxLength(9), Column("Phone")]
         public string Phone { get; set; } = string.Empty;
+
+        [Column("UserType")]
+        public userTypeEnum userType { get; set; } = userTypeEnum.nothing;
 
         [Ignore] // Para que SQLite no intente mapearla
         public string FullName => $"{Name} {FirstSurname} {SecondSurname}".Trim();

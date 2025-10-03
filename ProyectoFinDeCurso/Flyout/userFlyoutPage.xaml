@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProyectoFinDeCurso.Flyout.userFlyoutPage"
+            xmlns:pages="clr-namespace:ProyectoFinDeCurso.Pages"
+            xmlns:pages2 ="clr-namespace:ProyectoFinDeCurso.Pages.Main"
+            FlyoutLayoutBehavior="Popover"
+             Title="userFlyoutPage">
+    <FlyoutPage.Flyout>
+        <ContentPage Title="Menu">
+            <StackLayout>
+                <Label Text="Panel" 
+                       FontSize="24"
+                       HorizontalOptions="Center"
+                       Margin="0,40,0,20"/>
+                <Button Text="Ejercicios Sueltos" 
+                        FontSize="18"
+                        Clicked="ExercisePage"
+                        Margin="20,10"/>
+                <Button Text="Rutinas" 
+                        FontSize="18"
+                        Clicked="ExercisePage"
+                        Margin="20,10"/>
+                <Button Text="Cerrar Sesión" 
+                        FontSize="18"
+                        Clicked="LogoutButton"
+                        Margin="20,10"/>
+                <Button x:Name="listUsers"
+                        Text="Usuarios"
+                        Clicked="UsersBottonAdmin"/>
+            </StackLayout>
+        </ContentPage>
+    </FlyoutPage.Flyout>
+    <FlyoutPage.Detail>
+        <NavigationPage>
+        <x:Arguments>
+            <pages:HomePage />
+            
+                <!-- Página inicial -->
+        </x:Arguments>
+    </NavigationPage>
+    
+
+    </FlyoutPage.Detail>
+</FlyoutPage>
