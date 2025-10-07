@@ -20,10 +20,17 @@ namespace ProyectoFinDeCurso.ViewModels
 
         private async void InitAsync()
         {
-            var exercises = createExerciseList();
-            foreach (var exercise in exercises)
+            List<Exercise> existing = await _dbService.GetEercises(); // Lista de ejercicios ya en DB
+            var newExercises = createExerciseList();       // Lista que quieres agregar
+
+            var existingNames = existing.Select(e => e.name).ToList();
+
+            foreach (var exercise in newExercises)
             {
-                await _dbService.Create(exercise);
+                if (!existingNames.Contains(exercise.name))
+                {
+                    await _dbService.Create(exercise);
+                }
             }
         }
         public List<Exercise> createExerciseList()

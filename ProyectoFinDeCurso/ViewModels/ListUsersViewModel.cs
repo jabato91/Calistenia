@@ -32,5 +32,6 @@ namespace ProyectoFinDeCurso.ViewModels
                 Users.Add(user);
             }
         }
+        
     }
 }

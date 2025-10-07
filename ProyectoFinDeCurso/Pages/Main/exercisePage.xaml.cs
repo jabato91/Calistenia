@@ -1,18 +1,19 @@
-using ProyectoFinDeCurso.Services;
+﻿using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.ViewModels;
 
 namespace ProyectoFinDeCurso.Pages.Main;
 
 public partial class exercisePage : ContentPage
 {
-	public DbService _dbService;
-	public exercisePage(DbService dbService)
-	{
-		InitializeComponent();
-		_dbService = dbService;
-		CreateExercises createExercises = new CreateExercises(_dbService);
+
+    private readonly DbService _dbService;
+
+    public exercisePage(DbService dbService)
+    {
+        InitializeComponent();
+        _dbService = dbService;
+
+        // Solo asignamos el BindingContext, no llamamos OnAppearing manualmente
+        BindingContext = new ProyectoFinDeCurso.ViewModels.ExerciseFilterViewModel(_dbService);
     }
-
-
-	
 }
