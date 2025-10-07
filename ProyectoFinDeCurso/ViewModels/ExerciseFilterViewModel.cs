@@ -31,10 +31,21 @@ namespace ProyectoFinDeCurso.ViewModels
         }
 
         // Propiedad calculada para filtrar ejercicios sin vaciar la colección
-        public IEnumerable<Exercise> FilteredExercises =>
-            string.IsNullOrWhiteSpace(SearchText)
-                ? Exercises
-                : Exercises.Where(e => e.name.Contains(SearchText, System.StringComparison.OrdinalIgnoreCase));
+        public IEnumerable<ExerciseGroup> FilteredExercises
+        {
+            get
+            {
+                var filtered = string.IsNullOrWhiteSpace(SearchText)
+                    ? Exercises
+                    : Exercises.Where(e =>
+                        e.name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+
+                return filtered
+                    .GroupBy(e => e.muscleGroupId)
+                    .Select(g => new ExerciseGroup(g.Key, g))
+                    .ToList();
+            }
+        }
 
         public ExerciseFilterViewModel(DbService dbService)
         {
