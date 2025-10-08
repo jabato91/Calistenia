@@ -5,29 +5,62 @@
             xmlns:pages="clr-namespace:ProyectoFinDeCurso.Pages"
             xmlns:pages2 ="clr-namespace:ProyectoFinDeCurso.Pages.Main"
             FlyoutLayoutBehavior="Popover"
-             Title="userFlyoutPage">
-    <FlyoutPage.Flyout>
-        <ContentPage Title="Menu">
-            <StackLayout>
+             Title="userFlyoutPage"
+            BackgroundColor="#242424">
+    <FlyoutPage.Flyout BackgroundColor="#242424">
+        <ContentPage Title="Menu"
+                     
+                     BackgroundColor="#242424">
+            <StackLayout BackgroundColor="#242424">
                 <Label Text="Panel" 
                        FontSize="24"
                        HorizontalOptions="Center"
-                       Margin="0,40,0,20"/>
+                       Margin="0,40,0,20"
+                       TextColor="#B09D9D"/>
                 <Button Text="Ejercicios Sueltos" 
                         FontSize="18"
                         Clicked="ExercisePage"
-                        Margin="20,10"/>
+                        Margin="30,10"
+                        BorderWidth="4"
+                        BorderColor="#FF542E"
+                        BackgroundColor="#FF4C24"
+                        CharacterSpacing="0.75"
+                        CornerRadius="1"
+                        TextColor="#FFE1D9"
+                        />
                 <Button Text="Rutinas" 
                         FontSize="18"
                         Clicked="RoutinesPage"
-                        Margin="20,10"/>
+                        Margin="30,10"
+                        BorderWidth="4"
+                        BorderColor="#FF542E"
+                        BackgroundColor="#FF4C24"
+                        CharacterSpacing="0.75"
+                        CornerRadius="1"
+                        TextColor="#FFE1D9"
+                        Pressed="Button_Pressed"
+                        Released="Button_Released"/>
                 <Button Text="Cerrar Sesión" 
                         FontSize="18"
                         Clicked="LogoutButton"
-                        Margin="20,10"/>
+                        Margin="30,10"
+                        BorderWidth="4"
+                        BorderColor="#FF542E"
+                        BackgroundColor="#FF4C24"
+                        CharacterSpacing="0.75"
+                        CornerRadius="1"
+                        TextColor="#FFE1D9"/>   
                 <Button x:Name="listUsers"
+                        FontSize="18"
                         Text="Usuarios"
-                        Clicked="UsersBottonAdmin"/>
+                        Clicked="UsersBottonAdmin"
+                        Margin="30,10"
+                        BorderWidth="4"
+                        BorderColor="#FF542E"
+                        BackgroundColor="#FF4C24"
+                        CharacterSpacing="0.75"
+                        CornerRadius="1"
+                        TextColor="#FFE1D9"/>
             </StackLayout>
         </ContentPage>
     </FlyoutPage.Flyout>

@@ -15,6 +15,7 @@ public partial class userFlyoutPage : FlyoutPage
         _dbService = dbService;
         _userType = userType;
         verificationUserType(userType);
+
     }
     public userFlyoutPage(DbService dbService)
     {
@@ -44,13 +45,29 @@ public partial class userFlyoutPage : FlyoutPage
 
     private void ExercisePage(object sender, EventArgs e)
     {
+        listUsers.CancelAnimations();
+        listUsers.Scale = 1.0;
         this.Detail = new NavigationPage(new exercisePage(_dbService));
         IsPresented = false;
     }
 
     private void RoutinesPage(object sender, EventArgs e)
     {
+        listUsers.CancelAnimations();
+        listUsers.Scale = 1.0;
         this.Detail = new NavigationPage(new RoutinesPage());
         IsPresented = false;
     }
+    private async void Button_Pressed(object sender, EventArgs e)
+    {
+        var button = (Button)sender;
+        await button.ScaleTo(1.1, 150, Easing.CubicInOut); // Escala suavemente al 110%
+        
     }
+    private async void Button_Released(object sender, EventArgs e)
+    {
+        var button = (Button)sender;
+        await button.ScaleTo(1.0, 150, Easing.CubicInOut); // Vuelve al tamaño original
+    }
+
+}
