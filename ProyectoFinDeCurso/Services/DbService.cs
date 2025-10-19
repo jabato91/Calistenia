@@ -13,6 +13,7 @@ namespace ProyectoFinDeCurso.Services
             string path = Path.Combine(FileSystem.AppDataDirectory, DB_NAME);
             _connection = new SQLiteAsyncConnection(Path.Combine(FileSystem.AppDataDirectory, DB_NAME)); //crea la conexión a la base de datos
             InitTablesAsync();
+            
         }
         private async void InitTablesAsync()
         {
@@ -35,19 +36,27 @@ namespace ProyectoFinDeCurso.Services
         {
             return await _connection.Table<Exercise>().Where(x => x.execiseID == id).FirstOrDefaultAsync();
         }
-        public async Task Create(object create) //crea usuario
+        public async Task Create(object create) //elimina objeto
         {
             await _connection.InsertAsync(create);
         }
 
-        public async Task Update(object update) //actualiza usuario
+        public async Task Update(object update) //elimna objeto
         {
             await _connection.UpdateAsync(update);
         }
 
-        public async Task Delete(object delete) //elimina usuario
+        public async Task Delete(object delete) //elimina objeto
         {
             await _connection.DeleteAsync(delete);
+        }
+        public async Task DeleteExerciseById(int id)
+        {
+            var exercise = await GetExerciseById(id);
+            if (exercise != null)
+            {
+                await _connection.DeleteAsync(exercise);
+            }
         }
     }
 }

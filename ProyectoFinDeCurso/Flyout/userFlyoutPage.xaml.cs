@@ -47,7 +47,7 @@ public partial class userFlyoutPage : FlyoutPage
     {
         listUsers.CancelAnimations();
         listUsers.Scale = 1.0;
-        this.Detail = new NavigationPage(new exercisePage(_dbService));
+        this.Detail = new NavigationPage(new exercisePage(_dbService, _userType));
         IsPresented = false;
     }
 

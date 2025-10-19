@@ -2,17 +2,71 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ProyectoFinDeCurso.Pages.LoginPage"
-             Title="LoginPage">
-    <VerticalStackLayout>
-        <Entry  x:Name="loginEmail"
-                Placeholder="Introduce Correo Electrónico"
-                TextColor="#4D4040"/>
-        <Entry  x:Name="loginPassword"
-                Placeholder="Introduce Contraseña"
-                TextColor="#4D4040"/>
-        <Button Text="Iniciar Sesión"
-                Clicked="LoginButton"/>
-        <Button Text="Registrase"
-                Clicked="RegisterButton"/>
+             Title="Iniciar Sesión"
+             BackgroundColor="#F5F5F5">
+
+    <VerticalStackLayout 
+        Spacing="25"
+        Padding="40"
+        VerticalOptions="Center"
+        HorizontalOptions="Center">
+
+        <!-- Título -->
+        <Label Text="Bienvenido"
+               FontSize="28"
+               FontAttributes="Bold"
+               TextColor="#333333"
+               HorizontalOptions="Center" />
+
+        <Frame HasShadow="True"
+               CornerRadius="20"
+               BackgroundColor="White"
+               Padding="25"
+               WidthRequest="300">
+
+            <VerticalStackLayout Spacing="20">
+
+                <!-- Campo de Correo -->
+                <Entry x:Name="loginEmail"
+                       Placeholder="Correo Electrónico"
+                       Keyboard="Email"
+                       TextColor="#333333"
+                       PlaceholderColor="#999999"
+                       ClearButtonVisibility="WhileEditing"
+                       BackgroundColor="#F1F1F1"
+                       HeightRequest="45"
+                       Margin="0,0,0,10"
+                       />
+
+                <!-- Campo de Contraseña -->
+                <Entry x:Name="loginPassword"
+                       Placeholder="Contraseña"
+                       IsPassword="True"
+                       TextColor="#333333"
+                       PlaceholderColor="#999999"
+                       BackgroundColor="#F1F1F1"
+                       HeightRequest="45"
+                       />
+
+                <!-- Botón de Iniciar Sesión -->
+                <Button Text="Iniciar Sesión"
+                        Clicked="LoginButton"
+                        BackgroundColor="#3B82F6"
+                        TextColor="White"
+                        CornerRadius="10"
+                        HeightRequest="45"
+                        FontAttributes="Bold"/>
+
+                <!-- Botón de Registro -->
+                <Button Text="Registrarse"
+                        Clicked="RegisterButton"
+                        BackgroundColor="#E5E7EB"
+                        TextColor="#333333"
+                        CornerRadius="10"
+                        HeightRequest="45"
+                        />
+
+            </VerticalStackLayout>
+        </Frame>
     </VerticalStackLayout>
 </ContentPage>

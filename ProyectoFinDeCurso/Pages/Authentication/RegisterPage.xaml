@@ -2,31 +2,111 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ProyectoFinDeCurso.Pages.Authentication.RegisterPage"
-             Title="RegisterPage">
-    <VerticalStackLayout>
-        <Entry x:Name="nameRegister"
-            Placeholder="Introduce nombre"
-            TextColor="#4D4040"/>
-        <Entry x:Name="firstSurname"
-            Placeholder="Introduce primer apellido"
-            TextColor="#4D4040"/>
-        <Entry x:Name="SecondSurname"
-            Placeholder="Introduce segundo apellido"
-            TextColor="#4D4040"/>
-        <Entry x:Name="email"
-            Placeholder="Introduce correo electrónico"
-            TextColor="#4D4040"/>
-        <Entry x:Name="checkEmail"
-            Placeholder="Introduce correo de nuevo"
-            TextColor="#4D4040"/>
-        <Entry x:Name="Password"
-            Placeholder="Introduce una contraseña"
-            TextColor="#4D4040"
-             />
-        <Entry x:Name="phone"
-            Placeholder="Introduce teléfono movil"
-            TextColor="#4D4040"
-            Keyboard="Numeric"/>
-        <Button Text="registrarse" Clicked="RegisterUser"/>
-    </VerticalStackLayout>
+             Title="Registro"
+             BackgroundColor="#F5F5F5">
+
+    <ScrollView>
+        <VerticalStackLayout 
+            Spacing="25"
+            Padding="40"
+            VerticalOptions="Center"
+            HorizontalOptions="Center">
+
+            <!-- Título -->
+            <Label Text="Crea tu cuenta"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="#333333"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,10"/>
+
+            <!-- Contenedor -->
+            <Frame HasShadow="True"
+                   CornerRadius="20"
+                   BackgroundColor="White"
+                   Padding="25"
+                   WidthRequest="320">
+
+                <VerticalStackLayout Spacing="15">
+
+                    <!-- Nombre -->
+                    <Entry x:Name="nameRegister"
+                           Placeholder="Nombre"
+                           TextColor="#333333"
+                           PlaceholderColor="#999999"
+                           BackgroundColor="#F1F1F1"
+                           HeightRequest="45"
+                           />
+
+                    <!-- Primer Apellido -->
+                    <Entry x:Name="firstSurname"
+                           Placeholder="Primer Apellido"
+                           TextColor="#333333"
+                           PlaceholderColor="#999999"
+                           BackgroundColor="#F1F1F1"
+                           HeightRequest="45"
+                           />
+
+                    <!-- Segundo Apellido -->
+                    <Entry x:Name="SecondSurname"
+                           Placeholder="Segundo Apellido"
+                           TextColor="#333333"
+                           PlaceholderColor="#999999"
+                           BackgroundColor="#F1F1F1"
+                           HeightRequest="45"
+                           />
+
+                    <!-- Correo Electrónico -->
+                    <Entry x:Name="email"
+                           Placeholder="Correo Electrónico"
+                           Keyboard="Email"
+                           TextColor="#333333"
+                           PlaceholderColor="#999999"
+                           BackgroundColor="#F1F1F1"
+                           HeightRequest="45"
+                           />
+
+                    <!-- Confirmar Correo -->
+                    <Entry x:Name="checkEmail"
+                           Placeholder="Repite tu Correo Electrónico"
+                           Keyboard="Email"
+                           TextColor="#333333"
+                           PlaceholderColor="#999999"
+                           BackgroundColor="#F1F1F1"
+                           HeightRequest="45"
+                           />
+
+                    <!-- Contraseña -->
+                    <Entry x:Name="Password"
+                           Placeholder="Contraseña"
+                           IsPassword="True"
+                           TextColor="#333333"
+                           PlaceholderColor="#999999"
+                           BackgroundColor="#F1F1F1"
+                           HeightRequest="45"
+                           />
+
+                    <!-- Teléfono -->
+                    <Entry x:Name="phone"
+                           Placeholder="Teléfono Móvil"
+                           Keyboard="Telephone"
+                           TextColor="#333333"
+                           PlaceholderColor="#999999"
+                           BackgroundColor="#F1F1F1"
+                           HeightRequest="45"
+                           />
+
+                    <!-- Botón de Registro -->
+                    <Button Text="Registrarse"
+                            Clicked="RegisterUser"
+                            BackgroundColor="#3B82F6"
+                            TextColor="White"
+                            CornerRadius="10"
+                            HeightRequest="45"
+                            FontAttributes="Bold"
+                            />
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

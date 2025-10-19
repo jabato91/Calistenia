@@ -1,35 +1,57 @@
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ProyectoFinDeCurso.Pages.Main.exercisePage"
-             Title="Ejercicios">
+             Title="Ejercicios"
+             Background="#C78585">
 
     <ScrollView>
-        <VerticalStackLayout Padding="10" Spacing="10">
+        <VerticalStackLayout Padding="10" Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
 
             <SearchBar Placeholder="Buscar ejercicio"
                        Text="{Binding SearchText}" />
             <CollectionView ItemsSource="{Binding FilteredExercises}"
                 IsGrouped="True"
                 ItemsUpdatingScrollMode="KeepScrollOffset"
-                SelectionMode="Single"
-                SelectionChanged="OpenExercise">
+                            x:Name="ExercisesList">
 
                 <CollectionView.GroupHeaderTemplate>
                     <DataTemplate>
-                        <StackLayout BackgroundColor="#eeeeee" Padding="8">
-                            <Label Text="{Binding MuscleGroupId}" FontAttributes="Bold" />
-                        </StackLayout>
+                        <Frame BackgroundColor="#824646"
+                               BorderColor="#824646"
+                               CornerRadius="8"
+                               Padding="6"
+                               Margin="2,2,2,2"
+                               HasShadow="False">
+                            <StackLayout BackgroundColor="#8A4A4A" Padding="8">
+                                <Label Text="{Binding MuscleGroupId}" FontAttributes="Bold" />
+                            </StackLayout>
+                        </Frame>
                     </DataTemplate>
                 </CollectionView.GroupHeaderTemplate>
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame BorderColor="LightGray" CornerRadius="10" Margin="10" Padding="10">
-                            <StackLayout>
-                                <Label Text="{Binding name}" FontSize="20" FontAttributes="Bold"/>
-                                <Label Text="{Binding description}" FontSize="16"/>
-                            </StackLayout>
-                        </Frame>
+                        <Grid Margin="10">
+                            <!-- margen entre items -->
+                            <Frame BorderColor="#C44B4B"
+                               BackgroundColor="#C44B4B"
+                               CornerRadius="10"
+                               Margin="2,2,2,2"
+                               Padding="10"
+                               HasShadow="True">
+                                <!--Lista de objetos-->
+                                <StackLayout>
+                                    <Label Text="{Binding execiseID}" FontSize="20" FontAttributes="Bold" TextColor="#787878" IsVisible="False"/>
+                                    <Label Text="{Binding name}" FontSize="20" FontAttributes="Bold" TextColor="#262626" FontFamily="AnandaPersonal" HorizontalTextAlignment="Center"/>
+                                    <Label Text="{Binding description}" FontSize="16"/>
+                                    <Button Clicked="eliminateExercise" x:Name="eliminateE" Text="Eliminar"/>
+                                    <Button Clicked="modifyExercise" x:Name="modifyE" Text="Actualizar"/>
+                                </StackLayout>
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnExerciseTapped" CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
+                            </Frame>
+                        </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

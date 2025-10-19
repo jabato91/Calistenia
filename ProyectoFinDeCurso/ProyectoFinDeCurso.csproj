@@ -57,6 +57,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Fonts\Ananda Black Personal Use.ttf" />
+	  <None Remove="Resources\Fonts\Ananda Personal Use.ttf" />
+	  <None Remove="Resources\Fonts\Avenue de Madison.ttf" />
+	  <None Remove="Resources\Fonts\Madina.otf" />
+	  <None Remove="Resources\Fonts\Madina.ttf" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />
 	  <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.9" />
 	  <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
@@ -92,6 +100,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Helpers\" />
+	  <Folder Include="Views\" />
 	</ItemGroup>
 
 </Project>
