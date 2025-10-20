@@ -8,6 +8,7 @@ namespace ProyectoFinDeCurso.Pages.Main;
 
 public partial class exercisePage : ContentPage
 {
+    private HashSet<VisualElement> animatedElements = new HashSet<VisualElement>();
 
     private readonly DbService _dbService;
     Exercise selectedExercise;
