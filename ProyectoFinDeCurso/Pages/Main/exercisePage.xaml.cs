@@ -1,9 +1,11 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿
+using CommunityToolkit.Maui.Views;
+using Microsoft.Maui.Controls;
 using ProyectoFinDeCurso.Enums;
 using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.ViewModels;
-
+using CommunityToolkit.Maui.Media;
 namespace ProyectoFinDeCurso.Pages.Main;
 
 public partial class exercisePage : ContentPage
@@ -11,66 +13,107 @@ public partial class exercisePage : ContentPage
     private HashSet<VisualElement> animatedElements = new HashSet<VisualElement>();
 
     private readonly DbService _dbService;
-    Exercise selectedExercise;
+    private ExerciseFilterViewModel _filter;
     public exercisePage(DbService dbService, userTypeEnum userType)
     {
         InitializeComponent();
         _dbService = dbService;
         verificationUserType(userType);
         // Solo asignamos el BindingContext, no llamamos OnAppearing manualmente
-        BindingContext = new ProyectoFinDeCurso.ViewModels.ExerciseFilterViewModel(_dbService);
-    }
-    private void OpenExercise(object sender, SelectionChangedEventArgs e)
-    {
-        if (e.CurrentSelection.FirstOrDefault() is Exercise selectedExercise)
-        {
+        _filter = new ProyectoFinDeCurso.ViewModels.ExerciseFilterViewModel(_dbService);
+        BindingContext = _filter;
 
-            
-            
-                DisplayAlert("Ejercicio seleccionado", selectedExercise.name, "OK"); // Limpia la selección (opcional) ((CollectionView)sender).SelectedItem = null; }
-            
-        }
     }
+
     private async void OnExerciseTapped(object sender, EventArgs e)
     {
-        if ((sender as Frame)?.BindingContext is Exercise selectedExercise)
+        try
         {
-            // Crea la página modal
-            var modalPage = new ContentPage
+            if ((sender as Frame)?.BindingContext is Exercise selectedExercise)
             {
-                BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
-                Content = new Frame
+                // Traemos la instancia actual desde la DB
+                Exercise exerciseFromDb = await _dbService.GetExerciseById(selectedExercise.execiseID);
+
+                var modalPage = new ContentPage
                 {
-                    BackgroundColor = Colors.White,
-                    CornerRadius = 20,
-                    Margin = 30,
-                    VerticalOptions = LayoutOptions.Center,
+
+                    BackgroundColor = Color.FromHex("#D69C90"),
+                    Content = new Frame
+                    {
+                        BackgroundColor = Color.FromHex("#C44B4B"),
+                        CornerRadius = 20,
+                        Margin = 1,
+                        VerticalOptions = LayoutOptions.Center,
+                        HorizontalOptions = LayoutOptions.Center,
+                        Content = new VerticalStackLayout
+                        {
+                            Padding = 4,
+                            Children =
+            {
+                new Button
+                {
+                    Text = "X",
+                    BackgroundColor =  Color.FromHex("#BF9F9F"),
+                     CornerRadius = 999,
+                    WidthRequest = 40,
+                    HeightRequest = 40,
+                    FontSize =17,
+                    Padding = new Thickness(0),
+                     Margin = new Thickness(0, 5, 5, 0),
+                    HorizontalOptions = LayoutOptions.End,
+                    VerticalOptions = LayoutOptions.Start,
+                    Command = new Command(async () =>
+                        await Navigation.PopModalAsync())
+                },
+                new Label
+                {
+                    Text = exerciseFromDb.name,
+                    FontSize = 24,
                     HorizontalOptions = LayoutOptions.Center,
-                    Content = new VerticalStackLayout
-                    {
-                        Padding = 20,
-                        Children =
-                    {
-                        new Label
-                        {
-                            Text = selectedExercise.name,
-                            FontSize = 24,
-                            HorizontalOptions = LayoutOptions.Center
-                        },
-                        new Label { Text = selectedExercise.description },
-                        new Button
-                        {
-                            Text = "Cerrar",
-                            Command = new Command(async () =>
-                                await Navigation.PopModalAsync())
+                    TextColor = Colors.Black
+                },
+                new Label
+                {
+                    Text = exerciseFromDb.description,
+                    FontSize = 13,
+                    HorizontalOptions = LayoutOptions.Center,
+                    TextColor = Colors.Black,
+                    Margin = 1.5
+                },
+                new Frame
+                            {
+                                CornerRadius = 15,
+                                HasShadow = true,
+                                BackgroundColor = Colors.Black,
+                                Padding = 0,
+                                Margin = new Thickness(2,3,2,4),
+                                Content = new MediaElement
+                                {
+                                    Source = MediaSource.FromResource("prueba.mp4"),
+                                    Aspect = Aspect.AspectFit,
+                                    ShouldShowPlaybackControls = true,
+                                    HeightRequest = 325,
+                                    WidthRequest = 500
+                                }
+                            },
+               
+                }
                         }
                     }
-                    }
-                }
-            };
+                };
 
-            // Muestra la ventana modal
-            await Navigation.PushModalAsync(modalPage);
+                // Muestra la ventana modal
+                await Navigation.PushModalAsync(modalPage);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Muestra un mensaje de error amigable
+            await Application.Current.MainPage.DisplayAlert(
+                "Error",
+                $"Ocurrió un error al abrir el ejercicio:\n{ex.Message}",
+                "OK"
+            );
         }
     }
     private void verificationUserType(userTypeEnum userType)
@@ -97,50 +140,90 @@ public partial class exercisePage : ContentPage
         if ((sender as Button)?.BindingContext is not Exercise selectedExercise)
             return;
 
-        var selectExerciseID = selectedExercise.execiseID;
+        // Traemos la instancia actual desde la DB
+        Exercise exerciseFromDb = await _dbService.GetExerciseById(selectedExercise.execiseID);
 
-        Exercise exerciseFromDb = await _dbService.GetExerciseById(selectExerciseID);
-        // Crear la página para modificar el ejercicio
+        var traducciones = new Dictionary<bodyPartEnum, string>
+    {
+        { bodyPartEnum.nothing, "Ninguno" },
+        { bodyPartEnum.chest, "Pecho" },
+        { bodyPartEnum.leg, "Piernas" },
+        { bodyPartEnum.triceps, "Tríceps" },
+        { bodyPartEnum.biceps, "Bíceps" },
+        { bodyPartEnum.abdomen, "Abdomen" },
+        { bodyPartEnum.back, "Espalda" },
+        { bodyPartEnum.shoulder, "Hombros" }
+    };
+
+        // Creamos controles y los guardamos en variables locales
+        var nameEntry = new Entry
+        {
+            Text = exerciseFromDb.name,
+            Placeholder = "Nombre",
+            TextColor = Colors.Black,
+            BackgroundColor = Colors.LightGray,
+            HorizontalOptions = LayoutOptions.Fill
+        };
+
+        var descEntry = new Entry
+        {
+            Text = exerciseFromDb.description,
+            Placeholder = "Descripción",
+            TextColor = Colors.Black,
+            BackgroundColor = Colors.LightGray,
+            HorizontalOptions = LayoutOptions.Fill
+        };
+
+        var imageEntry = new Entry
+        {
+            Text = exerciseFromDb.image,
+            Placeholder = "Imagen",
+            TextColor = Colors.Black,
+            BackgroundColor = Colors.LightGray,
+            HorizontalOptions = LayoutOptions.Fill
+        };
+
+        var bodyPartEnumPicker = new Picker
+        {
+            Title = "Tipo Cuerpo",
+            ItemsSource = traducciones.Values.ToList(),
+            SelectedItem = traducciones[exerciseFromDb.muscleGroupId],
+            TextColor = Colors.Black,
+            BackgroundColor = Colors.LightGray,
+            HorizontalOptions = LayoutOptions.Fill
+        };
+
+        // Creamos la página modal
         var modalPage = new ContentPage
         {
             BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
             Content = new Frame
             {
                 BackgroundColor = Colors.White,
-                CornerRadius = 20,
-                Margin = 30,
+                CornerRadius = 50,
+                Margin = 1, // margen pequeño respecto a la pantalla
+                Padding = 1, // padding pequeño para que los controles estén cerca de los bordes
                 VerticalOptions = LayoutOptions.Center,
                 HorizontalOptions = LayoutOptions.Center,
                 Content = new VerticalStackLayout
                 {
-                    Padding = 20,
-                    Spacing = 15,
+                    Padding = 1, // padding interno mínimo
+                    Spacing = 5, // espacio entre elementos
                     Children =
                 {
                     new Label
                     {
                         Text = "Modificar ejercicio",
                         FontSize = 24,
-                        HorizontalOptions = LayoutOptions.Center
+                        TextColor = Colors.Black,
+                        BackgroundColor = Colors.LightGray,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        HorizontalTextAlignment = TextAlignment.Center
                     },
-                    new Entry
-                    {
-                        Text = exerciseFromDb.name,
-                        Placeholder = "Nombre",
-                        HorizontalOptions = LayoutOptions.Fill
-                    },
-                    new Entry
-                    {
-                        Text = exerciseFromDb.description,
-                        Placeholder = "Descripción",
-                        HorizontalOptions = LayoutOptions.Fill
-                    },
-                    new Entry
-                    {
-                        Text = exerciseFromDb.muscleGroupId.ToString(),
-                        Placeholder = "Tipo Cuerpo",
-                        HorizontalOptions = LayoutOptions.Fill
-                    },
+                    nameEntry,
+                    descEntry,
+                    imageEntry,
+                    bodyPartEnumPicker,
                     new HorizontalStackLayout
                     {
                         Spacing = 10,
@@ -149,19 +232,28 @@ public partial class exercisePage : ContentPage
                             new Button
                             {
                                 Text = "Guardar",
-                                Command = new Command(async (btn) =>
+                                Command = new Command(async () =>
                                 {
-                                    var stack = (btn as Button)?.Parent as HorizontalStackLayout;
-                                    if (stack?.Parent is VerticalStackLayout vstack)
-                                    {
-                                        var nameEntry = vstack.Children[1] as Entry;
-                                        var descEntry = vstack.Children[2] as Entry;
+                                    // Tomamos los valores directamente de las variables
+                                    exerciseFromDb.name = nameEntry.Text ?? "";
+                                    exerciseFromDb.description = descEntry.Text ?? "";
+                                    exerciseFromDb.image = imageEntry.Text ?? "";
 
-                                        if (nameEntry != null && descEntry != null)
-                                        {
-                                            selectedExercise.name = nameEntry.Text ?? "";
-                                            selectedExercise.description = descEntry.Text ?? "";
-                                        }
+                                    if (bodyPartEnumPicker.SelectedIndex >= 0)
+                                    {
+                                        var selectedEnum = traducciones.Keys.ToList()[bodyPartEnumPicker.SelectedIndex];
+                                        exerciseFromDb.muscleGroupId = selectedEnum;
+                                    }
+
+                                    // Guardamos en la DB
+                                    await _dbService.Update(exerciseFromDb);
+
+                                    // Actualizamos la colección del ViewModel
+                                    var index = _filter.Exercises.IndexOf(selectedExercise);
+                                    if (index >= 0)
+                                    {
+                                        _filter.Exercises[index] = exerciseFromDb;
+                                        _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
                                     }
 
                                     await Navigation.PopModalAsync();
@@ -179,9 +271,7 @@ public partial class exercisePage : ContentPage
             }
         };
 
-        // Mostrar el modal
+        // Mostramos el modal
         await Navigation.PushModalAsync(modalPage);
     }
-
-    
 }

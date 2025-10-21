@@ -62,10 +62,12 @@
 	  <None Remove="Resources\Fonts\Avenue de Madison.ttf" />
 	  <None Remove="Resources\Fonts\Madina.otf" />
 	  <None Remove="Resources\Fonts\Madina.ttf" />
+	  <None Remove="Resources\Raw\prueba.mp4" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />
+	  <PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="4.1.2" />
 	  <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.9" />
 	  <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
 	  <PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.1.2" />

@@ -26,6 +26,7 @@ namespace ProyectoFinDeCurso.ViewModels
                     _searchText = value;
                     OnPropertyChanged(nameof(SearchText));
                     OnPropertyChanged(nameof(FilteredExercises)); // actualizar la vista
+                    OnPropertyChanged(nameof(ExercisesCount));
                 }
             }
         }
@@ -46,13 +47,16 @@ namespace ProyectoFinDeCurso.ViewModels
                     .ToList();
             }
         }
-
+        public int ExercisesCount => Exercises?.Count ?? 0;
         public ExerciseFilterViewModel(DbService dbService)
         {
             _dbService = dbService;
 
             // Inicializa los ejercicios solo si no existen
             var initializer = new CreateExercises(_dbService);
+
+            Exercises.CollectionChanged += (s, e) => OnPropertyChanged(nameof(ExercisesCount));
+
 
             LoadExercises();
         }
@@ -67,10 +71,11 @@ namespace ProyectoFinDeCurso.ViewModels
 
             // Notificar que FilteredExercises cambió al cargar
             OnPropertyChanged(nameof(FilteredExercises));
+            OnPropertyChanged(nameof(ExercisesCount));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged(string name) =>
+        public void OnPropertyChanged(string name) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

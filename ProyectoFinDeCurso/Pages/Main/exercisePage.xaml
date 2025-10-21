@@ -4,8 +4,8 @@
              Title="Ejercicios"
              Background="#C78585">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="10" Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+    <ScrollView x:Name="Scroll">
+        <VerticalStackLayout Padding="10" Spacing="10" HorizontalOptions="Center" VerticalOptions="Center" x:Name="StackContainer">
 
             <SearchBar Placeholder="Buscar ejercicio"
                        Text="{Binding SearchText}" />
@@ -23,29 +23,38 @@
                                Margin="2,2,2,2"
                                HasShadow="False">
                             <StackLayout BackgroundColor="#8A4A4A" Padding="8">
-                                <Label Text="{Binding MuscleGroupId}" FontAttributes="Bold" />
+                                <Label Text="{Binding MuscleGroupId}" FontAttributes="Bold" HorizontalTextAlignment="Center" />
                             </StackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.GroupHeaderTemplate>
-
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="2" />
+                </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Margin="10">
+                        <Grid Margin="0.5,1,3,1">
                             <!-- margen entre items -->
                             <Frame BorderColor="#C44B4B"
                                BackgroundColor="#C44B4B"
                                CornerRadius="10"
-                               Margin="2,2,2,2"
+                               Margin="0.5,5,1,5"
                                Padding="10"
-                               HasShadow="True">
+                               HasShadow="True"
+                                   
+                                   VerticalOptions="Center">
                                 <!--Lista de objetos-->
                                 <StackLayout>
                                     <Label Text="{Binding execiseID}" FontSize="20" FontAttributes="Bold" TextColor="#787878" IsVisible="False"/>
                                     <Label Text="{Binding name}" FontSize="20" FontAttributes="Bold" TextColor="#262626" FontFamily="AnandaPersonal" HorizontalTextAlignment="Center"/>
-                                    <Label Text="{Binding description}" FontSize="16"/>
-                                    <Button Clicked="eliminateExercise" x:Name="eliminateE" Text="Eliminar"/>
-                                    <Button Clicked="modifyExercise" x:Name="modifyE" Text="Actualizar"/>
+                                    <Image Source="{Binding image}" 
+                                       HeightRequest="260"
+                                           WidthRequest="200"
+                                       Aspect="AspectFill"
+                                       HorizontalOptions="Center" 
+                                       Margin="0,10,0,10" />
+                                    <Button Clicked="eliminateExercise" x:Name="eliminateE" Text="Eliminar" BackgroundColor="#A82A2A" Margin="15,1,15,1"/>
+                                    <Button Clicked="modifyExercise" x:Name="modifyE" Text="Actualizar" BackgroundColor="#A82A2A" Margin="15,1,15,1"/>
                                 </StackLayout>
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnExerciseTapped" CommandParameter="{Binding .}" />

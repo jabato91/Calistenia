@@ -5,7 +5,7 @@
              Title="HomePage">
     <VerticalStackLayout>
         <Label 
-            Text="Home"
+            Text="Presentación de la aplicacion"
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
         
