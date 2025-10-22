@@ -36,29 +36,69 @@
                         <Grid Margin="0.5,1,3,1">
                             <!-- margen entre items -->
                             <Frame BorderColor="#C44B4B"
-                               BackgroundColor="#C44B4B"
-                               CornerRadius="10"
-                               Margin="0.5,5,1,5"
-                               Padding="10"
-                               HasShadow="True"
-                                   
-                                   VerticalOptions="Center">
-                                <!--Lista de objetos-->
-                                <StackLayout>
-                                    <Label Text="{Binding execiseID}" FontSize="20" FontAttributes="Bold" TextColor="#787878" IsVisible="False"/>
-                                    <Label Text="{Binding name}" FontSize="20" FontAttributes="Bold" TextColor="#262626" FontFamily="AnandaPersonal" HorizontalTextAlignment="Center"/>
+                            BackgroundColor="Transparent"
+                            CornerRadius="10"
+                            Margin="0.5,5,1,5"
+                            HasShadow="True"
+                            VerticalOptions="Center">        
+
+                                <Grid>
+                                    <!-- Imagen de fondo -->
                                     <Image Source="{Binding image}" 
-                                       HeightRequest="260"
-                                           WidthRequest="200"
-                                       Aspect="AspectFill"
-                                       HorizontalOptions="Center" 
-                                       Margin="0,10,0,10" />
-                                    <Button Clicked="eliminateExercise" x:Name="eliminateE" Text="Eliminar" BackgroundColor="#A82A2A" Margin="15,1,15,1"/>
-                                    <Button Clicked="modifyExercise" x:Name="modifyE" Text="Actualizar" BackgroundColor="#A82A2A" Margin="15,1,15,1"/>
-                                </StackLayout>
+                                           Aspect="AspectFill" 
+                                           WidthRequest="220"
+                                           HeightRequest="300"/>
+
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <!-- Texto arriba -->
+                                            <RowDefinition Height="*"/>
+                                            <!-- Espacio intermedio -->
+                                            <RowDefinition Height="Auto"/>
+                                            <!-- Botones abajo -->
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Texto arriba -->
+                                        <Label Text="{Binding name}" 
+                                           FontSize="20" 
+                                           FontAttributes="Bold" 
+                                           TextColor="#FFFFFF" 
+                                           FontFamily="AnandaPersonal" 
+                                           HorizontalTextAlignment="Center"
+                                           VerticalOptions="Start"
+                                           Margin="10"/>    
+
+                                        <!-- Botones abajo a la derecha -->
+                                        <StackLayout Grid.Row="2" 
+                                            Orientation="Horizontal" 
+                                            HorizontalOptions="End" 
+                                            VerticalOptions="End"
+                                            Spacing="10"
+                                            Margin="0,0,10,10">
+
+                                            <ImageButton Clicked="eliminateExercise"
+                                             Source="papelera.png"
+                                             WidthRequest="40"
+                                             HeightRequest="40"
+                                             BackgroundColor="Transparent"
+                                             Aspect="AspectFill"/>
+
+                                            <ImageButton Clicked="modifyExercise" 
+                                            Source="editar.png"
+                                            WidthRequest="40"
+                                            HeightRequest="40"
+                                            BackgroundColor="Transparent"
+                                            />   
+                                        </StackLayout>
+
+                                    </Grid>
+                                </Grid>
+
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnExerciseTapped" CommandParameter="{Binding .}" />
                                 </Frame.GestureRecognizers>
+
                             </Frame>
                         </Grid>
                     </DataTemplate>
