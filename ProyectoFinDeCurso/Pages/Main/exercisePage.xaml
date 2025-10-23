@@ -1,95 +1,136 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ProyectoFinDeCurso.Pages.Main.exercisePage"
-             Title="Ejercicios"
-             Background="#C78585">
+             Title="Ejercicios">
 
-    <ScrollView x:Name="Scroll">
-        <VerticalStackLayout Padding="10" Spacing="10" HorizontalOptions="Center" VerticalOptions="Center" x:Name="StackContainer">
+    <!-- Fondo con degradado sutil -->
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#1A1A1A" Offset="0.0"/>
+            <GradientStop Color="#2E1E1B" Offset="1.0"/>
+        </LinearGradientBrush>
+    </ContentPage.Background>
 
+    <ScrollView>
+        <VerticalStackLayout Padding="10" Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+
+            <!-- Barra de búsqueda -->
             <SearchBar Placeholder="Buscar ejercicio"
-                       Text="{Binding SearchText}" />
-            <CollectionView ItemsSource="{Binding FilteredExercises}"
-                IsGrouped="True"
-                ItemsUpdatingScrollMode="KeepScrollOffset"
-                            x:Name="ExercisesList">
+                       Text="{Binding SearchText}"
+                       BackgroundColor="#2B2B2B"
+                       TextColor="#E0CFC2"
+                       PlaceholderColor="#A59D95"/>
 
+            <!-- CollectionView de ejercicios -->
+            <CollectionView ItemsSource="{Binding FilteredExercises}"
+                            IsGrouped="True"
+                            ItemsUpdatingScrollMode="KeepScrollOffset">
+
+                <!-- Encabezado de grupo -->
                 <CollectionView.GroupHeaderTemplate>
                     <DataTemplate>
-                        <Frame BackgroundColor="#824646"
-                               BorderColor="#824646"
+                        <Frame BorderColor="#C77B30" 
                                CornerRadius="8"
                                Padding="6"
-                               Margin="2,2,2,2"
-                               HasShadow="False">
-                            <StackLayout BackgroundColor="#8A4A4A" Padding="8">
-                                <Label Text="{Binding MuscleGroupId}" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                               Margin="2"
+                               HasShadow="False"
+                               BackgroundColor="Transparent">
+                            <Frame.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#E48C34" Offset="0.0"/>
+                                    <GradientStop Color="#A85C1D" Offset="0.5"/>
+                                </LinearGradientBrush>
+                            </Frame.Background>
+
+                            <StackLayout Padding="8">
+                                <Label Text="{Binding DisplayName}" 
+                                       FontAttributes="Bold" 
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="#E0CFC2"
+                                       />
                             </StackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.GroupHeaderTemplate>
+
+                <!-- Layout de items -->
                 <CollectionView.ItemsLayout>
                     <GridItemsLayout Orientation="Vertical" Span="2" />
                 </CollectionView.ItemsLayout>
+
+                <!-- Plantilla de item -->
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Margin="0.5,1,3,1">
-                            <!-- margen entre items -->
-                            <Frame BorderColor="#C44B4B"
-                            BackgroundColor="Transparent"
-                            CornerRadius="10"
-                            Margin="0.5,5,1,5"
-                            HasShadow="True"
-                            VerticalOptions="Center">        
+                        <Grid Margin="0.5,5,1,5">
+                            <Frame BorderColor="#66605E"
+                                   BackgroundColor="#232020"
+                                   CornerRadius="12"
+                                   HasShadow="True"
+                                   VerticalOptions="Center">
 
                                 <Grid>
+
+                                    <!-- Aura verde pulsante -->
+                                    <BoxView x:Name="Aura"
+                                             CornerRadius="12"
+                                             Opacity="0.5"
+                                             HorizontalOptions="Fill"
+                                             VerticalOptions="Fill"
+                                             Margin="0">
+                                        <BoxView.Background>
+                                            <RadialGradientBrush Center="0.5,0.5" Radius="0.9">
+                                                <GradientStop Color="Transparent" Offset="0.3"/>
+                                                <GradientStop Color="#3FA45B" Offset="0.8"/>
+                                                <GradientStop Color="#2E7D32" Offset="1"/>
+                                            </RadialGradientBrush>
+                                        </BoxView.Background>
+                                    </BoxView>
+
                                     <!-- Imagen de fondo -->
                                     <Image Source="{Binding image}" 
-                                           Aspect="AspectFill" 
+                                           Aspect="AspectFill"
                                            WidthRequest="220"
-                                           HeightRequest="300"/>
+                                           HeightRequest="300"
+                                           />
 
+                                    <!-- Contenido de la carta -->
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
-                                            <!-- Texto arriba -->
                                             <RowDefinition Height="*"/>
-                                            <!-- Espacio intermedio -->
                                             <RowDefinition Height="Auto"/>
-                                            <!-- Botones abajo -->
                                         </Grid.RowDefinitions>
 
-                                        <!-- Texto arriba -->
+                                        <!-- Nombre -->
                                         <Label Text="{Binding name}" 
-                                           FontSize="20" 
-                                           FontAttributes="Bold" 
-                                           TextColor="#FFFFFF" 
-                                           FontFamily="AnandaPersonal" 
-                                           HorizontalTextAlignment="Center"
-                                           VerticalOptions="Start"
-                                           Margin="10"/>    
+                                               FontSize="20" 
+                                               FontAttributes="Bold" 
+                                               TextColor="#6B605D" 
+                                               FontFamily="AnandaPersonal"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalOptions="Start"
+                                               Margin="10"/>
 
-                                        <!-- Botones abajo a la derecha -->
-                                        <StackLayout Grid.Row="2" 
-                                            Orientation="Horizontal" 
-                                            HorizontalOptions="End" 
-                                            VerticalOptions="End"
-                                            Spacing="10"
-                                            Margin="0,0,10,10">
+                                        <!-- Botones -->
+                                        <StackLayout Grid.Row="2"
+                                                     Orientation="Horizontal"
+                                                     HorizontalOptions="End"
+                                                     VerticalOptions="End"
+                                                     Spacing="10"
+                                                     Margin="0,0,10,10">
 
                                             <ImageButton Clicked="eliminateExercise"
-                                             Source="papelera.png"
-                                             WidthRequest="40"
-                                             HeightRequest="40"
-                                             BackgroundColor="Transparent"
-                                             Aspect="AspectFill"/>
+                                                         Source="papelera.png"
+                                                         WidthRequest="40"
+                                                         HeightRequest="40"
+                                                         BackgroundColor="Transparent"
+                                                         Aspect="AspectFill"/>
 
                                             <ImageButton Clicked="modifyExercise" 
-                                            Source="editar.png"
-                                            WidthRequest="40"
-                                            HeightRequest="40"
-                                            BackgroundColor="Transparent"
-                                            />   
+                                                         Source="editar.png"
+                                                         WidthRequest="40"
+                                                         HeightRequest="40"
+                                                         BackgroundColor="Transparent"/>
                                         </StackLayout>
 
                                     </Grid>
@@ -103,6 +144,7 @@
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
+
             </CollectionView>
         </VerticalStackLayout>
     </ScrollView>

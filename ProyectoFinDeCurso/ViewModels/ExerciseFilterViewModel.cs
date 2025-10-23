@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using ProyectoFinDeCurso.Enums;
 using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Services;
 using System.Collections.ObjectModel;
@@ -38,8 +39,7 @@ namespace ProyectoFinDeCurso.ViewModels
             {
                 var filtered = string.IsNullOrWhiteSpace(SearchText)
                     ? Exercises
-                    : Exercises.Where(e =>
-                        e.name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+                    : Exercises.Where(e => e.name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
 
                 return filtered
                     .GroupBy(e => e.muscleGroupId)

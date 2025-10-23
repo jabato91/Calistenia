@@ -20,7 +20,7 @@ public partial class exercisePage : ContentPage
         _dbService = dbService;
         verificationUserType(userType);
         // Solo asignamos el BindingContext, no llamamos OnAppearing manualmente
-        _filter = new ProyectoFinDeCurso.ViewModels.ExerciseFilterViewModel(_dbService);
+        _filter = new ExerciseFilterViewModel(_dbService);
         BindingContext = _filter;
 
     }
@@ -137,8 +137,11 @@ public partial class exercisePage : ContentPage
 
     private async void modifyExercise(object sender, EventArgs e)
     {
-        if ((sender as Button)?.BindingContext is not Exercise selectedExercise)
+        if ((sender as ImageButton)?.BindingContext is not Exercise selectedExercise)
+        {
+            
             return;
+        }
 
         // Traemos la instancia actual desde la DB
         Exercise exerciseFromDb = await _dbService.GetExerciseById(selectedExercise.execiseID);
@@ -274,4 +277,5 @@ public partial class exercisePage : ContentPage
         // Mostramos el modal
         await Navigation.PushModalAsync(modalPage);
     }
+    
 }

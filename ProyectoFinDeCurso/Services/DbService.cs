@@ -19,15 +19,17 @@ namespace ProyectoFinDeCurso.Services
         {
             await _connection.CreateTableAsync<User>();
             await _connection.CreateTableAsync<Exercise>();
+            await _connection.CreateTableAsync<Routines>();
+            await _connection.CreateTableAsync<RoutinesExercises>();
         }
-        public async Task<List<User>> GetUsers() //obtiene todos los usuarios
-        {
-            return await _connection.Table<User>().ToListAsync();
-        }
-        public async Task<List<Exercise>> GetEercises() //obtiene todos los usuarios
-        {
-            return await _connection.Table<Exercise>().ToListAsync();
-        }
+        public async Task<List<User>> GetUsers() => await _connection.Table<User>().ToListAsync(); //obtiene todos los usuarios
+
+        public async Task<List<Exercise>> GetEercises() => await _connection.Table<Exercise>().ToListAsync(); //obtiene todos los ejercicios
+
+        public async Task<List<Routines>> GetRoutines() => await _connection.Table<Routines>().ToListAsync(); //obtiene todos las rutinas
+
+        public async Task<List<RoutinesExercises>> GetRoutinesExercises() => await _connection.Table<RoutinesExercises>().ToListAsync(); //obtiene todos los ejercicios de las rutinas
+
         public async Task<User> GetUserById(int id) //obtiene usuario por id
         {
             return await _connection.Table<User>().Where(x => x.UserID == id).FirstOrDefaultAsync();
@@ -35,6 +37,18 @@ namespace ProyectoFinDeCurso.Services
         public async Task<Exercise> GetExerciseById(int id) //obtiene ejercicio por id
         {
             return await _connection.Table<Exercise>().Where(x => x.execiseID == id).FirstOrDefaultAsync();
+        }
+        public async Task<Routines> GetRoutineById(int id) //obtiene rutina por id
+        {
+            return await _connection.Table<Routines>().Where(x => x.routineID == id).FirstOrDefaultAsync();
+        }
+        public async Task<RoutinesExercises> GetRoutinesExercisesByIdRoutine(int idRoutines) //obtiene rutina por id
+        {
+            return await _connection.Table<RoutinesExercises>().Where(x => x.Id == idRoutines).FirstOrDefaultAsync();
+        }
+        public async Task<User> GetUserByEmail(string email) //obtiene usuario por email
+        {
+            return await _connection.Table<User>().Where(x => x.Email == email).FirstOrDefaultAsync();
         }
         public async Task Create(object create) //elimina objeto
         {

@@ -18,7 +18,9 @@
             public string description { get; set; } = string.Empty;
             [Column("image")]
             public string image { get; set; } = string.Empty;
-            [Column("BodyPart")]
+            [Column("dificulty")]
+            public dificultyEnum dificulty { get; set; } = dificultyEnum.nothing;
+        [Column("BodyPart")]
             public bodyPartEnum muscleGroupId { get; set; } = bodyPartEnum.nothing;
        
         }
