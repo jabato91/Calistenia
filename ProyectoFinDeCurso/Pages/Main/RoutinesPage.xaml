@@ -3,40 +3,119 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="ProyectoFinDeCurso.Pages.Main.RoutinesPage"
-             Title="RoutinesPage">
-    <VerticalStackLayout Padding="20">
-        <CollectionView ItemsSource="{Binding Routines}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <toolkit:Expander>
-                        <toolkit:Expander.Header>
-                            <Border Stroke="#171616"
-                            StrokeThickness="4"
-                            Background="Black"
-                            Padding="16,8"
-                            HorizontalOptions="Fill">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="40,40,0,0" />
-                                </Border.StrokeShape>
-                                <Label Text="{Binding nameRoutine}"
-                               FontAttributes="Bold"
-                               FontSize="18"
-                               TextColor="Black"/>
-                            </Border>
-                        </toolkit:Expander.Header>
+             Title="Rutinas">
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#1A1A1A" Offset="0.0"/>
+            <GradientStop Color="#2E1E1B" Offset="1.0"/>
+        </LinearGradientBrush>
+    </ContentPage.Background>
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
 
-                        <toolkit:Expander.Content>
-                            <CollectionView ItemsSource="{Binding Exercises}">
-                                <CollectionView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Label Text="{Binding name}" />
-                                    </DataTemplate>
-                                </CollectionView.ItemTemplate>
-                            </CollectionView>
-                        </toolkit:Expander.Content>
-                    </toolkit:Expander>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </VerticalStackLayout>
+            <CollectionView ItemsSource="{Binding FilteredRoutines}"
+                            IsGrouped="True"
+                            ItemsUpdatingScrollMode="KeepScrollOffset">
+
+                <!-- 🔹 Encabezado de grupo (nombre del grupo muscular) -->
+                <CollectionView.GroupHeaderTemplate>
+                    <DataTemplate>
+                        
+
+                            
+
+                            <VerticalStackLayout Spacing="2" Padding="0">
+                                <Label Text="{Binding DisplayName}"
+                   FontAttributes="Bold"
+                   FontSize="20"
+                   HorizontalTextAlignment="Center"
+                   TextColor="#C77B30"
+                   Margin="5,0"/>
+
+                                <!-- 🔹 Línea debajo del texto -->
+                                <BoxView HeightRequest="2"
+                     Color="#C77B30"
+                     HorizontalOptions="Center"
+                     WidthRequest="300" />
+                            </VerticalStackLayout>
+                        
+                    </DataTemplate>
+                </CollectionView.GroupHeaderTemplate>
+
+                <!-- 🔹 Rutinas dentro del grupo -->
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <toolkit:Expander>
+                            <!-- 🔸 Encabezado del expander (nombre e imagen de la rutina) -->
+                            <toolkit:Expander.Header>
+                                <Border Stroke="#171616"
+                                        StrokeThickness="4"
+                                        Background="#3B2523"
+                                        Padding="16,8"
+                                        HorizontalOptions="Fill">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="40,40,0,0" />
+                                    </Border.StrokeShape>
+
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          VerticalOptions="Center"
+                                          ColumnSpacing="0">
+
+                                        <!-- Nombre de la rutina -->
+                                        <Label Grid.Column="0"
+                                               Text="{Binding nameRoutine}"
+                                               FontAttributes="Bold"
+                                               FontSize="18"
+                                               TextColor="#C77B30"
+                                               VerticalOptions="Center" 
+                                               Margin="0"/>
+
+                                        <!-- Imagen de la rutina -->
+                                        <Border Stroke="#F5E8E0"
+                                                StrokeThickness="4"
+                                                Background="#F5E8E0"
+                                                Padding="8"
+                                                HorizontalOptions="End"
+                                                Margin="0">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="40,40,0,0" Margin="0"/>
+                                            </Border.StrokeShape>
+                                            <Image Grid.Column="1"
+                                                   Source="{Binding image}"
+                                                   Aspect="AspectFit"
+                                                   WidthRequest="40"
+                                                   HeightRequest="40"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="End" 
+                                                   Margin="0"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </toolkit:Expander.Header>
+
+                            <!-- 🔸 Contenido del expander (lista de ejercicios) -->
+                            <toolkit:Expander.Content>
+                                <CollectionView ItemsSource="{Binding Exercises}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Label Text="{Binding name}"
+                                                   Margin="20,5"
+                                                   FontSize="16"
+                                                   TextColor="#E0CFC2" />
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </toolkit:Expander.Content>
+                        </toolkit:Expander>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <!-- 🔹 Diseño vertical (una columna, no en cuadrícula) -->
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

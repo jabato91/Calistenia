@@ -62,6 +62,11 @@
 	  <None Remove="Resources\Fonts\Avenue de Madison.ttf" />
 	  <None Remove="Resources\Fonts\Madina.otf" />
 	  <None Remove="Resources\Fonts\Madina.ttf" />
+	  <None Remove="Resources\Images\escaladores.png" />
+	  <None Remove="Resources\Images\estocadas.png" />
+	  <None Remove="Resources\Images\pie.png" />
+	  <None Remove="Resources\Images\sentadilla_unilateral.png" />
+	  <None Remove="Resources\Images\Tabla.png" />
 	  <None Remove="Resources\Raw\prueba.mp4" />
 	</ItemGroup>
 

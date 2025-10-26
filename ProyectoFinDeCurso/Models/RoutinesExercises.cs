@@ -17,5 +17,7 @@ namespace ProyectoFinDeCurso.Models
 
         [Indexed]
         public int ExerciseID { get; set; }
+
+
     }
 }

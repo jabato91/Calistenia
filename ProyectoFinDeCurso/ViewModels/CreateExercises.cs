@@ -27,15 +27,18 @@ namespace ProyectoFinDeCurso.ViewModels
             List<Exercise> exerciseNames = new List<Exercise>
             {
                 new Exercise { name = "Flexiones", description = "Las flexiones son un ejercicio de fuerza que trabaja pecho, brazos y hombros usando el peso corporal.\r\nSe realizan apoyando manos y pies en el suelo, bajando el pecho y extendiendo los brazos.\r\nMejoran la resistencia y fortalecen el core sin necesidad de equipamiento.", image = "flexiones.png", muscleGroupId = Enums.bodyPartEnum.chest, dificulty = Enums.dificultyEnum.easy },
+                new Exercise { name = "Dips en Barra", description = "Los dips en barra son un ejercicio de fuerza que trabaja tríceps, pecho y hombros.\r\nSe hacen bajando y subiendo el cuerpo entre dos barras.\r\nFortalecen el tren superior y mejoran la estabilidad sin necesidad de pesas.", image = "DipsEnBarra.png", muscleGroupId = Enums.bodyPartEnum.chest, dificulty = Enums.dificultyEnum.easy },
                 new Exercise { name = "Sentadillas", description = "Las sentadillas fortalecen piernas y glúteos usando el peso corporal.\r\nSe realizan flexionando las rodillas y bajando la cadera como si te sentaras.\r\nMejoran la fuerza, el equilibrio y la estabilidad del core.", image = "sentadillas.png", muscleGroupId = Enums.bodyPartEnum.leg, dificulty = Enums.dificultyEnum.easy },
-                new Exercise { name = "Tabla", description = "La tabla (plank) es un ejercicio isométrico que fortalece el core, espalda y hombros.\r\nSe realiza apoyando antebrazos y pies, manteniendo el cuerpo recto y firme.\r\nMejora la estabilidad, la postura y la resistencia muscular.", image = "plank.png", muscleGroupId = Enums.bodyPartEnum.abdomen,dificulty =  Enums.dificultyEnum.easy },
+                new Exercise { name = "Tabla", description = "La tabla (plank) es un ejercicio isométrico que fortalece el core, espalda y hombros.\r\nSe realiza apoyando antebrazos y pies, manteniendo el cuerpo recto y firme.\r\nMejora la estabilidad, la postura y la resistencia muscular.", image = "tabla.png", muscleGroupId = Enums.bodyPartEnum.abdomen,dificulty =  Enums.dificultyEnum.easy },
                 new Exercise { name = "Remo", description = "El remo es un ejercicio que trabaja espalda, hombros y brazos.\r\nSe realiza tirando de un peso hacia el torso mientras se mantiene la espalda recta.\r\nMejora la fuerza, la postura y la estabilidad del core.", image = "bicepcurl.png", muscleGroupId = Enums.bodyPartEnum.biceps,dificulty =  Enums.dificultyEnum.medium },
                 new Exercise { name = "Flexiones de Triceps", description = "Las flexiones de tríceps fortalecen principalmente los brazos y el pecho.\r\nSe realizan con las manos más juntas, bajando el cuerpo manteniendo los codos pegados al torso.\r\nMejoran la fuerza de los tríceps y la estabilidad del core.", image = "tricepdip.png", muscleGroupId = Enums.bodyPartEnum.triceps,dificulty =  Enums.dificultyEnum.easy },
-                new Exercise { name = "Estocadas", description = "Las estocadas trabajan piernas y glúteos de forma unilateral.\r\nSe realizan dando un paso adelante y flexionando ambas rodillas hasta casi tocar el suelo.\r\nMejoran el equilibrio, la fuerza y la estabilidad del core.", image = "lunges.png", muscleGroupId = Enums.bodyPartEnum.leg,dificulty =  Enums.dificultyEnum.medium },
-                new Exercise { name = "Sentadilla Unilateral", description = "La sentadilla unilateral fortalece piernas y glúteos usando una sola pierna.\r\nSe realiza apoyando una pierna y bajando la cadera como en una sentadilla normal.\r\nMejora el equilibrio, la coordinación y la estabilidad del core.", image = "deadlift.png", muscleGroupId = Enums.bodyPartEnum.leg,dificulty =  Enums.dificultyEnum.easy },
+                new Exercise { name = "Flexiones en Diamante", description = "Las flexiones de tríceps fortalecen principalmente los brazos y el pecho.\r\nSe realizan con las manos más juntas, bajando el cuerpo manteniendo los codos pegados al torso.\r\nMejoran la fuerza de los tríceps y la estabilidad del core.", image = "tricepdip.png", muscleGroupId = Enums.bodyPartEnum.chest,dificulty =  Enums.dificultyEnum.medium },
+                new Exercise { name = "Fondos en Barra", description = "Las flexiones de tríceps fortalecen principalmente los brazos y el pecho.\r\nSe realizan con las manos más juntas, bajando el cuerpo manteniendo los codos pegados al torso.\r\nMejoran la fuerza de los tríceps y la estabilidad del core.", image = "tricepdip.png", muscleGroupId = Enums.bodyPartEnum.triceps,dificulty =  Enums.dificultyEnum.medium },
+                new Exercise { name = "Estocadas", description = "Las estocadas trabajan piernas y glúteos de forma unilateral.\r\nSe realizan dando un paso adelante y flexionando ambas rodillas hasta casi tocar el suelo.\r\nMejoran el equilibrio, la fuerza y la estabilidad del core.", image = "estocadas.png", muscleGroupId = Enums.bodyPartEnum.leg,dificulty =  Enums.dificultyEnum.medium },
+                new Exercise { name = "Sentadilla Unilateral", description = "La sentadilla unilateral fortalece piernas y glúteos usando una sola pierna.\r\nSe realiza apoyando una pierna y bajando la cadera como en una sentadilla normal.\r\nMejora el equilibrio, la coordinación y la estabilidad del core.", image = "sentadilla_unilateral.png", muscleGroupId = Enums.bodyPartEnum.leg,dificulty =  Enums.dificultyEnum.easy },
                 new Exercise { name = "Fondos en Paralelas", description = "Los fondos en paralelas trabajan pecho, tríceps y hombros.\r\nSe realizan bajando y subiendo el cuerpo entre dos barras paralelas con los brazos extendidos.\r\nMejoran la fuerza del tren superior y la estabilidad del core.", image = "shoulderpress.png", muscleGroupId = Enums.bodyPartEnum.triceps,dificulty =  Enums.dificultyEnum.medium },
                 new Exercise { name = "Dominadas", description = "Las dominadas fortalecen espalda, hombros y brazos.\r\nSe realizan colgándose de una barra y elevando el cuerpo hasta que la barbilla supere la barra.\r\nMejoran la fuerza del tren superior y la resistencia muscular.", image = "dominadas.png", muscleGroupId = Enums.bodyPartEnum.back,dificulty =  Enums.dificultyEnum.medium },
-                new Exercise { name = "Escaladores", description = "Los escaladores (mountain climbers) trabajan core, brazos y piernas de forma dinámica.\r\nSe realizan en posición de plancha llevando las rodillas al pecho de manera alterna y rápida.\r\nMejoran la resistencia, la coordinación y la fuerza del core.", image = "mountainclimbers.png", muscleGroupId = Enums.bodyPartEnum.abdomen,dificulty =  Enums.dificultyEnum.easy }
+                new Exercise { name = "Escaladores", description = "Los escaladores (mountain climbers) trabajan core, brazos y piernas de forma dinámica.\r\nSe realizan en posición de plancha llevando las rodillas al pecho de manera alterna y rápida.\r\nMejoran la resistencia, la coordinación y la fuerza del core.", image = "escaladores.png", muscleGroupId = Enums.bodyPartEnum.abdomen,dificulty =  Enums.dificultyEnum.easy }
             };
             return exerciseNames;
         }
@@ -43,7 +46,8 @@ namespace ProyectoFinDeCurso.ViewModels
         {
             List<Routines> routineList = new List<Routines>
             {
-                new Routines { nameRoutine = "Rutina pierna", description = "Rutina completa para trabajar pierna.", image = "fullbody.png", muscleGroup = Enums.bodyPartEnum.leg }
+                new Routines { nameRoutine = "Rutina Pierna", description = "Rutina completa para trabajar pierna.", image = "pie.png", muscleGroup = Enums.bodyPartEnum.leg },
+                 new Routines { nameRoutine = "Rutina Triceps", description = "Rutina completa para trabajar brazo.", image = "brazo.png", muscleGroup = Enums.bodyPartEnum.triceps }
             };
             return routineList;
         }
@@ -64,9 +68,14 @@ namespace ProyectoFinDeCurso.ViewModels
         public async Task CreateRoutine()
         {
             List<Routines> routineNames = createRoutineList(); // Rutinas que quieres crear
-            List<Exercise> Exercises = await _dbService.GetEercises(); // Ejercicios que se pueden asociar
+            List<Exercise> exercises = await _dbService.GetEercises(); // Ejercicios que se pueden asociar
             List<Routines> existing = await _dbService.GetRoutines(); // Rutinas ya en la DB
 
+            var routineMappings = new Dictionary<string, string[]>
+            {
+                ["Rutina Pierna"] = new[] { "Sentadillas", "Estocadas", "Sentadilla Unilateral" },
+                ["Rutina Triceps"] = new[] { "Flexiones de Triceps", "Flexiones en Diamante", "Fondos en Barra" }
+            };
             foreach (var routineToAdd in routineNames)
             {
                 // Verifica si ya existe una rutina con el mismo nombre
@@ -77,18 +86,26 @@ namespace ProyectoFinDeCurso.ViewModels
                     // Crea la nueva rutina
                     await _dbService.Create(routineToAdd);
 
-                    // ⚠️ Importante: si la rutina usa autoincremento, obtén su ID actualizado
+                    // Asegurar que tenga un ID válido
                     int routineId = routineToAdd.routineID;
+                    if (routineId <= 0)
+                        continue;
 
-                    // Asocia ejercicios específicos a la rutina
-                    foreach (var exercise in Exercises)
+                    // Si existe una asociación definida, buscar los ejercicios y crear el vínculo
+                    if (routineMappings.TryGetValue(routineToAdd.nameRoutine, out var exerciseNames))
                     {
-                        if (exercise.name == "Sentadillas" || exercise.name == "Estocadas" || exercise.name == "Sentadilla Unilateral")
+                        // Buscar los ejercicios en la lista general que coincidan con los nombres definidos
+                        var selectedExercises = exercises
+                            .Where(ex => exerciseNames.Contains(ex.name, StringComparer.OrdinalIgnoreCase))
+                            .ToList();
+
+                        // Crear la relación rutina-ejercicio
+                        foreach (var ex in selectedExercises)
                         {
-                            var routineExercise = new Models.RoutinesExercises
+                            var routineExercise = new RoutinesExercises
                             {
                                 RoutineID = routineId,
-                                ExerciseID = exercise.execiseID
+                                ExerciseID = ex.execiseID
                             };
 
                             await _dbService.Create(routineExercise);
