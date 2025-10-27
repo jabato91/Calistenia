@@ -21,12 +21,14 @@ namespace ProyectoFinDeCurso.Services
             await _connection.CreateTableAsync<Exercise>();
             await _connection.CreateTableAsync<Routines>();
             await _connection.CreateTableAsync<RoutinesExercises>();
+            await _connection.CreateTableAsync<SetsAndRepetitions>();
         }
         public async Task<List<User>> GetUsers() => await _connection.Table<User>().ToListAsync(); //obtiene todos los usuarios
 
         public async Task<List<Exercise>> GetEercises() => await _connection.Table<Exercise>().ToListAsync(); //obtiene todos los ejercicios
 
         public async Task<List<Routines>> GetRoutines() => await _connection.Table<Routines>().ToListAsync(); //obtiene todos las rutinas
+        public async Task<List<SetsAndRepetitions>> GetSetsAndRepetitions() => await _connection.Table<SetsAndRepetitions>().ToListAsync(); //obtiene todos las rutinas
 
         public async Task<List<RoutinesExercises>> GetRoutinesExercises() => await _connection.Table<RoutinesExercises>().ToListAsync(); //obtiene todos los ejercicios de las rutinas
 
@@ -45,6 +47,10 @@ namespace ProyectoFinDeCurso.Services
         public async Task<RoutinesExercises> GetRoutinesExercisesByIdRoutine(int idRoutines) //obtiene rutina por id
         {
             return await _connection.Table<RoutinesExercises>().Where(x => x.Id == idRoutines).FirstOrDefaultAsync();
+        }
+        public async Task<SetsAndRepetitions> GetRoutinesExercisesByIdSetAndRepetitions(int idSetsAndReps) //obtiene rutina por id
+        {
+            return await _connection.Table<SetsAndRepetitions>().Where(x => x.setsAndRepsID == idSetsAndReps).FirstOrDefaultAsync();
         }
         public async Task<User> GetUserByEmail(string email) //obtiene usuario por email
         {

@@ -20,8 +20,10 @@ namespace ProyectoFinDeCurso.Enums
                 bodyPartEnum.abdomen => "Abdomen",
                 bodyPartEnum.back => "Espalda",
                 bodyPartEnum.shoulder => "Hombro",
-                _ => part.ToString()
+                bodyPartEnum.isometric => "Isométrico",
+                
             };
+            return part.ToString();
         }
     }
 }

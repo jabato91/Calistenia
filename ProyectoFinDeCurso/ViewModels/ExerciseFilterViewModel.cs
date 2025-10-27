@@ -12,9 +12,23 @@ namespace ProyectoFinDeCurso.ViewModels
     {
         private readonly DbService _dbService;
         private string _searchText = string.Empty;
+        private Brush _auraColor;
 
         // Lista completa de ejercicios
         public ObservableCollection<Exercise> Exercises { get; set; } = new();
+
+        public Brush AuraColor
+        {
+            get => _auraColor;
+            set
+            {
+                if (_auraColor != value)
+                {
+                    _auraColor = value;
+                    OnPropertyChanged(nameof(AuraColor));
+                }
+            }
+        }
 
         // Texto de búsqueda
         public string SearchText
@@ -66,9 +80,11 @@ namespace ProyectoFinDeCurso.ViewModels
         {
             var exercises = await _dbService.GetEercises();
 
-            foreach (var ex in exercises)
+            foreach (var ex in exercises) { 
                 Exercises.Add(ex);
 
+                
+            }
             // Notificar que FilteredExercises cambió al cargar
             OnPropertyChanged(nameof(FilteredExercises));
             OnPropertyChanged(nameof(ExercisesCount));
@@ -77,5 +93,7 @@ namespace ProyectoFinDeCurso.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
         public void OnPropertyChanged(string name) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        
     }
 }

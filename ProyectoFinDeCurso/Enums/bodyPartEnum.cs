@@ -15,6 +15,7 @@ namespace ProyectoFinDeCurso.Enums
         biceps,
         abdomen,
         back,
-        shoulder
+        shoulder,
+        isometric
     }
 }

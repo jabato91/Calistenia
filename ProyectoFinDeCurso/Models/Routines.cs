@@ -23,5 +23,7 @@ namespace ProyectoFinDeCurso.Models
         public bodyPartEnum muscleGroup { get; set; } = bodyPartEnum.nothing;
         [Ignore] // Ignorar al guardar en DB
         public ObservableCollection<Exercise> Exercises { get; set; } = new();
+
+        
     }
 }

@@ -18,6 +18,10 @@ namespace ProyectoFinDeCurso.Models
         [Indexed]
         public int ExerciseID { get; set; }
 
+        [Column("sets")]
+        public int sets { get; set; }
+        [Column("Repetitions")]
+        public int reps { get; set; }
 
     }
 }

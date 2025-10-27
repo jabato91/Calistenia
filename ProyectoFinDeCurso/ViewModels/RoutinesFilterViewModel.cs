@@ -69,10 +69,21 @@ namespace ProyectoFinDeCurso.ViewModels
                     .Join(exercisesFromDb,
                           re => re.ExerciseID,
                           ex => ex.execiseID,
-                          (re, ex) => ex);
+                          (re, ex) => new
+                          {
+                              Exercise = ex,
+                              Sets = re.sets,
+                              Reps = re.reps
+                          })
+                          .ToList();
 
                 foreach (var ex in exercisesForRoutine)
-                    routine.Exercises.Add(ex);
+                {
+                    ex.Exercise.sets = ex.Sets;
+                    ex.Exercise.reps = ex.Reps;
+                    routine.Exercises.Add(ex.Exercise);
+                }
+                    
 
                 Routines.Add(routine);
             }

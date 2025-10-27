@@ -38,7 +38,10 @@ namespace ProyectoFinDeCurso.ViewModels
                 new Exercise { name = "Sentadilla Unilateral", description = "La sentadilla unilateral fortalece piernas y glúteos usando una sola pierna.\r\nSe realiza apoyando una pierna y bajando la cadera como en una sentadilla normal.\r\nMejora el equilibrio, la coordinación y la estabilidad del core.", image = "sentadilla_unilateral.png", muscleGroupId = Enums.bodyPartEnum.leg,dificulty =  Enums.dificultyEnum.easy },
                 new Exercise { name = "Fondos en Paralelas", description = "Los fondos en paralelas trabajan pecho, tríceps y hombros.\r\nSe realizan bajando y subiendo el cuerpo entre dos barras paralelas con los brazos extendidos.\r\nMejoran la fuerza del tren superior y la estabilidad del core.", image = "shoulderpress.png", muscleGroupId = Enums.bodyPartEnum.triceps,dificulty =  Enums.dificultyEnum.medium },
                 new Exercise { name = "Dominadas", description = "Las dominadas fortalecen espalda, hombros y brazos.\r\nSe realizan colgándose de una barra y elevando el cuerpo hasta que la barbilla supere la barra.\r\nMejoran la fuerza del tren superior y la resistencia muscular.", image = "dominadas.png", muscleGroupId = Enums.bodyPartEnum.back,dificulty =  Enums.dificultyEnum.medium },
-                new Exercise { name = "Escaladores", description = "Los escaladores (mountain climbers) trabajan core, brazos y piernas de forma dinámica.\r\nSe realizan en posición de plancha llevando las rodillas al pecho de manera alterna y rápida.\r\nMejoran la resistencia, la coordinación y la fuerza del core.", image = "escaladores.png", muscleGroupId = Enums.bodyPartEnum.abdomen,dificulty =  Enums.dificultyEnum.easy }
+                new Exercise { name = "Escaladores", description = "Los escaladores (mountain climbers) trabajan core, brazos y piernas de forma dinámica.\r\nSe realizan en posición de plancha llevando las rodillas al pecho de manera alterna y rápida.\r\nMejoran la resistencia, la coordinación y la fuerza del core.", image = "escaladores.png", muscleGroupId = Enums.bodyPartEnum.abdomen,dificulty =  Enums.dificultyEnum.easy },
+                new Exercise { name = "Tuck Planche", description = "Los escaladores (mountain climbers) trabajan core, brazos y piernas de forma dinámica.\r\nSe realizan en posición de plancha llevando las rodillas al pecho de manera alterna y rápida.\r\nMejoran la resistencia, la coordinación y la fuerza del core.", image = "escaladores.png", muscleGroupId = Enums.bodyPartEnum.isometric,dificulty =  Enums.dificultyEnum.medium },
+                new Exercise { name = "Straddle Planche", description = "Los escaladores (mountain climbers) trabajan core, brazos y piernas de forma dinámica.\r\nSe realizan en posición de plancha llevando las rodillas al pecho de manera alterna y rápida.\r\nMejoran la resistencia, la coordinación y la fuerza del core.", image = "escaladores.png", muscleGroupId = Enums.bodyPartEnum.isometric,dificulty =  Enums.dificultyEnum.hard },
+                new Exercise { name = "Full Planche", description = "Los escaladores (mountain climbers) trabajan core, brazos y piernas de forma dinámica.\r\nSe realizan en posición de plancha llevando las rodillas al pecho de manera alterna y rápida.\r\nMejoran la resistencia, la coordinación y la fuerza del core.", image = "escaladores.png", muscleGroupId = Enums.bodyPartEnum.isometric,dificulty =  Enums.dificultyEnum.extreme },
             };
             return exerciseNames;
         }
@@ -47,7 +50,10 @@ namespace ProyectoFinDeCurso.ViewModels
             List<Routines> routineList = new List<Routines>
             {
                 new Routines { nameRoutine = "Rutina Pierna", description = "Rutina completa para trabajar pierna.", image = "pie.png", muscleGroup = Enums.bodyPartEnum.leg },
-                 new Routines { nameRoutine = "Rutina Triceps", description = "Rutina completa para trabajar brazo.", image = "brazo.png", muscleGroup = Enums.bodyPartEnum.triceps }
+                 new Routines { nameRoutine = "Rutina Triceps", description = "Rutina completa para trabajar brazo.", image = "triceps.png", muscleGroup = Enums.bodyPartEnum.triceps },
+                 new Routines { nameRoutine = "Rutina Pecho", description = "Rutina completa para trabajar pecho.", image = "pecho.png", muscleGroup = Enums.bodyPartEnum.chest },
+                  new Routines { nameRoutine = "Rutina Espalda", description = "Rutina completa para trabajar espalda.", image = "espalda.png", muscleGroup = Enums.bodyPartEnum.back },
+                  new Routines { nameRoutine = "Rutina Full Planche", description = "Rutina completa para sacar la full planche.", image = "full_planche.png", muscleGroup = Enums.bodyPartEnum.isometric }
             };
             return routineList;
         }
@@ -70,48 +76,57 @@ namespace ProyectoFinDeCurso.ViewModels
             List<Routines> routineNames = createRoutineList(); // Rutinas que quieres crear
             List<Exercise> exercises = await _dbService.GetEercises(); // Ejercicios que se pueden asociar
             List<Routines> existing = await _dbService.GetRoutines(); // Rutinas ya en la DB
+            if(existing.Count == 0) {
 
-            var routineMappings = new Dictionary<string, string[]>
-            {
-                ["Rutina Pierna"] = new[] { "Sentadillas", "Estocadas", "Sentadilla Unilateral" },
-                ["Rutina Triceps"] = new[] { "Flexiones de Triceps", "Flexiones en Diamante", "Fondos en Barra" }
-            };
-            foreach (var routineToAdd in routineNames)
-            {
-                // Verifica si ya existe una rutina con el mismo nombre
-                bool exists = existing.Any(r => r.nameRoutine.Equals(routineToAdd.nameRoutine, StringComparison.OrdinalIgnoreCase));
 
-                if (!exists)
+                var routineMappings = new Dictionary<string, (string[], int[], int[])>
                 {
-                    // Crea la nueva rutina
-                    await _dbService.Create(routineToAdd);
+                    ["Rutina Pierna"] = (new[] { "Sentadillas", "Estocadas", "Sentadilla Unilateral" }, new[] { 3, 3, 3 }, new[] { 12, 10, 8 }),
+                    ["Rutina Triceps"] = (new[] { "Flexiones de Triceps", "Flexiones en Diamante", "Fondos en Barra" }, new[] { 3, 3, 3 }, new[] { 12, 10, 8 }),
+                    ["Rutina Pecho"] = (new[] { "Flexiones", "Flexiones en Diamante" }, new[] { 3, 3, 3 }, new[] { 12, 10, 8 }),
+                    ["Rutina Espalda"] = (new[] { "Dominadas" }, new[] { 3, 3, 3 }, new[] { 12, 10, 8 }),
+                    ["Rutina Full Planche"] = (new[] { "Tuck Planche", "Straddle Planche", "Full Planche" }, new[] { 3, 3, 3 }, new[] { 12, 10, 8 })
+                };
+                foreach (var routineToAdd in routineNames)
+                {
+                    // Verifica si ya existe una rutina con el mismo nombre
+                    bool exists = existing.Any(r => r.nameRoutine.Equals(routineToAdd.nameRoutine, StringComparison.OrdinalIgnoreCase));
 
-                    // Asegurar que tenga un ID válido
-                    int routineId = routineToAdd.routineID;
-                    if (routineId <= 0)
-                        continue;
-
-                    // Si existe una asociación definida, buscar los ejercicios y crear el vínculo
-                    if (routineMappings.TryGetValue(routineToAdd.nameRoutine, out var exerciseNames))
+                    if (!exists)
                     {
-                        // Buscar los ejercicios en la lista general que coincidan con los nombres definidos
-                        var selectedExercises = exercises
-                            .Where(ex => exerciseNames.Contains(ex.name, StringComparer.OrdinalIgnoreCase))
-                            .ToList();
+                        // Crea la nueva rutina
+                        await _dbService.Create(routineToAdd);
 
-                        // Crear la relación rutina-ejercicio
-                        foreach (var ex in selectedExercises)
+                        // Asegurar que tenga un ID válido
+                        int routineId = routineToAdd.routineID;
+                        if (routineId <= 0)
+                            continue;
+
+                        // Si existe una asociación definida, buscar los ejercicios y crear el vínculo
+                        if (routineMappings.TryGetValue(routineToAdd.nameRoutine, out var routineData))
                         {
-                            var routineExercise = new RoutinesExercises
-                            {
-                                RoutineID = routineId,
-                                ExerciseID = ex.execiseID
-                            };
+                            var (exerciseNames, series, repeticiones) = routineData; //recoge los datos de la rutina
+                            var selectedExercises = exercises
+                           .Where(ex => exerciseNames.Contains(ex.name, StringComparer.OrdinalIgnoreCase))
+                           .ToList(); //filtra los ejercicios que coinciden con los nombres definidos
 
-                            await _dbService.Create(routineExercise);
+                            for (int i = 0; i < selectedExercises.Count; i++) //bucle para crear los ejercicios asociados a la rutina
+                            {
+                                var ex = selectedExercises[i];
+
+                                var routineExercise = new RoutinesExercises
+                                {
+                                    RoutineID = routineId,
+                                    ExerciseID = ex.execiseID,
+                                    sets = i < series.Length ? series[i] : 0,
+                                    reps = i < repeticiones.Length ? repeticiones[i] : 0
+                                };
+
+                                await _dbService.Create(routineExercise);
+                            }
                         }
                     }
-                }
+            }
             }
         }
     }

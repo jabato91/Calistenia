@@ -72,20 +72,7 @@
                                 <Grid>
 
                                     <!-- Aura verde pulsante -->
-                                    <BoxView x:Name="Aura"
-                                             CornerRadius="12"
-                                             Opacity="0.5"
-                                             HorizontalOptions="Fill"
-                                             VerticalOptions="Fill"
-                                             Margin="0">
-                                        <BoxView.Background>
-                                            <RadialGradientBrush Center="0.5,0.5" Radius="0.9">
-                                                <GradientStop Color="Transparent" Offset="0.3"/>
-                                                <GradientStop Color="#3FA45B" Offset="0.8"/>
-                                                <GradientStop Color="#2E7D32" Offset="1"/>
-                                            </RadialGradientBrush>
-                                        </BoxView.Background>
-                                    </BoxView>
+                                    <BoxView Background="{Binding AuraColor}" />
 
                                     <!-- Imagen de fondo -->
                                     <Image Source="{Binding image}" 
@@ -125,13 +112,15 @@
                                                          WidthRequest="40"
                                                          HeightRequest="40"
                                                          BackgroundColor="Transparent"
-                                                         Aspect="AspectFill"/>
+                                                         Aspect="AspectFill"
+                                                         x:Name="eliminateButton"/>
 
                                             <ImageButton Clicked="modifyExercise" 
                                                          Source="editar.png"
-                                                         WidthRequest="40"
-                                                         HeightRequest="40"
-                                                         BackgroundColor="Transparent"/>
+                                                         WidthRequest="75"
+                                                         HeightRequest="75"
+                                                         BackgroundColor="Transparent"
+                                                         x:Name="modifyButton"/>
                                         </StackLayout>
 
                                     </Grid>

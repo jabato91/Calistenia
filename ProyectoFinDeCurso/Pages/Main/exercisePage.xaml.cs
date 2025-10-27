@@ -1,11 +1,13 @@
 ﻿
+using CommunityToolkit.Maui.Media;
 using CommunityToolkit.Maui.Views;
 using Microsoft.Maui.Controls;
 using ProyectoFinDeCurso.Enums;
 using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.ViewModels;
-using CommunityToolkit.Maui.Media;
+using System;
+using System.Collections.ObjectModel;
 namespace ProyectoFinDeCurso.Pages.Main;
 
 public partial class exercisePage : ContentPage
@@ -118,20 +120,29 @@ public partial class exercisePage : ContentPage
     }
     private void verificationUserType(userTypeEnum userType)
     {
+        ImageButton eliminate = this.FindByName<ImageButton>("eliminateButton");
+        ImageButton modify = this.FindByName<ImageButton>("modifyButton");
+        
         if (!userType.Equals(userTypeEnum.admin))
         {
-            //eliminateE.IsVisible = false;
+            //eliminate.IsVisible = false;
+            //modify.IsVisible = false;
         }
     }
     private async void eliminateExercise(object sender, EventArgs e)
     {
-        var button = sender as Button;
-
-        var exercise = button?.BindingContext as Exercise;
+        var eliminate = sender as ImageButton;
+        
+        var exercise = eliminate?.BindingContext as Exercise; //recoge el ejercicio al que está asociado
 
         if (exercise != null)
         { 
             await _dbService.DeleteExerciseById(exercise.execiseID);
+            // Actualizamos la colección del ViewModel
+            _filter.Exercises.Remove(exercise);
+            _filter.OnPropertyChanged(nameof(_filter.Exercises));
+            _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
+
         }
     }
 

@@ -98,10 +98,62 @@
                                 <CollectionView ItemsSource="{Binding Exercises}">
                                     <CollectionView.ItemTemplate>
                                         <DataTemplate>
-                                            <Label Text="{Binding name}"
-                                                   Margin="20,5"
+                                            <Grid Background="#3B2523"
+                                              Padding="0"
+                                              ColumnDefinitions="*,Auto,Auto,Auto"
+                                              RowDefinitions="Auto">        
+
+                                                <!-- Contenido -->
+                                                <Label Text="{Binding name}"
                                                    FontSize="16"
-                                                   TextColor="#E0CFC2" />
+                                                   TextColor="#E0CFC2"
+                                                   VerticalOptions="Center"
+                                                   Grid.Column="0" 
+                                                   Margin="10,0"
+                                                       Padding="3"/>           
+
+                                                <Label Text="{Binding sets}"
+                                                   FontSize="16"
+                                                   TextColor="#E0CFC2"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="End"
+                                                   Grid.Column="1"
+                                                   Margin="10,0" />
+                                                <Label Text="X"
+                                                   FontSize="16"
+                                                   TextColor="#E0CFC2"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="End"
+                                                   Grid.Column="2"
+                                                   Margin="10,0" />     
+
+                                                <Label Text="{Binding reps}"
+                                                   FontSize="16"
+                                                   TextColor="#E0CFC2"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="End"
+                                                   Grid.Column="3"
+                                                   Margin="10,0" />     
+
+                                                <!-- Bordes (sin línea arriba) -->
+                                                <!-- Izquierdo -->
+                                                <BoxView WidthRequest="3" BackgroundColor="#171616"
+                                                         VerticalOptions="Fill"
+                                                         HorizontalOptions="Start"
+                                                         Grid.ColumnSpan="4" /> 
+
+                                                <!-- Derecho -->
+                                                <BoxView WidthRequest="3" BackgroundColor="#171616"
+                                                     VerticalOptions="Fill"
+                                                     HorizontalOptions="End"
+                                                     Grid.ColumnSpan="4" /> 
+
+                                                <!-- Inferior -->
+                                                <BoxView HeightRequest="3" BackgroundColor="#171616"
+                                                     VerticalOptions="End"
+                                                     HorizontalOptions="Fill"
+                                                     Grid.ColumnSpan="4" /> 
+                                            </Grid>
                                         </DataTemplate>
                                     </CollectionView.ItemTemplate>
                                 </CollectionView>

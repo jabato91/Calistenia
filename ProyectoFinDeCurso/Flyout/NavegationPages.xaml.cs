@@ -10,15 +10,5 @@ public partial class NavegationPages : FlyoutPage
 		InitializeComponent();
 	}
 
-    private async void OnPagina1Clicked(object sender, EventArgs e)
-    {
-        Detail = new NavigationPage(new HomePage());
-        IsPresented = false; // Cierra el menú
-    }
-
-    private async void OnPagina2Clicked(object sender, EventArgs e)
-    {
-        Detail = new NavigationPage(new ListUsers());
-        IsPresented = false;
-    }
+    
 }
