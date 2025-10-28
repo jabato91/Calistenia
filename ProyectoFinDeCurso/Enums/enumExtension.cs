@@ -21,9 +21,9 @@ namespace ProyectoFinDeCurso.Enums
                 bodyPartEnum.back => "Espalda",
                 bodyPartEnum.shoulder => "Hombro",
                 bodyPartEnum.isometric => "Isométrico",
-                
+                _ => throw new NotImplementedException(),
             };
-            return part.ToString();
+            
         }
     }
 }

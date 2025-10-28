@@ -39,10 +39,10 @@ public partial class exercisePage : ContentPage
                 var modalPage = new ContentPage
                 {
 
-                    BackgroundColor = Color.FromHex("#D69C90"),
+                    BackgroundColor = Color.FromArgb("#D69C90"),
                     Content = new Frame
                     {
-                        BackgroundColor = Color.FromHex("#C44B4B"),
+                        BackgroundColor = Color.FromArgb("#C44B4B"),
                         CornerRadius = 20,
                         Margin = 1,
                         VerticalOptions = LayoutOptions.Center,
@@ -55,7 +55,7 @@ public partial class exercisePage : ContentPage
                 new Button
                 {
                     Text = "X",
-                    BackgroundColor =  Color.FromHex("#BF9F9F"),
+                    BackgroundColor =  Color.FromArgb("#BF9F9F"),
                      CornerRadius = 999,
                     WidthRequest = 40,
                     HeightRequest = 40,
@@ -98,7 +98,7 @@ public partial class exercisePage : ContentPage
                                     WidthRequest = 500
                                 }
                             },
-               
+
                 }
                         }
                     }
@@ -111,7 +111,7 @@ public partial class exercisePage : ContentPage
         catch (Exception ex)
         {
             // Muestra un mensaje de error amigable
-            await Application.Current.MainPage.DisplayAlert(
+            await DisplayAlert(
                 "Error",
                 $"Ocurrió un error al abrir el ejercicio:\n{ex.Message}",
                 "OK"
@@ -122,7 +122,7 @@ public partial class exercisePage : ContentPage
     {
         ImageButton eliminate = this.FindByName<ImageButton>("eliminateButton");
         ImageButton modify = this.FindByName<ImageButton>("modifyButton");
-        
+
         if (!userType.Equals(userTypeEnum.admin))
         {
             //eliminate.IsVisible = false;
@@ -132,11 +132,11 @@ public partial class exercisePage : ContentPage
     private async void eliminateExercise(object sender, EventArgs e)
     {
         var eliminate = sender as ImageButton;
-        
+
         var exercise = eliminate?.BindingContext as Exercise; //recoge el ejercicio al que está asociado
 
         if (exercise != null)
-        { 
+        {
             await _dbService.DeleteExerciseById(exercise.execiseID);
             // Actualizamos la colección del ViewModel
             _filter.Exercises.Remove(exercise);
@@ -148,9 +148,9 @@ public partial class exercisePage : ContentPage
 
     private async void modifyExercise(object sender, EventArgs e)
     {
-        if ((sender as ImageButton)?.BindingContext is not Exercise selectedExercise)
+        if ((sender as ImageButton)?.BindingContext is not Exercise selectedExercise)//recoge el ejercicio al que está asociado
         {
-            
+
             return;
         }
 
@@ -174,8 +174,9 @@ public partial class exercisePage : ContentPage
         {
             Text = exerciseFromDb.name,
             Placeholder = "Nombre",
-            TextColor = Colors.Black,
-            BackgroundColor = Colors.LightGray,
+            TextColor = Color.FromArgb("#C49362"),
+            BackgroundColor = Color.FromArgb("#3B2523"),
+
             HorizontalOptions = LayoutOptions.Fill
         };
 
@@ -183,27 +184,38 @@ public partial class exercisePage : ContentPage
         {
             Text = exerciseFromDb.description,
             Placeholder = "Descripción",
-            TextColor = Colors.Black,
-            BackgroundColor = Colors.LightGray,
+            TextColor = Color.FromArgb("#C49362"),
+            BackgroundColor = Color.FromArgb("#3B2523"),
             HorizontalOptions = LayoutOptions.Fill
         };
 
-        var imageEntry = new Entry
+        var imageButton = new ImageButton
         {
-            Text = exerciseFromDb.image,
-            Placeholder = "Imagen",
-            TextColor = Colors.Black,
-            BackgroundColor = Colors.LightGray,
-            HorizontalOptions = LayoutOptions.Fill
+            Source = exerciseFromDb.image,
+            HorizontalOptions = LayoutOptions.Fill,
+            WidthRequest = 75,
+                                                         HeightRequest = 75
         };
+        imageButton.Clicked += async (s, e) =>
+        {
+            var result = await FilePicker.Default.PickAsync(new PickOptions
+            {
+                PickerTitle = "Selecciona una imagen",
+                FileTypes = FilePickerFileType.Images
+            });
 
+            if (result != null)
+            {
+                imageButton.Source = ImageSource.FromFile(result.FullPath);
+            }
+        };
         var bodyPartEnumPicker = new Picker
         {
             Title = "Tipo Cuerpo",
             ItemsSource = traducciones.Values.ToList(),
             SelectedItem = traducciones[exerciseFromDb.muscleGroupId],
-            TextColor = Colors.Black,
-            BackgroundColor = Colors.LightGray,
+            TextColor = Color.FromArgb("#C49362"),
+            BackgroundColor = Color.FromArgb("#3B2523"),
             HorizontalOptions = LayoutOptions.Fill
         };
 
@@ -212,11 +224,11 @@ public partial class exercisePage : ContentPage
         {
             BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
             Content = new Frame
+
             {
-                BackgroundColor = Colors.White,
-                CornerRadius = 50,
-                Margin = 1, // margen pequeño respecto a la pantalla
-                Padding = 1, // padding pequeño para que los controles estén cerca de los bordes
+                BackgroundColor = Color.FromArgb("#2E1E1B"),
+                CornerRadius = 20,
+                Margin = 1,
                 VerticalOptions = LayoutOptions.Center,
                 HorizontalOptions = LayoutOptions.Center,
                 Content = new VerticalStackLayout
@@ -229,55 +241,77 @@ public partial class exercisePage : ContentPage
                     {
                         Text = "Modificar ejercicio",
                         FontSize = 24,
-                        TextColor = Colors.Black,
-                        BackgroundColor = Colors.LightGray,
+
+                        TextColor = Color.FromArgb("#C77B30"),
+
                         HorizontalOptions = LayoutOptions.Fill,
-                        HorizontalTextAlignment = TextAlignment.Center
+                        HorizontalTextAlignment = TextAlignment.Center,
+                        FontFamily="EatMeAlive"
                     },
                     nameEntry,
                     descEntry,
-                    imageEntry,
+                    imageButton,
                     bodyPartEnumPicker,
+
                     new HorizontalStackLayout
                     {
                         Spacing = 10,
                         Children =
                         {
-                            new Button
+                             new Button
+                        {
+                            Text = "Guardar",
+                            Command = new Command(async () =>
                             {
-                                Text = "Guardar",
-                                Command = new Command(async () =>
+                                 exerciseFromDb.name = nameEntry.Text ?? "";
+                                 exerciseFromDb.description = descEntry.Text ?? "";
+
+                                if (imageButton.Source is FileImageSource fileSource)
                                 {
-                                    // Tomamos los valores directamente de las variables
-                                    exerciseFromDb.name = nameEntry.Text ?? "";
-                                    exerciseFromDb.description = descEntry.Text ?? "";
-                                    exerciseFromDb.image = imageEntry.Text ?? "";
+                                    
+                                    string rutaOrigen = fileSource.File; //obtiene la ruta de la carpeta
+                                    string nombreArchivo = Path.GetFileName(rutaOrigen);
 
-                                    if (bodyPartEnumPicker.SelectedIndex >= 0)
+                                    
+                                    string carpetaImagenes = Path.Combine(FileSystem.AppDataDirectory, "Images");
+                                    if (!Directory.Exists(carpetaImagenes)) //crea la carpeta si no esiste
+                                        Directory.CreateDirectory(carpetaImagenes);
+
+                                    string rutaDestino = Path.Combine(carpetaImagenes, nombreArchivo);//obtener la ruta de destino
+
+                                    if (!File.Exists(rutaDestino) || rutaOrigen != rutaDestino) //verifica si la imagen fue cambiada
                                     {
-                                        var selectedEnum = traducciones.Keys.ToList()[bodyPartEnumPicker.SelectedIndex];
-                                        exerciseFromDb.muscleGroupId = selectedEnum;
-                                    }
-
-                                    // Guardamos en la DB
-                                    await _dbService.Update(exerciseFromDb);
-
-                                    // Actualizamos la colección del ViewModel
-                                    var index = _filter.Exercises.IndexOf(selectedExercise);
-                                    if (index >= 0)
+                                    try
                                     {
-                                        _filter.Exercises[index] = exerciseFromDb;
-                                        _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
+                                        File.Copy(rutaOrigen, rutaDestino, overwrite: true);
                                     }
+                                    catch (Exception ex)
+                                    {
+                                        await DisplayAlert("Error", $"No se pudo copiar la imagen: {ex.Message}", "OK");
+                                    }
+                                }
 
-                                    await Navigation.PopModalAsync();
-                                })
-                            },
-                            new Button
-                            {
-                                Text = "Cancelar",
-                                Command = new Command(async () => await Navigation.PopModalAsync())
+                                
+                                exerciseFromDb.image = nombreArchivo; //guarda el nombre del archivo
                             }
+
+                                await _dbService.Update(exerciseFromDb);
+
+                                var index = _filter.Exercises.IndexOf(selectedExercise);
+                                if (index >= 0)
+                                {
+                                    _filter.Exercises[index] = exerciseFromDb;
+                                    _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
+                                }
+
+                                await Navigation.PopModalAsync();
+                            })
+                        },
+                        new Button
+                        {
+                            Text = "Cancelar",
+                            Command = new Command(async () => await Navigation.PopModalAsync())
+                        }
                         }
                     }
                 }
@@ -288,5 +322,20 @@ public partial class exercisePage : ContentPage
         // Mostramos el modal
         await Navigation.PushModalAsync(modalPage);
     }
-    
+    private async void editImage(object sender, EventArgs e)
+    {
+        try
+        {
+            var result = await FilePicker.Default.PickAsync(new PickOptions
+            {
+                PickerTitle = "Selecciona una imagen",
+                FileTypes = FilePickerFileType.Images // Puedes poner .Pdf, .Videos, etc.
+            });
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo abrir el archivo: {ex.Message}", "OK");
+        }
+
+    }
 }

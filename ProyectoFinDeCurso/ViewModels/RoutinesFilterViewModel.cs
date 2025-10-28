@@ -83,7 +83,13 @@ namespace ProyectoFinDeCurso.ViewModels
                     ex.Exercise.reps = ex.Reps;
                     routine.Exercises.Add(ex.Exercise);
                 }
-                    
+                foreach(var ex in routine.Exercises)
+                {
+                    if(ex == routine.Exercises.Last())
+                    {
+                        ex.LinePattern = new DoubleCollection() {  };
+                    }
+                }
 
                 Routines.Add(routine);
             }

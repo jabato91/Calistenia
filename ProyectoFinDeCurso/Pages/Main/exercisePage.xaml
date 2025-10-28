@@ -29,7 +29,7 @@
                 <!-- Encabezado de grupo -->
                 <CollectionView.GroupHeaderTemplate>
                     <DataTemplate>
-                        <Frame BorderColor="#C77B30" 
+                        <Frame BorderColor="#1F1C1C" 
                                CornerRadius="8"
                                Padding="6"
                                Margin="2"
@@ -37,8 +37,8 @@
                                BackgroundColor="Transparent">
                             <Frame.Background>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                    <GradientStop Color="#E48C34" Offset="0.0"/>
-                                    <GradientStop Color="#A85C1D" Offset="0.5"/>
+                                    <GradientStop Color="#3B2928" Offset="0.0"/>
+                                    <GradientStop Color="#3B2523" Offset="0.5"/>
                                 </LinearGradientBrush>
                             </Frame.Background>
 
@@ -46,8 +46,9 @@
                                 <Label Text="{Binding DisplayName}" 
                                        FontAttributes="Bold" 
                                        HorizontalTextAlignment="Center"
-                                       TextColor="#E0CFC2"
-                                       />
+                                       TextColor="#C77B30"
+                                       FontFamily="Forresten"
+                                       FontSize="30"/>
                             </StackLayout>
                         </Frame>
                     </DataTemplate>
@@ -91,10 +92,10 @@
 
                                         <!-- Nombre -->
                                         <Label Text="{Binding name}" 
-                                               FontSize="20" 
+                                               FontSize="25" 
                                                FontAttributes="Bold" 
-                                               TextColor="#6B605D" 
-                                               FontFamily="AnandaPersonal"
+                                               TextColor="#C49362" 
+                                               FontFamily="EatMeAlive"
                                                HorizontalTextAlignment="Center"
                                                VerticalOptions="Start"
                                                Margin="10"/>

@@ -25,6 +25,13 @@ namespace ProyectoFinDeCurso
                     fonts.AddFont("Avenue de Madison.ttf", "AvenueMadison");
                     fonts.AddFont("Ananda Personal Use.ttf", "AnandaPersonal");
                     fonts.AddFont("Ananda Black Personal Use.ttf", "AnandaBlack");
+                    fonts.AddFont("Eat Me Alive Blackout.ttf", "EatMeBlackout");
+                    fonts.AddFont("Eat Me Alive.ttf", "EatMeAlive");
+                    fonts.AddFont("Forresten.ttf", "Forresten");
+                    fonts.AddFont("Returns.ttf", "Returns");
+                    fonts.AddFont("Spel-Regular.ttf", "Spel-Regular");
+                    fonts.AddFont("Vanilla Pancake.ttf", "VanillaPacake");
+                    fonts.AddFont("Calculator.ttf", "calculator");
                 });
 
             builder.Services.AddSingleton<DbService>();

@@ -26,6 +26,8 @@
         public int sets { get; set; } = -1;
         [Ignore]
         public int reps { get; set; } = -1;
+        [Ignore]
+        public DoubleCollection LinePattern { get; set; } = new() { 6, 4 };
         public Brush AuraColor
         {
             get

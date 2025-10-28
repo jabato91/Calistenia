@@ -11,163 +11,119 @@
         </LinearGradientBrush>
     </ContentPage.Background>
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="10">
+    <VerticalStackLayout Padding="20" Spacing="10"
+                         BindableLayout.ItemsSource="{Binding FilteredRoutines}">
 
-            <CollectionView ItemsSource="{Binding FilteredRoutines}"
-                            IsGrouped="True"
-                            ItemsUpdatingScrollMode="KeepScrollOffset">
+        <BindableLayout.ItemTemplate>
+            <DataTemplate>
+                <!-- Grupo -->
+                <VerticalStackLayout Spacing="6">
+                    <!-- Header del grupo -->
+                    <VerticalStackLayout Spacing="2" Padding="0">
+                        <Label Text="{Binding DisplayName}"
+                               FontAttributes="Bold"
+                               FontSize="20"
+                               HorizontalTextAlignment="Center"
+                               TextColor="#C77B30"
+                               Margin="5,0"/>
+                        <BoxView HeightRequest="2" Color="#C77B30"
+                                 HorizontalOptions="Center" WidthRequest="300"/>
+                    </VerticalStackLayout>
 
-                <!-- 🔹 Encabezado de grupo (nombre del grupo muscular) -->
-                <CollectionView.GroupHeaderTemplate>
-                    <DataTemplate>
-                        
+                    <!-- Lista de rutinas del grupo -->
+                    <VerticalStackLayout Padding="10"
+                        BindableLayout.ItemsSource="{Binding Routines}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                    <toolkit:Expander x:Name="RoutineExpander"
+                                                        ExpandedChanged="OnExpanded">
 
-                            
-
-                            <VerticalStackLayout Spacing="2" Padding="0">
-                                <Label Text="{Binding DisplayName}"
-                   FontAttributes="Bold"
-                   FontSize="20"
-                   HorizontalTextAlignment="Center"
-                   TextColor="#C77B30"
-                   Margin="5,0"/>
-
-                                <!-- 🔹 Línea debajo del texto -->
-                                <BoxView HeightRequest="2"
-                     Color="#C77B30"
-                     HorizontalOptions="Center"
-                     WidthRequest="300" />
-                            </VerticalStackLayout>
-                        
-                    </DataTemplate>
-                </CollectionView.GroupHeaderTemplate>
-
-                <!-- 🔹 Rutinas dentro del grupo -->
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <toolkit:Expander>
-                            <!-- 🔸 Encabezado del expander (nombre e imagen de la rutina) -->
-                            <toolkit:Expander.Header>
-                                <Border Stroke="#171616"
-                                        StrokeThickness="4"
-                                        Background="#3B2523"
-                                        Padding="16,8"
-                                        HorizontalOptions="Fill">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="40,40,0,0" />
-                                    </Border.StrokeShape>
-
-                                    <Grid ColumnDefinitions="*,Auto"
-                                          VerticalOptions="Center"
-                                          ColumnSpacing="0">
-
-                                        <!-- Nombre de la rutina -->
-                                        <Label Grid.Column="0"
-                                               Text="{Binding nameRoutine}"
-                                               FontAttributes="Bold"
-                                               FontSize="18"
-                                               TextColor="#C77B30"
-                                               VerticalOptions="Center" 
-                                               Margin="0"/>
-
-                                        <!-- Imagen de la rutina -->
-                                        <Border Stroke="#F5E8E0"
-                                                StrokeThickness="4"
-                                                Background="#F5E8E0"
-                                                Padding="8"
-                                                HorizontalOptions="End"
-                                                Margin="0">
+                                    <!-- Header de la rutina -->
+                                    <toolkit:Expander.Header>
+                                        <Border Stroke="#171616" StrokeThickness="4"
+                                                Background="#3B2523" Padding="16,8"
+                                                HorizontalOptions="Fill">
                                             <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="40,40,0,0" Margin="0"/>
+                                                <RoundRectangle CornerRadius="40,40,0,0"/>
                                             </Border.StrokeShape>
-                                            <Image Grid.Column="1"
-                                                   Source="{Binding image}"
-                                                   Aspect="AspectFit"
-                                                   WidthRequest="40"
-                                                   HeightRequest="40"
-                                                   VerticalOptions="Center"
-                                                   HorizontalOptions="End" 
-                                                   Margin="0"/>
-                                        </Border>
-                                    </Grid>
-                                </Border>
-                            </toolkit:Expander.Header>
 
-                            <!-- 🔸 Contenido del expander (lista de ejercicios) -->
-                            <toolkit:Expander.Content>
-                                <CollectionView ItemsSource="{Binding Exercises}">
-                                    <CollectionView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid Background="#3B2523"
-                                              Padding="0"
-                                              ColumnDefinitions="*,Auto,Auto,Auto"
-                                              RowDefinitions="Auto">        
-
-                                                <!-- Contenido -->
-                                                <Label Text="{Binding name}"
-                                                   FontSize="16"
-                                                   TextColor="#E0CFC2"
-                                                   VerticalOptions="Center"
-                                                   Grid.Column="0" 
-                                                   Margin="10,0"
-                                                       Padding="3"/>           
-
-                                                <Label Text="{Binding sets}"
-                                                   FontSize="16"
-                                                   TextColor="#E0CFC2"
-                                                   VerticalOptions="Center"
-                                                   HorizontalOptions="End"
-                                                   Grid.Column="1"
-                                                   Margin="10,0" />
-                                                <Label Text="X"
-                                                   FontSize="16"
-                                                   TextColor="#E0CFC2"
-                                                   VerticalOptions="Center"
-                                                   HorizontalOptions="End"
-                                                   Grid.Column="2"
-                                                   Margin="10,0" />     
-
-                                                <Label Text="{Binding reps}"
-                                                   FontSize="16"
-                                                   TextColor="#E0CFC2"
-                                                   VerticalOptions="Center"
-                                                   HorizontalOptions="End"
-                                                   Grid.Column="3"
-                                                   Margin="10,0" />     
-
-                                                <!-- Bordes (sin línea arriba) -->
-                                                <!-- Izquierdo -->
-                                                <BoxView WidthRequest="3" BackgroundColor="#171616"
-                                                         VerticalOptions="Fill"
-                                                         HorizontalOptions="Start"
-                                                         Grid.ColumnSpan="4" /> 
-
-                                                <!-- Derecho -->
-                                                <BoxView WidthRequest="3" BackgroundColor="#171616"
-                                                     VerticalOptions="Fill"
-                                                     HorizontalOptions="End"
-                                                     Grid.ColumnSpan="4" /> 
-
-                                                <!-- Inferior -->
-                                                <BoxView HeightRequest="3" BackgroundColor="#171616"
-                                                     VerticalOptions="End"
-                                                     HorizontalOptions="Fill"
-                                                     Grid.ColumnSpan="4" /> 
+                                            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                                                <Label Text="{Binding nameRoutine}"
+                                                       FontAttributes="Bold" FontSize="18"
+                                                       TextColor="#C77B30" VerticalOptions="Center"/>
+                                                <Border Stroke="#F5E8E0" StrokeThickness="4"
+                                                        Background="#F5E8E0" Padding="8"
+                                                        HorizontalOptions="End">
+                                                    <Border.StrokeShape>
+                                                        <RoundRectangle CornerRadius="40,40,0,0"/>
+                                                    </Border.StrokeShape>
+                                                    <Image Source="{Binding image}"
+                                                           Aspect="AspectFit" WidthRequest="40" HeightRequest="40"/>
+                                                </Border>
                                             </Grid>
-                                        </DataTemplate>
-                                    </CollectionView.ItemTemplate>
-                                </CollectionView>
-                            </toolkit:Expander.Content>
-                        </toolkit:Expander>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
+                                        </Border>
+                                    </toolkit:Expander.Header>
 
-                <!-- 🔹 Diseño vertical (una columna, no en cuadrícula) -->
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" />
-                </CollectionView.ItemsLayout>
+                                    <!-- Contenido: ejercicios (también BindableLayout) -->
+                                    <toolkit:Expander.Content>
+                                        <VerticalStackLayout BackgroundColor="#3B2523"
+                                            BindableLayout.ItemsSource="{Binding Exercises}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid 
+                                                          ColumnDefinitions="*,30,30,35">
+                                                        <Label Text="{Binding name}" FontSize="16"
+                                                               TextColor="#E0CFC2" Grid.Column="0"
+                                                               Margin="10,0" Padding="3"/>
+                                                        <Label Text="{Binding sets}" FontSize="16"
+                                                               TextColor="#E0CFC2" Grid.Column="1"
+                                                               HorizontalOptions="End" Margin="10,0"
+                                                               FontFamily = "calculator"/>
+                                                        <Label Text="X" FontSize="16"
+                                                               TextColor="#E0CFC2" Grid.Column="2"
+                                                               HorizontalOptions="End" Margin="10,0"
+                                                               FontFamily = "calculator"/>
+                                                        <Label Text="{Binding reps}" FontSize="16"
+                                                               TextColor="#E0CFC2" Grid.Column="3"
+                                                               HorizontalOptions="End" Margin="10,0"
+                                                               FontFamily = "calculator"/>
 
-            </CollectionView>
-        </VerticalStackLayout>
-    </ScrollView>
+                                                        <!-- Bordes -->
+                                                            <Border WidthRequest="3" Stroke="#171616"
+                                                                    StrokeThickness="20"
+                                                                 VerticalOptions="Fill" HorizontalOptions="Start"
+                                                                 Grid.ColumnSpan="4"/>
+                                                            <Border WidthRequest="3" Stroke="#171616"
+                                                                    StrokeThickness="20"
+                                                                 VerticalOptions="Fill" HorizontalOptions="End"
+                                                                 Grid.ColumnSpan="4"/>
+                                                            <Border Stroke="#171616"
+                                                            StrokeThickness="10"
+                                                            StrokeDashArray="{Binding LinePattern}"
+                                                            HorizontalOptions="Fill"
+                                                            VerticalOptions="End"
+                                                            HeightRequest="6"
+                                                            Grid.Column="0"
+                                                            Grid.ColumnSpan="4"/>         
+                                                            <Grid.GestureRecognizers>
+                                                                <TapGestureRecognizer
+                                                                    Tapped="OnExerciseTapped"
+                                                                    CommandParameter="{Binding .}" />   
+                                                            </Grid.GestureRecognizers>
+
+                                                        </Grid>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </VerticalStackLayout>
+                                    </toolkit:Expander.Content>
+
+                                </toolkit:Expander>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </DataTemplate>
+        </BindableLayout.ItemTemplate>
+    </VerticalStackLayout>
+</ScrollView>
 </ContentPage>
