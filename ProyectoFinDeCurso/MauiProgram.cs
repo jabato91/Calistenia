@@ -15,8 +15,8 @@ namespace ProyectoFinDeCurso
 
             builder
                 .UseMauiApp<App>()
-                .UseMauiCommunityToolkit()                    // ✅ esto ya lo tenías
-                .UseMauiCommunityToolkitMediaElement()       // ✅ agregar MediaElement
+                .UseMauiCommunityToolkit()                    // agrega Community Toolkit
+                .UseMauiCommunityToolkitMediaElement()       // agrega media element
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

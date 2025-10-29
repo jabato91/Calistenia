@@ -17,8 +17,8 @@ namespace ProyectoFinDeCurso.ViewModels
         public ObservableCollection<User> Users { get; set; } = new ObservableCollection<User>(); //Se usa la colección Oservable para notificar automáticamente a la interfaz gráfica
         public ListUsersViewModel()
         {
-            _dbService = new DbService(); //carga la base de datos
-            LoadUsersAsync(); //carga el método
+            _dbService = new DbService(); 
+            LoadUsersAsync(); 
 
         }
 

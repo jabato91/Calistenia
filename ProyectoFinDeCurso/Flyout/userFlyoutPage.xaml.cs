@@ -31,18 +31,25 @@ public partial class userFlyoutPage : FlyoutPage
         await Navigation.PushModalAsync(new LoginPage(_dbService));
     }
 
-    private void verificationUserType(userTypeEnum userType)
+    public void verificationUserType(userTypeEnum userType)
     {
         if (!userType.Equals(userTypeEnum.admin))
         {
             listUsers.IsVisible = false;
         }
     }
-    private async void UsersBottonAdmin(object sender, EventArgs e)
+    private void UsersBottonAdmin(object sender, EventArgs e)
     {
-        await Navigation.PushModalAsync(new ListUsers());
+        this.Detail = new NavigationPage(new ListUsers());
+        this.IsPresented = false;
     }
-
+    
+    private void HomePage(object sender, EventArgs e)
+    {
+        
+        this.Detail = new NavigationPage(new HomePage());
+        IsPresented = false;
+    }
     private void ExercisePage(object sender, EventArgs e)
     {
         listUsers.CancelAnimations();

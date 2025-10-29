@@ -34,6 +34,19 @@ namespace ProyectoFinDeCurso.Models
         [Ignore] // Para que SQLite no intente mapearla
         public string FullName => $"{Name} {FirstSurname} {SecondSurname}".Trim();
         
-       
+        public String listUserType
+        {
+            get { 
+                return userType switch
+                {
+                    userTypeEnum.admin => "Administrador",
+                    userTypeEnum.user => "Usuario",
+                    userTypeEnum.nothing => "Nada",
+                    _ => "Desconocido",
+                };
+            }
+        }
+
+
     }
 }

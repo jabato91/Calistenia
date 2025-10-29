@@ -21,9 +21,9 @@ namespace ProyectoFinDeCurso.Models
         public string image { get; set; } = string.Empty;
         [Column("bodyPartRoutine")]
         public bodyPartEnum muscleGroup { get; set; } = bodyPartEnum.nothing;
-        [Ignore] // Ignorar al guardar en DB
-        public ObservableCollection<Exercise> Exercises { get; set; } = new();
+        [Ignore] 
+        public ObservableCollection<Exercise> Exercises { get; set; } = new(); //obtiene los ejercicios de la rutina
 
-        
+
     }
 }

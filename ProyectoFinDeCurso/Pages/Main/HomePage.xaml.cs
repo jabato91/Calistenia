@@ -1,3 +1,4 @@
+
 using ProyectoFinDeCurso.Pages.Main;
 using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.ViewModels;
@@ -5,10 +6,12 @@ namespace ProyectoFinDeCurso.Pages;
 
 public partial class HomePage : ContentPage
 {
-	public HomePage()
+    DbService _dbService = new DbService();
+    public HomePage()
 	{
 		InitializeComponent();
-        new CreateExercises(new DbService());
+        // Inicializa los ejercicios solo si no existen
+        var initializer = new CreateExercises(_dbService);
     }
 
     

@@ -20,9 +20,8 @@ public partial class exercisePage : ContentPage
     {
         InitializeComponent();
         _dbService = dbService;
-        verificationUserType(userType);
         // Solo asignamos el BindingContext, no llamamos OnAppearing manualmente
-        _filter = new ExerciseFilterViewModel(_dbService);
+        _filter = new ExerciseFilterViewModel(_dbService,userType);
         BindingContext = _filter;
 
     }
@@ -118,17 +117,7 @@ public partial class exercisePage : ContentPage
             );
         }
     }
-    private void verificationUserType(userTypeEnum userType)
-    {
-        ImageButton eliminate = this.FindByName<ImageButton>("eliminateButton");
-        ImageButton modify = this.FindByName<ImageButton>("modifyButton");
-
-        if (!userType.Equals(userTypeEnum.admin))
-        {
-            //eliminate.IsVisible = false;
-            //modify.IsVisible = false;
-        }
-    }
+    
     private async void eliminateExercise(object sender, EventArgs e)
     {
         var eliminate = sender as ImageButton;
@@ -194,7 +183,7 @@ public partial class exercisePage : ContentPage
             Source = exerciseFromDb.image,
             HorizontalOptions = LayoutOptions.Fill,
             WidthRequest = 75,
-                                                         HeightRequest = 75
+            HeightRequest = 75
         };
         imageButton.Clicked += async (s, e) =>
         {

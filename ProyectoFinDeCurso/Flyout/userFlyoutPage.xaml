@@ -17,6 +17,17 @@
                        HorizontalOptions="Center"
                        Margin="0,40,0,20"
                        TextColor="#B09D9D"/>
+                <Button Text="Inicio" 
+                    FontSize="18"
+                    Clicked="HomePage"
+                    Margin="30,10"
+                    BorderWidth="4"
+                    BorderColor="#FF542E"
+                    BackgroundColor="#FF4C24"
+                    CharacterSpacing="0.75"
+                    CornerRadius="1"
+                    TextColor="#FFE1D9"
+                    />  
                 <Button Text="Ejercicios Sueltos" 
                         FontSize="18"
                         Clicked="ExercisePage"

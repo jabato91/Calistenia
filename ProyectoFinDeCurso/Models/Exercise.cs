@@ -20,15 +20,35 @@
             public string image { get; set; } = string.Empty;
             [Column("dificulty")]
             public dificultyEnum dificulty { get; set; } = dificultyEnum.nothing;
-        [Column("BodyPart")]
+            [Column("BodyPart")]
             public bodyPartEnum muscleGroupId { get; set; } = bodyPartEnum.nothing;
+            [Column("typeUser")]
+            public userTypeEnum typeUser { get; set; } = userTypeEnum.nothing;
+            
         [Ignore]
         public int sets { get; set; } = -1;
         [Ignore]
         public int reps { get; set; } = -1;
         [Ignore]
-        public DoubleCollection LinePattern { get; set; } = new() { 6, 4 };
-        public Brush AuraColor
+        public DoubleCollection LinePattern { get; set; } = new() { 6, 4 }; // Patrón de línea discontinua si no es el ultimo ejercicio
+        [Ignore]
+        public int IsAdmin { get; set; } = -1; // Indica si el ejercicio está siendo visto en modo administrador
+
+        public bool IsAdminMode
+        {
+            get
+            {
+                return IsAdmin switch
+                {
+                    0 => false,
+                    1 => true,
+                    2 => true,
+                    _ => throw new NotImplementedException(),
+                };
+            }
+        }
+
+        public Brush AuraColor // propiedad calculada para obtener el pincel de degradado según la dificultad
         {
             get
             {
@@ -43,14 +63,14 @@
             }
         }
 
-        // 🔸 Método auxiliar para crear el gradiente radial
+        // crea un pincel de degradado radial basado en dos colores
         private static RadialGradientBrush CreateBrush(Color color1, Color color2)
         {
-            return new RadialGradientBrush
+            return new RadialGradientBrush //crea el pincel
             {
-                Center = new Point(0.5, 0.5),
-                Radius = 0.9,
-                GradientStops = new GradientStopCollection
+                Center = new Point(0.5, 0.5), // centro del degradado
+                Radius = 0.9, //radio del degradado
+                GradientStops = new GradientStopCollection //colección de paradas de degradado
                 {
                     new GradientStop(Colors.Transparent, 0.3f),
                     new GradientStop(color1, 0.8f),

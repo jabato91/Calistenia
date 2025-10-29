@@ -2,7 +2,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ProyectoFinDeCurso.Pages.Main.exercisePage"
              Title="Ejercicios">
+    <!-- 👇 Zona personalizada del título -->
+    <NavigationPage.TitleView>
+        <Grid Padding="10"
+          ColumnDefinitions="Auto,*,Auto"
+          VerticalOptions="Center"
+          HorizontalOptions="FillAndExpand">
 
+            <!-- Título centrado -->
+            <Label Grid.Column="1"
+               Text="Ejercicios"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               FontSize="22"
+               FontAttributes="Bold"
+               TextColor="#C77B30"
+               FontFamily="Forresten"/>
+
+            <!-- Botón derecha -->
+            <ImageButton Grid.Column="2"
+                     Source="icono_predeterminado.png"
+                     WidthRequest="35"
+                     HeightRequest="35"
+                     BackgroundColor="Transparent"/>
+        </Grid>
+    </NavigationPage.TitleView>
     <!-- Fondo con degradado sutil -->
     <ContentPage.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -114,14 +138,16 @@
                                                          HeightRequest="40"
                                                          BackgroundColor="Transparent"
                                                          Aspect="AspectFill"
-                                                         x:Name="eliminateButton"/>
+                                                         x:Name="eliminateButton"
+                                                         IsVisible="{Binding IsAdminMode}"/>
 
                                             <ImageButton Clicked="modifyExercise" 
                                                          Source="editar.png"
                                                          WidthRequest="75"
                                                          HeightRequest="75"
                                                          BackgroundColor="Transparent"
-                                                         x:Name="modifyButton"/>
+                                                         x:Name="modifyButton"
+                                                         IsVisible="{Binding IsAdminMode}"/>
                                         </StackLayout>
 
                                     </Grid>

@@ -13,7 +13,7 @@ namespace ProyectoFinDeCurso.ViewModels
         private readonly DbService _dbService;
         private string _searchText = string.Empty;
         private Brush _auraColor;
-
+        private userTypeEnum _userType;
         // Lista completa de ejercicios
         public ObservableCollection<Exercise> Exercises { get; set; } = new();
 
@@ -62,12 +62,11 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
         public int ExercisesCount => Exercises?.Count ?? 0;
-        public ExerciseFilterViewModel(DbService dbService)
+        public ExerciseFilterViewModel(DbService dbService, userTypeEnum userType)
         {
             _dbService = dbService;
 
-            // Inicializa los ejercicios solo si no existen
-            var initializer = new CreateExercises(_dbService);
+            _userType = userType;
 
             Exercises.CollectionChanged += (s, e) => OnPropertyChanged(nameof(ExercisesCount));
 
@@ -79,9 +78,22 @@ namespace ProyectoFinDeCurso.ViewModels
         private async void LoadExercises()
         {
             var exercises = await _dbService.GetEercises();
-
+            
             foreach (var ex in exercises) { 
-                Exercises.Add(ex);
+                if(ex.typeUser.Equals(_userType) && _userType.Equals(userTypeEnum.admin))
+                {
+                    ex.IsAdmin = 1;
+                }
+                else if(ex.typeUser.Equals(_userType) && _userType.Equals(userTypeEnum.user))
+                {
+                    ex.IsAdmin = 0;
+                }
+                else
+                {
+                    ex.IsAdmin = 2;
+                }
+
+                    Exercises.Add(ex);
 
                 
             }

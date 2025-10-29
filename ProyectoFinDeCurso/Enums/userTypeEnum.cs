@@ -10,6 +10,7 @@ namespace ProyectoFinDeCurso.Enums
     {
         nothing,
         user,
-        admin
+        admin,
+        all
     }
 }

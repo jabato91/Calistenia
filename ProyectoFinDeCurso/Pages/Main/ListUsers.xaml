@@ -10,7 +10,8 @@
                     <Frame Padding="10"
                            Margin="5"
                            BorderColor="LightGray"
-                           CornerRadius="10">
+                           CornerRadius="10"
+                           >
                         <VerticalStackLayout>
                             <Label Text="{Binding Id}"/>
                             <!-- Nombre completo -->
@@ -26,7 +27,17 @@
                             <Label Text="{Binding Phone}" 
                                    FontSize="14"
                                    TextColor="Gray" />
+                            <Label Text="{Binding listUserType}" 
+                                   FontSize="14"
+                                   TextColor="Gray" />
+                            <ImageButton Source="papelera.png"
+                                 WidthRequest="24"
+                                 HeightRequest="24"
+                                 HorizontalOptions="End"
+                                 VerticalOptions="Start"
+                                 Clicked="EliminateUser"/>  
                         </VerticalStackLayout>
+                        
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

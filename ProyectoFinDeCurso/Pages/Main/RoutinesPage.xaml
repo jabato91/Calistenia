@@ -25,7 +25,8 @@
                                FontSize="20"
                                HorizontalTextAlignment="Center"
                                TextColor="#C77B30"
-                               Margin="5,0"/>
+                               Margin="5,0"
+                               FontFamily="Forresten"/>
                         <BoxView HeightRequest="2" Color="#C77B30"
                                  HorizontalOptions="Center" WidthRequest="300"/>
                     </VerticalStackLayout>
@@ -49,8 +50,9 @@
 
                                             <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
                                                 <Label Text="{Binding nameRoutine}"
-                                                       FontAttributes="Bold" FontSize="18"
-                                                       TextColor="#C77B30" VerticalOptions="Center"/>
+                                                       FontAttributes="Bold" FontSize="20"
+                                                       TextColor="#C77B30" VerticalOptions="Center"
+                                                       FontFamily="EatMeAlive"/>
                                                 <Border Stroke="#F5E8E0" StrokeThickness="4"
                                                         Background="#F5E8E0" Padding="8"
                                                         HorizontalOptions="End">

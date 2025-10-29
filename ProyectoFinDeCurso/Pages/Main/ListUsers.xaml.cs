@@ -12,8 +12,7 @@ public partial class ListUsers : ContentPage
 
 		BindingContext = new ListUsersViewModel();
     }
-
-
-
-
+    private void EliminateUser(object sender, EventArgs e)
+    { 
+    }
 }
