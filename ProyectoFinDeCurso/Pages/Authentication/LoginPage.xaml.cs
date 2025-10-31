@@ -1,3 +1,4 @@
+using ProyectoFinDeCurso.Flyout;
 using ProyectoFinDeCurso.Pages.Authentication;
 using ProyectoFinDeCurso.Services;
 
@@ -38,7 +39,7 @@ public partial class LoginPage : ContentPage
 
         if (Application.Current != null)
         {
-            Application.Current.MainPage = new ProyectoFinDeCurso.Flyout.userFlyoutPage(new DbService(),user.userType); //Navega hacia la página Home, permitiendo no volver a la página anterior
+            Application.Current.MainPage = new userFlyoutPage(new DbService(),user.userType); //Navega hacia la página Home, permitiendo no volver a la página anterior
         }
         else
         {

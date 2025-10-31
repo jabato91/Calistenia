@@ -8,21 +8,33 @@ namespace ProyectoFinDeCurso.Flyout;
 public partial class userFlyoutPage : FlyoutPage
 {
     public DbService _dbService;
-    private userTypeEnum _userType;
+    private static userTypeEnum _userType;
     public userFlyoutPage(DbService dbService,userTypeEnum userType)
 	{
-		InitializeComponent();
-        _dbService = dbService;
-        _userType = userType;
-        verificationUserType(userType);
-
-    }
-    public userFlyoutPage(DbService dbService)
-    {
+        
         InitializeComponent();
         _dbService = dbService;
-        
+        _userType = userType;
+        verificationUserType(_userType);
 
+    }
+    public userFlyoutPage(DbService dbService, string userId)
+    {
+       
+        InitializeComponent();
+        _dbService = dbService;
+        _ = InitializeAsync(userId);
+    }
+    private async Task InitializeAsync(string userId)
+    {
+        var user = await _dbService.GetUserById(int.Parse(userId));
+
+        if (user != null)
+        {
+            _userType = user.userType;
+        }
+
+        verificationUserType(_userType);
     }
     private async void LogoutButton(object sender, EventArgs e)
     {

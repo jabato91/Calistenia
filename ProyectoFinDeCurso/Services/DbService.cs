@@ -21,7 +21,6 @@ namespace ProyectoFinDeCurso.Services
             await _connection.CreateTableAsync<Exercise>();
             await _connection.CreateTableAsync<Routines>();
             await _connection.CreateTableAsync<RoutinesExercises>();
-            await _connection.CreateTableAsync<SetsAndRepetitions>();
         }
         public async Task<List<User>> GetUsers() => await _connection.Table<User>().ToListAsync(); //obtiene todos los usuarios
 

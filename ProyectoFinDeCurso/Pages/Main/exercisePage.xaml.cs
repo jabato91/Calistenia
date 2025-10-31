@@ -16,12 +16,15 @@ public partial class exercisePage : ContentPage
 
     private readonly DbService _dbService;
     private ExerciseFilterViewModel _filter;
+    private static userTypeEnum _userType;
     public exercisePage(DbService dbService, userTypeEnum userType)
     {
+        _userType = userTypeEnum.nothing;
+        _userType = userType;
         InitializeComponent();
         _dbService = dbService;
         // Solo asignamos el BindingContext, no llamamos OnAppearing manualmente
-        _filter = new ExerciseFilterViewModel(_dbService,userType);
+        _filter = new ExerciseFilterViewModel(_dbService,_userType);
         BindingContext = _filter;
 
     }
