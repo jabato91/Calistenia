@@ -74,7 +74,7 @@ public partial class userFlyoutPage : FlyoutPage
     {
         listUsers.CancelAnimations();
         listUsers.Scale = 1.0;
-        this.Detail = new NavigationPage(new RoutinesPage(_dbService));
+        this.Detail = new NavigationPage(new RoutinesPage(_dbService, _userType));
         IsPresented = false;
     }
     private async void Button_Pressed(object sender, EventArgs e)

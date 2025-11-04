@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
+using ProyectoFinDeCurso.Enums;
 using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.ViewModels;
@@ -9,12 +10,13 @@ namespace ProyectoFinDeCurso.Pages.Main;
 public partial class RoutinesPage : ContentPage
 {
     private readonly DbService _dbService;
-    public RoutinesPage(DbService dbService)
+    private static userTypeEnum _userType;
+    public RoutinesPage(DbService dbService, userTypeEnum userType)
 	{
         _dbService = dbService;
 		InitializeComponent();
-
-		BindingContext = new RoutinesFilterViewModel(_dbService);
+        _userType = userType;
+		BindingContext = new RoutinesFilterViewModel(_dbService, _userType);
     }
 
     private async void OnExerciseTapped(object sender, EventArgs e)

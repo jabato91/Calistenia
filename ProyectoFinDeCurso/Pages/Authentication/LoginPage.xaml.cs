@@ -1,6 +1,7 @@
 using ProyectoFinDeCurso.Flyout;
 using ProyectoFinDeCurso.Pages.Authentication;
 using ProyectoFinDeCurso.Services;
+using ProyectoFinDeCurso.ViewModels;
 
 namespace ProyectoFinDeCurso.Pages;
 
@@ -26,7 +27,7 @@ public partial class LoginPage : ContentPage
         }
 
         var users = await _dbService.GetUsers(); //Obtiene todos los usuarios de la base de datos
-        var user = users.FirstOrDefault(u => u.Email == emailInput && u.Password == passwordInput); //Busca el usuario con el email introducido
+        var user = users.FirstOrDefault(u => u.Email == emailInput && PasswordHasher.VerifyPassword(passwordInput,u.Password)); //Busca el primer usuario con el email y la contraseña introducido
 
         if (user == null) //Si no encuentra el usuario, muestra un mensaje de error
         {

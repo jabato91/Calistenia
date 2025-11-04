@@ -4,6 +4,29 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="ProyectoFinDeCurso.Pages.Main.RoutinesPage"
              Title="Rutinas">
+    <NavigationPage.TitleView>
+        <Grid Padding="10"
+      ColumnDefinitions="Auto,*,Auto"
+      VerticalOptions="Center">
+
+            <!-- Título centrado -->
+            <Label Grid.Column="1"
+           Text="Rutinas"
+           HorizontalOptions="Center"
+           VerticalOptions="Center"
+           FontSize="22"
+           FontAttributes="Bold"
+           TextColor="#C77B30"
+           FontFamily="Forresten"/>
+
+            <!-- Botón derecha -->
+            <ImageButton Grid.Column="2"
+                 Source="icono_predeterminado.png"
+                 WidthRequest="35"
+                 HeightRequest="35"
+                 BackgroundColor="Transparent"/>
+        </Grid>
+    </NavigationPage.TitleView>
     <ContentPage.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#1A1A1A" Offset="0.0"/>
@@ -48,20 +71,37 @@
                                                 <RoundRectangle CornerRadius="40,40,0,0"/>
                                             </Border.StrokeShape>
 
-                                            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto" VerticalOptions="Center">
                                                 <Label Text="{Binding nameRoutine}"
                                                        FontAttributes="Bold" FontSize="20"
                                                        TextColor="#C77B30" VerticalOptions="Center"
                                                        FontFamily="EatMeAlive"/>
-                                                <Border Stroke="#F5E8E0" StrokeThickness="4"
+                                                    <ImageButton 
+                                                     Source="papelera.png"
+                                                     WidthRequest="40"
+                                                     HeightRequest="40"
+                                                     BackgroundColor="Transparent"
+                                                     Aspect="AspectFill"
+                                                     x:Name="eliminateButton"
+                                                     IsVisible="{Binding IsAdminMode}" Grid.Column="1"/>
+
+                                                    <ImageButton  
+                                                     Source="editar.png"
+                                                     WidthRequest="75"
+                                                     HeightRequest="75"
+                                                     BackgroundColor="Transparent"
+                                                     x:Name="modifyButton"
+                                                     IsVisible="{Binding IsAdminMode}" Grid.Column="2"/>    
+                                                    <Border Stroke="#F5E8E0" StrokeThickness="4"
                                                         Background="#F5E8E0" Padding="8"
-                                                        HorizontalOptions="End">
+                                                        HorizontalOptions="End" Grid.Column="3">
                                                     <Border.StrokeShape>
                                                         <RoundRectangle CornerRadius="40,40,0,0"/>
                                                     </Border.StrokeShape>
                                                     <Image Source="{Binding image}"
                                                            Aspect="AspectFit" WidthRequest="40" HeightRequest="40"/>
                                                 </Border>
+                                                
                                             </Grid>
                                         </Border>
                                     </toolkit:Expander.Header>

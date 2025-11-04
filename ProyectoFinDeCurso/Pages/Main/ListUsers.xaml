@@ -3,7 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ProyectoFinDeCurso.Pages.Main.ListUsers"
              Title="ListUsers">
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#1A1A1A" Offset="0.0"/>
+            <GradientStop Color="#2E1E1B" Offset="1.0"/>
+        </LinearGradientBrush>
+    </ContentPage.Background>
     <VerticalStackLayout Padding="10">
+        
         <CollectionView ItemsSource="{Binding Users}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>

@@ -1,4 +1,5 @@
-﻿using ProyectoFinDeCurso.Pages;
+﻿using ProyectoFinDeCurso.Flyout;
+using ProyectoFinDeCurso.Pages;
 using ProyectoFinDeCurso.Services;
 namespace ProyectoFinDeCurso
 {
@@ -18,7 +19,7 @@ namespace ProyectoFinDeCurso
 
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    MainPage = new ProyectoFinDeCurso.Flyout.userFlyoutPage(new DbService(),userId);
+                    MainPage = new userFlyoutPage(new DbService(), userId);
                 }
                 else
                 {

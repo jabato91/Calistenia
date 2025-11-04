@@ -15,12 +15,14 @@ namespace ProyectoFinDeCurso.ViewModels
     {
         private readonly DbService _dbService;
         private string _searchText = string.Empty;
-
+        private static userTypeEnum _userType;
         public ObservableCollection<Routines> Routines { get; set; } = new();
 
-        public RoutinesFilterViewModel(DbService dbService)
+        public RoutinesFilterViewModel(DbService dbService, userTypeEnum userType)
         {
+            _userType = userTypeEnum.nothing;
             _dbService = dbService;
+            _userType = userType;
             LoadRoutines();
         }
 
@@ -64,6 +66,18 @@ namespace ProyectoFinDeCurso.ViewModels
 
             foreach (var routine in routinesFromDb)
             {
+                if (routine.typeUser.Equals(_userType) && _userType.Equals(userTypeEnum.admin))
+                {
+                    routine.IsAdmin = 1;
+                }
+                else if (!routine.typeUser.Equals(_userType) && _userType.Equals(userTypeEnum.user))
+                {
+                    routine.IsAdmin = 0;
+                }
+                else
+                {
+                    routine.IsAdmin = 2;
+                }
                 var exercisesForRoutine = routinesExercisesFromDb
                     .Where(re => re.RoutineID == routine.routineID)
                     .Join(exercisesFromDb,
@@ -79,6 +93,7 @@ namespace ProyectoFinDeCurso.ViewModels
 
                 foreach (var ex in exercisesForRoutine)
                 {
+                    
                     ex.Exercise.sets = ex.Sets;
                     ex.Exercise.reps = ex.Reps;
                     routine.Exercises.Add(ex.Exercise);

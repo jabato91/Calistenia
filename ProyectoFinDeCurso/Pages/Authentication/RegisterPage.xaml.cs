@@ -4,6 +4,7 @@ using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.Pages.Main;
 namespace ProyectoFinDeCurso.Pages.Authentication;
 using Microsoft.Maui.Storage;
+using ProyectoFinDeCurso.ViewModels;
 
 public partial class RegisterPage : ContentPage
 {
@@ -41,7 +42,7 @@ public partial class RegisterPage : ContentPage
             await DisplayAlert("Error", "El teléfono debe tener 9 dígitos", "OK");
             return;
         }
-
+        String passwordHash = PasswordHasher.HashPassword(Password.Text);
         // Crea modelo del usuario a registrar
         var user = new User
         {
@@ -50,7 +51,7 @@ public partial class RegisterPage : ContentPage
             SecondSurname = SecondSurname.Text,
             Email = email.Text,
             Phone = phone.Text,
-            Password = Password.Text,
+            Password = passwordHash,
             userType = Enums.userTypeEnum.user
         };
         //Crea usuario en la base de datos
