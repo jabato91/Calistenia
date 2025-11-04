@@ -6,8 +6,7 @@
     <NavigationPage.TitleView>
         <Grid Padding="10"
           ColumnDefinitions="Auto,*,Auto"
-          VerticalOptions="Center"
-          HorizontalOptions="FillAndExpand">
+          VerticalOptions="Center">
 
             <!-- Título centrado -->
             <Label Grid.Column="1"

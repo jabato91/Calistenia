@@ -52,7 +52,7 @@ public partial class userFlyoutPage : FlyoutPage
     }
     private void UsersBottonAdmin(object sender, EventArgs e)
     {
-        this.Detail = new NavigationPage(new ListUsers());
+        this.Detail = new NavigationPage(new ListUsers(_dbService));
         this.IsPresented = false;
     }
     

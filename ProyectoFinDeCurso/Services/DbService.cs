@@ -77,5 +77,13 @@ namespace ProyectoFinDeCurso.Services
                 await _connection.DeleteAsync(exercise);
             }
         }
+        public async Task DeleteUserById(int id)
+        {
+            var exercise = await GetUserById(id);
+            if (exercise != null)
+            {
+                await _connection.DeleteAsync(exercise);
+            }
+        }
     }
 }

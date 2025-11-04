@@ -21,7 +21,7 @@ namespace ProyectoFinDeCurso.ViewModels
             LoadUsersAsync(); 
 
         }
-
+        
         private async void LoadUsersAsync() //lee los usuarios dentro de la base de datos
         {
             var allUsers = await _dbService.GetUsers(); //se espera hasta que se lean todos los usuarios

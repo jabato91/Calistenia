@@ -43,6 +43,12 @@
                                  HorizontalOptions="End"
                                  VerticalOptions="Start"
                                  Clicked="EliminateUser"/>  
+                            <ImageButton Clicked="modifyUser" 
+                                 Source="editar.png"
+                                 WidthRequest="75"
+                                 HeightRequest="75"
+                                 BackgroundColor="Transparent"
+             x:Name="modifyButton"/>
                         </VerticalStackLayout>
                         
                     </Frame>
