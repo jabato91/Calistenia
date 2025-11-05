@@ -16,6 +16,9 @@ namespace ProyectoFinDeCurso.Enums
         abdomen,
         back,
         shoulder,
+        torso,
+        arms,
+        torsoAndArms,
         isometric
     }
 }

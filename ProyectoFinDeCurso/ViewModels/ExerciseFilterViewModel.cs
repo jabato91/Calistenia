@@ -57,7 +57,7 @@ namespace ProyectoFinDeCurso.ViewModels
 
                 return filtered
                     .GroupBy(e => e.muscleGroupId)
-                    .Select(g => new ExerciseGroup(g.Key, g))
+                    .Select(g => new ExerciseGroup(g.Key, g.OrderBy(e => e.dificulty)))
                     .ToList();
             }
         }

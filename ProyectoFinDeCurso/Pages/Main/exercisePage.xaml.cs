@@ -158,7 +158,11 @@ public partial class exercisePage : ContentPage
         { bodyPartEnum.biceps, "Bíceps" },
         { bodyPartEnum.abdomen, "Abdomen" },
         { bodyPartEnum.back, "Espalda" },
-        { bodyPartEnum.shoulder, "Hombros" }
+        { bodyPartEnum.shoulder, "Hombros" },
+        { bodyPartEnum.isometric, "Isométrico" },
+        { bodyPartEnum.arms, "Brazos" },
+        { bodyPartEnum.torso, "Torso" },
+        { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
     };
 
         // Creamos controles y los guardamos en variables locales

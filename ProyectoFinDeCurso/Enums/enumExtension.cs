@@ -21,6 +21,9 @@ namespace ProyectoFinDeCurso.Enums
                 bodyPartEnum.back => "Espalda",
                 bodyPartEnum.shoulder => "Hombro",
                 bodyPartEnum.isometric => "Isométrico",
+                bodyPartEnum.arms => "Brazos",
+                bodyPartEnum.torso => "Torso",
+                bodyPartEnum.torsoAndArms => "Torso y Brazos",
                 _ => throw new NotImplementedException(),
             };
             

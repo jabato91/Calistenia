@@ -4,6 +4,7 @@ using ProyectoFinDeCurso.Enums;
 using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.ViewModels;
+using System.Collections.Generic;
 
 namespace ProyectoFinDeCurso.Pages.Main;
 
@@ -101,6 +102,7 @@ public partial class RoutinesPage : ContentPage
                 await Navigation.PushModalAsync(modalPage);
             }
         }
+       
         catch (Exception ex)
         {
             // Muestra un mensaje de error amigable
@@ -111,6 +113,222 @@ public partial class RoutinesPage : ContentPage
             );
         }
     }
+    private async void createRoutine(object sender, TappedEventArgs e)
+    {
+        {
+            var translation = new Dictionary<bodyPartEnum, string>
+    {
+        { bodyPartEnum.nothing, "Ninguno" },
+        { bodyPartEnum.chest, "Pecho" },
+        { bodyPartEnum.leg, "Piernas" },
+        { bodyPartEnum.triceps, "Tríceps" },
+        { bodyPartEnum.biceps, "Bíceps" },
+        { bodyPartEnum.abdomen, "Abdomen" },
+        { bodyPartEnum.back, "Espalda" },
+        { bodyPartEnum.shoulder, "Hombros" },
+        { bodyPartEnum.isometric, "Isométrico" },
+        { bodyPartEnum.arms, "Brazos" },
+        { bodyPartEnum.torso, "Torso" },
+        { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
+    };
+            var nameRoutineEntry = new Entry
+            {
+                Placeholder = "Nombre de la rutina",
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
+
+                HorizontalOptions = LayoutOptions.Fill
+            };
+            var DescriptionRoutineEntry = new Entry
+            {
+                Placeholder = "Nombre de la rutina",
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
+
+                HorizontalOptions = LayoutOptions.Fill
+            };
+            var bodyPartEnumPicker = new Picker
+            {
+                Title = "Tipo Cuerpo",
+                ItemsSource = translation.Values.ToList(),
+                SelectedItem = translation[bodyPartEnum.nothing],
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
+                HorizontalOptions = LayoutOptions.Fill
+            };
+            var addExercises = new Button
+            {
+                Text = "Agregar Ejercicios",
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
+                HorizontalOptions = LayoutOptions.Fill
+            };
+            addExercises.Clicked += async (s, e) =>
+            {
+                string selectedText = bodyPartEnumPicker.SelectedItem as string;
+                bodyPartEnum selectedEnum = translation.FirstOrDefault(x => x.Value == selectedText).Key;
+                if (selectedEnum.Equals(bodyPartEnum.nothing))
+                {
+                    await DisplayAlert("Error", "Seleccione un grupo muscular", "OK");
+                    return;
+                }
+                else
+                {
+
+                    List<Exercise> exercises = await _dbService.GetEercises();
+                    List<Exercise> ExercisesSelecter;
+                    if (selectedEnum.Equals(bodyPartEnum.torsoAndArms))
+                    {
+                            ExercisesSelecter = exercises.Where(ex => ex.muscleGroupId.Equals(bodyPartEnum.triceps) 
+                                                                                || ex.muscleGroupId.Equals(bodyPartEnum.biceps)
+                                                                               || ex.muscleGroupId.Equals(bodyPartEnum.chest)
+                                                                               || ex.muscleGroupId.Equals(bodyPartEnum.back))
+                                                                                .ToList();
+                    }else if (selectedEnum.Equals(bodyPartEnum.arms))
+                    {
+                        ExercisesSelecter = exercises.Where(ex => ex.muscleGroupId.Equals(bodyPartEnum.triceps)
+                                                                                || ex.muscleGroupId.Equals(bodyPartEnum.biceps))
+                                                                                .ToList();
+                    }else if (selectedEnum.Equals(bodyPartEnum.torso))
+                    {
+                        ExercisesSelecter = exercises.Where(ex => ex.muscleGroupId.Equals(bodyPartEnum.chest)
+                                                                               || ex.muscleGroupId.Equals(bodyPartEnum.back))
+                                                                                .ToList();
+                    }
+                    else
+                    {
+                        ExercisesSelecter = exercises.Where(ex => ex.muscleGroupId.Equals(selectedEnum)).ToList();
+                    }
+                        
+                    var lookForExercise = new SearchBar()
+                    {
+                        Placeholder = "Buscar ejercicio..."
+                    };
+                    var collectionExercises = new CollectionView
+                    {
+                        ItemsSource = ExercisesSelecter,
+
+                        ItemTemplate = new DataTemplate(() =>
+                        {
+                            
+                            var nameExercise = new Label { FontAttributes = FontAttributes.Bold, TextColor = Colors.White };
+                            nameExercise.SetBinding(Label.TextProperty, "name");
+
+
+                            return new Frame
+                            {
+                                Margin = 5,
+                                Padding = 10,
+                                BackgroundColor = Color.FromArgb("#3B2523"),
+                                Content = new VerticalStackLayout
+                                {
+                                    Children = { nameExercise }
+                                }
+                            };
+                        })
+                    };
+                    var selectedExercises = new ContentPage
+                    {
+                        BackgroundColor = Color.FromArgb("#2E1E1B"),
+                        Content = new VerticalStackLayout
+                        {
+                            Spacing = 10,
+                            Padding = 10,
+                            Children =
+                {
+                    lookForExercise,
+                    collectionExercises,
+                    new HorizontalStackLayout
+                    {
+                        Spacing = 10,
+                        Children =
+                        {
+                            new Button
+                            {
+                                Text = "Guardar",
+                                Command = new Command(() =>
+                                {
+                                    
+                                })
+                            },
+                            new Button
+                            {
+                                Text = "Cancelar",
+                                Command = new Command(async () => await Navigation.PopModalAsync())
+                            }
+                        }
+                    }
+                }
+                        }
+                    };
+
+                    await Navigation.PushModalAsync(selectedExercises);
+                }
+            };
+            var modalPage = new ContentPage
+                {
+                    BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
+                    Content = new Frame
+
+                    {
+                        BackgroundColor = Color.FromArgb("#2E1E1B"),
+                        CornerRadius = 20,
+                        Margin = 1,
+                        VerticalOptions = LayoutOptions.Center,
+                        HorizontalOptions = LayoutOptions.Center,
+                        Content = new VerticalStackLayout
+                        {
+                            Padding = 1, // padding interno mínimo
+                            Spacing = 5, // espacio entre elementos
+                            Children =
+                {
+                    new Label
+                    {
+                        Text = "Crear Rutina",
+                        FontSize = 24,
+
+                        TextColor = Color.FromArgb("#C77B30"),
+
+                        HorizontalOptions = LayoutOptions.Fill,
+                        HorizontalTextAlignment = TextAlignment.Center,
+                        FontFamily="EatMeAlive"
+                    },
+                    nameRoutineEntry,
+                    DescriptionRoutineEntry,
+                    bodyPartEnumPicker,
+                    addExercises,
+                    new HorizontalStackLayout
+                    {
+                        Spacing = 10,
+                        Children =
+                        {
+                             new Button
+                        {
+                            Text = "Guardar",
+                            Command = new Command(() =>
+                            {
+
+
+
+
+
+                            })
+                        },
+                        new Button
+                        {
+                            Text = "Cancelar",
+                            Command = new Command(async () => await Navigation.PopModalAsync())
+                        }
+                        }
+                    }
+                }
+                        }
+                    }
+                };
+                await Navigation.PushModalAsync(modalPage);
+            };
+        } 
+    
     private async void OnExpanded(object sender, ExpandedChangedEventArgs e)
     {
         if (sender is not Expander expander)
