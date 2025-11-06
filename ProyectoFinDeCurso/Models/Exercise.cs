@@ -62,7 +62,14 @@
                 };
             }
         }
-
+        public Color DifficultyColor => dificulty switch
+        {
+            dificultyEnum.easy => Colors.Green,
+            dificultyEnum.medium => Colors.Orange,
+            dificultyEnum.hard => Colors.Red,
+            dificultyEnum.extreme => Colors.Purple,
+            _ => Colors.Gray
+        };
         // crea un pincel de degradado radial basado en dos colores
         private static RadialGradientBrush CreateBrush(Color color1, Color color2)
         {

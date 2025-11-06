@@ -5,6 +5,8 @@ using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.ViewModels;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace ProyectoFinDeCurso.Pages.Main;
 
@@ -167,6 +169,7 @@ public partial class RoutinesPage : ContentPage
             {
                 string selectedText = bodyPartEnumPicker.SelectedItem as string;
                 bodyPartEnum selectedEnum = translation.FirstOrDefault(x => x.Value == selectedText).Key;
+
                 if (selectedEnum.Equals(bodyPartEnum.nothing))
                 {
                     await DisplayAlert("Error", "Seleccione un grupo muscular", "OK");
@@ -174,95 +177,306 @@ public partial class RoutinesPage : ContentPage
                 }
                 else
                 {
-
                     List<Exercise> exercises = await _dbService.GetEercises();
                     List<Exercise> ExercisesSelecter;
+
                     if (selectedEnum.Equals(bodyPartEnum.torsoAndArms))
                     {
-                            ExercisesSelecter = exercises.Where(ex => ex.muscleGroupId.Equals(bodyPartEnum.triceps) 
-                                                                                || ex.muscleGroupId.Equals(bodyPartEnum.biceps)
-                                                                               || ex.muscleGroupId.Equals(bodyPartEnum.chest)
-                                                                               || ex.muscleGroupId.Equals(bodyPartEnum.back))
-                                                                                .ToList();
-                    }else if (selectedEnum.Equals(bodyPartEnum.arms))
+                        ExercisesSelecter = exercises.Where(ex =>
+                            ex.muscleGroupId.Equals(bodyPartEnum.triceps)
+                            || ex.muscleGroupId.Equals(bodyPartEnum.biceps)
+                            || ex.muscleGroupId.Equals(bodyPartEnum.chest)
+                            || ex.muscleGroupId.Equals(bodyPartEnum.back)).ToList();
+                    }
+                    else if (selectedEnum.Equals(bodyPartEnum.arms))
                     {
-                        ExercisesSelecter = exercises.Where(ex => ex.muscleGroupId.Equals(bodyPartEnum.triceps)
-                                                                                || ex.muscleGroupId.Equals(bodyPartEnum.biceps))
-                                                                                .ToList();
-                    }else if (selectedEnum.Equals(bodyPartEnum.torso))
+                        ExercisesSelecter = exercises.Where(ex =>
+                            ex.muscleGroupId.Equals(bodyPartEnum.triceps)
+                            || ex.muscleGroupId.Equals(bodyPartEnum.biceps)).ToList();
+                    }
+                    else if (selectedEnum.Equals(bodyPartEnum.torso))
                     {
-                        ExercisesSelecter = exercises.Where(ex => ex.muscleGroupId.Equals(bodyPartEnum.chest)
-                                                                               || ex.muscleGroupId.Equals(bodyPartEnum.back))
-                                                                                .ToList();
+                        ExercisesSelecter = exercises.Where(ex =>
+                            ex.muscleGroupId.Equals(bodyPartEnum.chest)
+                            || ex.muscleGroupId.Equals(bodyPartEnum.back)).ToList();
                     }
                     else
                     {
                         ExercisesSelecter = exercises.Where(ex => ex.muscleGroupId.Equals(selectedEnum)).ToList();
                     }
-                        
-                    var lookForExercise = new SearchBar()
+
+                    var grouped = ExercisesSelecter
+                        .GroupBy(ex => ex.muscleGroupId)
+                        .OrderBy(g => g.Key)
+                        .SelectMany(muscleGroup =>
+                            muscleGroup
+                                .GroupBy(ex => ex.dificulty)
+                                .OrderBy(g => g.Key)
+                                .Select(diffGroup => new ExerciseAndDificultyGroup(
+                                    muscleGroup.Key,
+                                    diffGroup.Key,
+                                    diffGroup.ToList()
+                                ))
+                        )
+                        .ToList();
+
+                    // 🟩 Cambiar List por ObservableCollection
+                    ObservableCollection<Exercise> exerciseSelection = new ObservableCollection<Exercise>();
+
+                    var lookForExercise = new SearchBar
                     {
                         Placeholder = "Buscar ejercicio..."
                     };
+
+                    // 🔹 CollectionView principal (selección de ejercicios)
                     var collectionExercises = new CollectionView
                     {
-                        ItemsSource = ExercisesSelecter,
+                        ItemsSource = grouped,
+                        IsGrouped = true,
+                        GroupHeaderTemplate = new DataTemplate(() =>
+                        {
+                            var difficultyBar = new BoxView
+                            {
+                                WidthRequest = 6,
+                                CornerRadius = 3,
+                                HorizontalOptions = LayoutOptions.Start,
+                                VerticalOptions = LayoutOptions.Fill
+                            };
+                            difficultyBar.SetBinding(BoxView.ColorProperty, "HeaderColor");
 
+                            var headerLabel = new Label
+                            {
+                                FontAttributes = FontAttributes.Bold,
+                                FontSize = 18,
+                                FontFamily = "Forresten",
+                                TextColor = Colors.Orange,
+                                Margin = new Thickness(10, 5)
+                            };
+                            headerLabel.SetBinding(Label.TextProperty, "HeaderText");
+
+                            var grid = new Grid
+                            {
+                                ColumnDefinitions =
+                    {
+                        new ColumnDefinition { Width = 10 },
+                        new ColumnDefinition { Width = GridLength.Star }
+                    },
+                                BackgroundColor = Color.FromArgb("#2B1A19")
+                            };
+
+                            grid.Add(difficultyBar, 0, 0);
+                            grid.Add(headerLabel, 1, 0);
+
+                            return grid;
+                        }),
                         ItemTemplate = new DataTemplate(() =>
                         {
-                            
-                            var nameExercise = new Label { FontAttributes = FontAttributes.Bold, TextColor = Colors.White };
+                            var nameExercise = new Label
+                            {
+                                FontAttributes = FontAttributes.Bold,
+                                TextColor = Colors.White
+                            };
                             nameExercise.SetBinding(Label.TextProperty, "name");
 
-
-                            return new Frame
+                            var frame = new Frame
                             {
                                 Margin = 5,
                                 Padding = 10,
                                 BackgroundColor = Color.FromArgb("#3B2523"),
-                                Content = new VerticalStackLayout
+                                CornerRadius = 8,
+                                HasShadow = false
+                            };
+
+                            frame.Content = new VerticalStackLayout
+                            {
+                                Children = { nameExercise }
+                            };
+
+                            // 🔹 Tap: abrir modal para añadir
+                            var tapGesture = new TapGestureRecognizer();
+                            tapGesture.Tapped += async (s, e) =>
+                            {
+                                if (frame.BindingContext is Exercise selectedExercise)
                                 {
-                                    Children = { nameExercise }
+                                    var getExerciseLabel = new Label
+                                    {
+                                        FontAttributes = FontAttributes.Bold,
+                                        FontSize = 18,
+                                        FontFamily = "Forresten",
+                                        TextColor = Color.FromArgb("#C77B30"),
+                                        Margin = new Thickness(10, 5),
+                                        Text = selectedExercise.name
+                                    };
+
+                                    var repsLabel = new Entry
+                                    {
+                                        Placeholder = "Número de repeticiones",
+                                        Keyboard = Keyboard.Numeric
+                                    };
+                                    var setsLabel = new Entry
+                                    {
+                                        Placeholder = "Número de series",
+                                        Keyboard = Keyboard.Numeric
+                                    };
+
+                                    var modalPage = new ContentPage
+                                    {
+                                        BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
+                                        Content = new Frame
+                                        {
+                                            BackgroundColor = Color.FromArgb("#2E1E1B"),
+                                            CornerRadius = 20,
+                                            Margin = 1,
+                                            VerticalOptions = LayoutOptions.Center,
+                                            HorizontalOptions = LayoutOptions.Center,
+                                            Content = new VerticalStackLayout
+                                            {
+                                                Padding = 1,
+                                                Spacing = 5,
+                                                Children =
+                                    {
+                                        new Label
+                                        {
+                                            Text = "Añadir ejercicio",
+                                            FontSize = 24,
+                                            TextColor = Colors.Orange,
+                                            HorizontalOptions = LayoutOptions.Fill,
+                                            HorizontalTextAlignment = TextAlignment.Center,
+                                            FontFamily="EatMeAlive"
+                                        },
+                                        getExerciseLabel,
+                                        repsLabel,
+                                        setsLabel,
+                                        new HorizontalStackLayout
+                                        {
+                                            Spacing = 10,
+                                            Children =
+                                            {
+                                                new Button
+                                                {
+                                                    Text = "Crear",
+                                                    Command = new Command(async () =>
+                                                    {
+                                                        if (string.IsNullOrEmpty(repsLabel.Text) || string.IsNullOrEmpty(setsLabel.Text))
+                                                        {
+                                                            await Application.Current.MainPage.DisplayAlert("Error", "Introduce series y repeticiones.", "OK");
+                                                            return;
+                                                        }
+
+                                                        // 🟩 Agregar nuevo ejercicio a la lista observable
+                                                        exerciseSelection.Add(new Exercise
+                                                        {
+                                                            sets = int.TryParse(setsLabel.Text, out int r) ? r : 0,
+                                                            reps = int.TryParse(repsLabel.Text, out int s) ? s : 0,
+                                                            name = getExerciseLabel.Text
+                                                        });
+
+                                                        await Navigation.PopModalAsync();
+                                                    })
+                                                },
+                                                new Button
+                                                {
+                                                    Text = "Cancelar",
+                                                    Command = new Command(async () => await Navigation.PopModalAsync())
+                                                }
+                                            }
+                                        }
+                                    }
+                                            }
+                                        }
+                                    };
+
+                                    await Navigation.PushModalAsync(modalPage);
+                                }
+                            };
+
+                            frame.GestureRecognizers.Add(tapGesture);
+                            return frame;
+                        })
+                    };
+
+                    // 🟩 NUEVO: lista para mostrar ejercicios seleccionados
+                    var selectedExercisesView = new CollectionView
+                    {
+                        ItemsSource = exerciseSelection,
+                        EmptyView = new Label
+                        {
+                            Text = "No hay ejercicios seleccionados.",
+                            TextColor = Colors.Gray,
+                            HorizontalOptions = LayoutOptions.Center
+                        },
+                        ItemTemplate = new DataTemplate(() =>
+                        {
+                            var nameLabel = new Label
+                            {
+                                FontAttributes = FontAttributes.Bold,
+                                TextColor = Colors.White
+                            };
+                            nameLabel.SetBinding(Label.TextProperty, "name");
+
+                            var infoLabel = new Label
+                            {
+                                FontSize = 12,
+                                TextColor = Colors.LightGray
+                            };
+                            infoLabel.SetBinding(Label.TextProperty, new Binding("reps", stringFormat: "Reps: {0}"));
+
+                            var removeButton = new Button
+                            {
+                                Text = "❌",
+                                BackgroundColor = Colors.Transparent,
+                                TextColor = Colors.Orange,
+                                FontSize = 18,
+                                Padding = new Thickness(5)
+                            };
+                            removeButton.Clicked += (s, e) =>
+                            {
+                                if (removeButton.BindingContext is Exercise exToRemove)
+                                    exerciseSelection.Remove(exToRemove);
+                            };
+
+                            return new Frame
+                            {
+                                Margin = 5,
+                                Padding = 8,
+                                BackgroundColor = Color.FromArgb("#3B2523"),
+                                Content = new HorizontalStackLayout
+                                {
+                                    Spacing = 10,
+                                    Children = { nameLabel, infoLabel, removeButton }
                                 }
                             };
                         })
                     };
-                    var selectedExercises = new ContentPage
-                    {
-                        BackgroundColor = Color.FromArgb("#2E1E1B"),
-                        Content = new VerticalStackLayout
-                        {
-                            Spacing = 10,
-                            Padding = 10,
-                            Children =
-                {
-                    lookForExercise,
-                    collectionExercises,
-                    new HorizontalStackLayout
+
+                    // 🟩 Agregamos todo en un layout vertical
+                    var mainLayout = new VerticalStackLayout
                     {
                         Spacing = 10,
+                        Padding = 10,
                         Children =
-                        {
-                            new Button
-                            {
-                                Text = "Guardar",
-                                Command = new Command(() =>
-                                {
-                                    
-                                })
-                            },
-                            new Button
-                            {
-                                Text = "Cancelar",
-                                Command = new Command(async () => await Navigation.PopModalAsync())
-                            }
-                        }
-                    }
-                }
-                        }
+            {
+                lookForExercise,
+                new Label
+                {
+                    Text = "Ejercicios seleccionados:",
+                    FontAttributes = FontAttributes.Bold,
+                    FontSize = 20,
+                    TextColor = Colors.Orange
+                },
+                selectedExercisesView,
+                collectionExercises,
+                
+            }
                     };
 
-                    await Navigation.PushModalAsync(selectedExercises);
+                    var selectedExercisesPage = new ContentPage
+                    {
+                        BackgroundColor = Color.FromArgb("#2E1E1B"),
+                        Content = new ScrollView { Content = mainLayout }
+                    };
+
+                    await Navigation.PushModalAsync(selectedExercisesPage);
                 }
             };
             var modalPage = new ContentPage
