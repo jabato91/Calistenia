@@ -143,7 +143,7 @@ public partial class RoutinesPage : ContentPage
             };
             var DescriptionRoutineEntry = new Entry
             {
-                Placeholder = "Nombre de la rutina",
+                Placeholder = "Descripción de la rutina",
                 TextColor = Color.FromArgb("#C49362"),
                 BackgroundColor = Color.FromArgb("#3B2523"),
 
@@ -165,8 +165,39 @@ public partial class RoutinesPage : ContentPage
                 BackgroundColor = Color.FromArgb("#3B2523"),
                 HorizontalOptions = LayoutOptions.Fill
             };
+            ObservableCollection<Exercise> exercisesInRoutine = new ObservableCollection<Exercise>();
+
+            bodyPartEnumPicker.SelectedIndexChanged += async (s, e) =>
+            {
+                // Verificamos si hay un elemento seleccionado
+                if (bodyPartEnumPicker.SelectedItem is string selectedText)
+                {
+                    if(exercisesInRoutine != null && exercisesInRoutine.Any())
+                    {
+                        // Mostrar advertencia al usuario
+                        bool answer = await DisplayAlert(
+                            "Advertencia",
+                            "Si cambias la parte del cuerpo, se borrarán todos los jercicios seleccionados.\n ¿Deseas cambiar la rutina?",
+                            "Sí, vaciar",
+                            "No"
+                        );
+
+                        if (answer)
+                        {
+                            exercisesInRoutine.Clear();
+                            Console.WriteLine("Lista de ejercicios vaciada.");
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                }
+            };
+
             addExercises.Clicked += async (s, e) =>
             {
+                
                 string selectedText = bodyPartEnumPicker.SelectedItem as string;
                 bodyPartEnum selectedEnum = translation.FirstOrDefault(x => x.Value == selectedText).Key;
 
@@ -291,10 +322,14 @@ public partial class RoutinesPage : ContentPage
                             {
                                 Children = { nameExercise }
                             };
-
-                            // 🔹 Tap: abrir modal para añadir
                             var tapGesture = new TapGestureRecognizer();
-                            tapGesture.Tapped += async (s, e) =>
+                            if (bodyPartEnumPicker.SelectedItem is string selectedText)
+                            {
+                                if (!selectedText.Equals(translation[bodyPartEnum.isometric]))
+                                {
+                                    // 🔹 Tap: abrir modal para añadir
+
+                                    tapGesture.Tapped += async (s, e) =>
                             {
                                 if (frame.BindingContext is Exercise selectedExercise)
                                 {
@@ -313,12 +348,33 @@ public partial class RoutinesPage : ContentPage
                                         Placeholder = "Número de repeticiones",
                                         Keyboard = Keyboard.Numeric
                                     };
+                                    repsLabel.TextChanged += (s, e) =>
+                                    {
+                                        if (!string.IsNullOrEmpty(repsLabel.Text))
+                                        {
+                                            string onlyDigits = new string(repsLabel.Text.Where(char.IsDigit).ToArray());
+                                            if (repsLabel.Text != onlyDigits)
+                                            {
+                                                repsLabel.Text = onlyDigits; // limpia si es texto
+                                            }
+                                        }
+                                    };
                                     var setsLabel = new Entry
                                     {
                                         Placeholder = "Número de series",
                                         Keyboard = Keyboard.Numeric
                                     };
-
+                                    setsLabel.TextChanged += (s, e) =>
+                                    {
+                                        if (!string.IsNullOrEmpty(setsLabel.Text))
+                                        {
+                                            string onlyDigits = new string(setsLabel.Text.Where(char.IsDigit).ToArray());
+                                            if (setsLabel.Text != onlyDigits)
+                                            {
+                                                setsLabel.Text = onlyDigits; // limpia si es texto
+                                            }
+                                        }
+                                    };
                                     var modalPage = new ContentPage
                                     {
                                         BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
@@ -363,7 +419,6 @@ public partial class RoutinesPage : ContentPage
                                                             return;
                                                         }
 
-                                                        // 🟩 Agregar nuevo ejercicio a la lista observable
                                                         exerciseSelection.Add(new Exercise
                                                         {
                                                             sets = int.TryParse(setsLabel.Text, out int r) ? r : 0,
@@ -389,15 +444,143 @@ public partial class RoutinesPage : ContentPage
                                     await Navigation.PushModalAsync(modalPage);
                                 }
                             };
+                                }
+                                else
+                                {
+                                    tapGesture.Tapped += async (s, e) =>
+                                    {
+                                        if (frame.BindingContext is Exercise selectedExercise)
+                                        {
+                                            var getExerciseLabel = new Label
+                                            {
+                                                FontAttributes = FontAttributes.Bold,
+                                                FontSize = 18,
+                                                FontFamily = "Forresten",
+                                                TextColor = Color.FromArgb("#C77B30"),
+                                                Margin = new Thickness(10, 5),
+                                                Text = selectedExercise.name
+                                            };
 
+                                            var repsLabel = new Entry
+                                            {
+                                                Placeholder = "Número de repeticiones",
+                                                Keyboard = Keyboard.Numeric
+                                            };
+                                            repsLabel.TextChanged += (s, e) =>
+                                            {
+                                                if (!string.IsNullOrEmpty(repsLabel.Text))
+                                                {
+                                                    string onlyDigits = new string(repsLabel.Text.Where(char.IsDigit).ToArray());
+                                                    if (repsLabel.Text != onlyDigits)
+                                                    {
+                                                        repsLabel.Text = onlyDigits; // limpia si es texto
+                                                    }
+                                                }
+                                            };
+                                            var timeLabel = new Entry
+                                            {
+                                                Placeholder = "Tiempo de ejecución",
+                                                Keyboard = Keyboard.Numeric
+                                            };
+                                            timeLabel.TextChanged += (s, e) =>
+                                            {
+                                                if (!string.IsNullOrEmpty(timeLabel.Text))
+                                                {
+                                                    string onlyDigits = new string(timeLabel.Text.Where(char.IsDigit).ToArray());
+                                                    if (timeLabel.Text != onlyDigits)
+                                                    {
+                                                        timeLabel.Text = onlyDigits; // limpia si es texto
+                                                    }
+                                                }
+                                            };
+                                            var modalPage = new ContentPage
+                                            {
+                                                BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
+                                                Content = new Frame
+                                                {
+                                                    BackgroundColor = Color.FromArgb("#2E1E1B"),
+                                                    CornerRadius = 20,
+                                                    Margin = 1,
+                                                    VerticalOptions = LayoutOptions.Center,
+                                                    HorizontalOptions = LayoutOptions.Center,
+                                                    Content = new VerticalStackLayout
+                                                    {
+                                                        Padding = 1,
+                                                        Spacing = 5,
+                                                        Children =
+                                        {
+                                        new Label
+                                        {
+                                            Text = "Añadir ejercicio",
+                                            FontSize = 24,
+                                            TextColor = Colors.Orange,
+                                            HorizontalOptions = LayoutOptions.Fill,
+                                            HorizontalTextAlignment = TextAlignment.Center,
+                                            FontFamily="EatMeAlive"
+                                        },
+                                        getExerciseLabel,
+                                        repsLabel,
+                                        timeLabel,
+                                        new HorizontalStackLayout
+                                        {
+                                            Spacing = 10,
+                                            Children =
+                                            {
+                                                new Button
+                                                {
+                                                    Text = "Crear",
+                                                    Command = new Command(async () =>
+                                                    {
+                                                        if (string.IsNullOrEmpty(repsLabel.Text) || string.IsNullOrEmpty(timeLabel.Text))
+                                                        {
+                                                            await Application.Current.MainPage.DisplayAlert("Error", "Introduce series y repeticiones.", "OK");
+                                                            return;
+                                                        }
+
+                                                        exerciseSelection.Add(new Exercise
+                                                        {
+                                                            seconds = int.TryParse(timeLabel.Text, out int r) ? r : 0,
+                                                            reps = int.TryParse(repsLabel.Text, out int s) ? s : 0,
+                                                            name = getExerciseLabel.Text
+                                                        });
+
+                                                        await Navigation.PopModalAsync();
+                                                    })
+                                                },
+                                                new Button
+                                                {
+                                                    Text = "Cancelar",
+                                                    Command = new Command(async () => await Navigation.PopModalAsync())
+                                                }
+                                            }
+                                        }
+                                        }
+                                                    }
+                                                }
+                                            };
+
+                                            await Navigation.PushModalAsync(modalPage);
+                                        }
+                                    };
+                                }
+                                frame.GestureRecognizers.Add(tapGesture);
+                                return frame;
+                            }
                             frame.GestureRecognizers.Add(tapGesture);
                             return frame;
                         })
                     };
-
-                    // 🟩 NUEVO: lista para mostrar ejercicios seleccionados
-                    var selectedExercisesView = new CollectionView
+                    if (exercisesInRoutine != null)
                     {
+                        foreach (var exercise in exercisesInRoutine)
+                        {
+                            exerciseSelection.Add(exercise);
+                        }
+                    }
+                    
+                        var selectedExercisesView = new CollectionView //lista para ver los ejercicios seleccionados
+                    {
+                        
                         ItemsSource = exerciseSelection,
                         EmptyView = new Label
                         {
@@ -414,13 +597,34 @@ public partial class RoutinesPage : ContentPage
                             };
                             nameLabel.SetBinding(Label.TextProperty, "name");
 
-                            var infoLabel = new Label
+                            var setsAndRepsLabel = new Label
                             {
                                 FontSize = 12,
                                 TextColor = Colors.LightGray
                             };
-                            infoLabel.SetBinding(Label.TextProperty, new Binding("reps", stringFormat: "Reps: {0}"));
-
+                        MultiBinding multiBinding = new MultiBinding { };
+                            if (bodyPartEnumPicker.SelectedItem is string selectedText)
+                            {
+                                if (!selectedText.Equals(translation[bodyPartEnum.isometric]))
+                                {
+                                    multiBinding = new MultiBinding
+                                    {
+                                        StringFormat = "Repeticiones: {0}\nSeries: {1}"
+                                    };
+                                    multiBinding.Bindings.Add(new Binding("reps"));
+                                    multiBinding.Bindings.Add(new Binding("sets"));
+                                }
+                                else
+                                {
+                                    multiBinding = new MultiBinding
+                                    {
+                                        StringFormat = "Repeticiones: {0}\nTiempo: {1} segundos"
+                                    };
+                                    multiBinding.Bindings.Add(new Binding("reps"));
+                                    multiBinding.Bindings.Add(new Binding("seconds"));
+                                }
+                            }
+                            setsAndRepsLabel.SetBinding(Label.TextProperty, multiBinding);
                             var removeButton = new Button
                             {
                                 Text = "❌",
@@ -443,12 +647,14 @@ public partial class RoutinesPage : ContentPage
                                 Content = new HorizontalStackLayout
                                 {
                                     Spacing = 10,
-                                    Children = { nameLabel, infoLabel, removeButton }
+                                    Children = { nameLabel, setsAndRepsLabel, removeButton }
                                 }
+
                             };
+
                         })
                     };
-
+                    
                     // 🟩 Agregamos todo en un layout vertical
                     var mainLayout = new VerticalStackLayout
                     {
@@ -466,10 +672,35 @@ public partial class RoutinesPage : ContentPage
                 },
                 selectedExercisesView,
                 collectionExercises,
-                
+                new HorizontalStackLayout
+                    {
+                        Spacing = 10,
+                        Children =
+                        {
+                             new Button
+                        {
+                            Text = "Agregar",
+                            Command = new Command(async () =>
+                            {
+                                exercisesInRoutine.Clear();
+                                foreach (var exercise in exerciseSelection)
+                                {
+                                    exercisesInRoutine.Add(exercise);
+                                }
+                                await Navigation.PopModalAsync();
+
+                            })
+                        },
+                        new Button
+                        {
+                            Text = "Cancelar",
+                            Command = new Command(async () => await Navigation.PopModalAsync())
+                        }
+                        }
+                    }
             }
                     };
-
+                    
                     var selectedExercisesPage = new ContentPage
                     {
                         BackgroundColor = Color.FromArgb("#2E1E1B"),
@@ -478,6 +709,55 @@ public partial class RoutinesPage : ContentPage
 
                     await Navigation.PushModalAsync(selectedExercisesPage);
                 }
+            };
+            var collectionExercises = new CollectionView
+            {
+                ItemsSource = exercisesInRoutine,
+                EmptyView = new Label
+                {
+                    Text = "No hay ejercicios añadidos.",
+                    TextColor = Colors.Gray,
+                    HorizontalOptions = LayoutOptions.Center
+                },
+                ItemTemplate = new DataTemplate(() =>
+                {
+                    var nameLabel = new Label
+                    {
+                        FontAttributes = FontAttributes.Bold,
+                        TextColor = Colors.White
+                    };
+                    nameLabel.SetBinding(Label.TextProperty, "name");
+
+                    var repsLabel = new Label
+                    {
+                        TextColor = Colors.LightGray,
+                        FontSize = 12
+                    };
+
+                    MultiBinding multiBinding = new MultiBinding { };
+                    if (bodyPartEnumPicker.SelectedItem is string selectedText)
+                    {
+                        if (!selectedText.Equals(translation[bodyPartEnum.isometric]))
+                        {
+                            multiBinding = new MultiBinding { StringFormat = "Repeticiones: {0} | Series: {1}" };
+                            multiBinding.Bindings.Add(new Binding("reps"));
+                            multiBinding.Bindings.Add(new Binding("sets"));
+                        }
+                        else
+                        {
+                            multiBinding = new MultiBinding { StringFormat = "Repeticiones: {0} | Tiempo: {1} segundos" };
+                            multiBinding.Bindings.Add(new Binding("reps"));
+                            multiBinding.Bindings.Add(new Binding("seconds"));
+                        }
+                    }
+                            repsLabel.SetBinding(Label.TextProperty, multiBinding);
+
+                    return new HorizontalStackLayout
+                    {
+                        Spacing = 10,
+                        Children = { nameLabel, repsLabel }
+                    };
+                })
             };
             var modalPage = new ContentPage
                 {
@@ -511,6 +791,7 @@ public partial class RoutinesPage : ContentPage
                     DescriptionRoutineEntry,
                     bodyPartEnumPicker,
                     addExercises,
+                    collectionExercises,
                     new HorizontalStackLayout
                     {
                         Spacing = 10,
@@ -518,11 +799,17 @@ public partial class RoutinesPage : ContentPage
                         {
                              new Button
                         {
-                            Text = "Guardar",
+                            Text = "Crear",
                             Command = new Command(() =>
                             {
 
-
+                                if(nameRoutineEntry.Text == null || string.IsNullOrWhiteSpace(nameRoutineEntry.Text) ||
+                                DescriptionRoutineEntry.Text == null || string.IsNullOrWhiteSpace(DescriptionRoutineEntry.Text) ||
+                                !exercisesInRoutine.Any())
+                                {
+                                    DisplayAlert("Error", "Rellena todos lo campos, y añade por lo menos un ejercicio", "OK");
+                                    return;
+                                }
 
 
 

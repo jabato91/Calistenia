@@ -129,16 +129,30 @@ namespace ProyectoFinDeCurso.ViewModels
                             for (int i = 0; i < selectedExercises.Count; i++) //bucle para crear los ejercicios asociados a la rutina
                             {
                                 var ex = selectedExercises[i];
-
-                                var routineExercise = new RoutinesExercises
+                                RoutinesExercises routineExercise;
+                                if (!ex.muscleGroupId.Equals(bodyPartEnum.isometric))
                                 {
-                                    RoutineID = routineId,
-                                    ExerciseID = ex.execiseID,
-                                    sets = i < series.Length ? series[i] : 0,
-                                    reps = i < repeticiones.Length ? repeticiones[i] : 0
-                                };
+                                
+                                    routineExercise = new RoutinesExercises
+                                    {
+                                        RoutineID = routineId,
+                                        ExerciseID = ex.execiseID,
+                                        sets = i < series.Length ? series[i] : 0,
+                                        reps = i < repeticiones.Length ? repeticiones[i] : 0
+                                    };
 
-                                await _dbService.Create(routineExercise);
+                                }
+                                else
+                                {
+                                    routineExercise = new RoutinesExercises
+                                    {
+                                        RoutineID = routineId,
+                                        ExerciseID = ex.execiseID,
+                                        reps = i < series.Length ? repeticiones[i] : 0,
+                                        seconds = ex.seconds
+                                    };
+                                }
+                                    await _dbService.Create(routineExercise);
                             }
                         }
                     }

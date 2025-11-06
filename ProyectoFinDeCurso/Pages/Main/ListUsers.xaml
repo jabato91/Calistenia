@@ -14,43 +14,57 @@
         <CollectionView ItemsSource="{Binding Users}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Frame Padding="10"
-                           Margin="5"
-                           BorderColor="LightGray"
-                           CornerRadius="10"
-                           >
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Id}"/>
-                            <!-- Nombre completo -->
-                            <Label Text="{Binding FullName}" FontSize="18" FontAttributes="Bold"/>
-                            
+                    <Frame Padding="1"
+           Margin="20"
+           BorderColor="LightGray"
+           CornerRadius="10"
+           BackgroundColor="#3B2523">
 
-                            <!-- Correo -->
-                            <Label Text="{Binding Email}" 
-                                   FontSize="14"
-                                   TextColor="Gray" />
+                        <!-- Usamos un Grid para alinear texto e íconos -->
+                        <Grid ColumnDefinitions="*,Auto"
+              VerticalOptions="Center"
+              Margin="20,0,20,0">
 
-                            <!-- Teléfono -->
-                            <Label Text="{Binding Phone}" 
-                                   FontSize="14"
-                                   TextColor="Gray" />
-                            <Label Text="{Binding listUserType}" 
-                                   FontSize="14"
-                                   TextColor="Gray" />
-                            <ImageButton Source="papelera.png"
-                                 WidthRequest="24"
-                                 HeightRequest="24"
-                                 HorizontalOptions="End"
-                                 VerticalOptions="Start"
-                                 Clicked="EliminateUser"/>  
-                            <ImageButton Clicked="modifyUser" 
-                                 Source="editar.png"
-                                 WidthRequest="75"
-                                 HeightRequest="75"
-                                 BackgroundColor="Transparent"
-             x:Name="modifyButton"/>
-                        </VerticalStackLayout>
-                        
+                            <!-- Columna izquierda: contenido -->
+                            <VerticalStackLayout Grid.Column="0"
+                                 Spacing="3"
+                                 VerticalOptions="Center">
+                                <Label Text="{Binding Id}" />
+                                <Label Text="{Binding FullName}"
+                                    FontSize="18"
+                                    FontAttributes="Bold"
+                                    TextColor="Orange"
+                                       FontFamily="EatMeAlive"/>
+                                <Label Text="{Binding Email, StringFormat='Correo: {0}'}" 
+                       FontSize="14"
+                       TextColor="Gray" />
+                                <Label Text="{Binding Phone, StringFormat='Teléfono: {0}'}"
+                       FontSize="14"
+                       TextColor="Gray" />
+                                <Label Text="{Binding listUserType, StringFormat='Tipo de Usuario: {0}'}" 
+                       FontSize="14"
+                       TextColor="Gray" />
+                            </VerticalStackLayout>
+
+                            <!-- Columna derecha: íconos centrados verticalmente -->
+                            <HorizontalStackLayout Grid.Column="1"
+                                 VerticalOptions="Center"
+                                 Spacing="10"
+                                 HorizontalOptions="End">
+
+                                <ImageButton Source="editar.png"
+                             WidthRequest="24"
+                             HeightRequest="24"
+                             BackgroundColor="Transparent"
+                             Clicked="modifyUser" />
+
+                                <ImageButton Source="papelera.png"
+                             WidthRequest="24"
+                             HeightRequest="24"
+                             BackgroundColor="Transparent"
+                             Clicked="EliminateUser" />
+                            </HorizontalStackLayout>
+                        </Grid>
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

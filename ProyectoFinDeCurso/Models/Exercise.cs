@@ -30,6 +30,8 @@
         [Ignore]
         public int reps { get; set; } = -1;
         [Ignore]
+        public int seconds { get; set; } = -1;
+        [Ignore]
         public DoubleCollection LinePattern { get; set; } = new() { 6, 4 }; // Patrón de línea discontinua si no es el ultimo ejercicio
         [Ignore]
         public int IsAdmin { get; set; } = -1; // Indica si el ejercicio está siendo visto en modo administrador

@@ -22,6 +22,8 @@ namespace ProyectoFinDeCurso.Models
         public int sets { get; set; }
         [Column("Repetitions")]
         public int reps { get; set; }
+        [Column("Secons")]
+        public int seconds { get; set; } = -1;
 
     }
 }
