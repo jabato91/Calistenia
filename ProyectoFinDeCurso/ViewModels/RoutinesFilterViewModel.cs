@@ -1,13 +1,8 @@
 ﻿using ProyectoFinDeCurso.Enums;
 using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Services;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProyectoFinDeCurso.ViewModels
 {
@@ -56,7 +51,7 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-        private async void LoadRoutines()
+        public async void LoadRoutines()
         {
             var routinesFromDb = await _dbService.GetRoutines();
             var routinesExercisesFromDb = await _dbService.GetRoutinesExercises();
@@ -98,13 +93,7 @@ namespace ProyectoFinDeCurso.ViewModels
                     ex.Exercise.reps = ex.Reps;
                     routine.Exercises.Add(ex.Exercise);
                 }
-                foreach(var ex in routine.Exercises)
-                {
-                    if(ex == routine.Exercises.Last())
-                    {
-                        ex.LinePattern = new DoubleCollection() {  };
-                    }
-                }
+                
 
                 Routines.Add(routine);
             }

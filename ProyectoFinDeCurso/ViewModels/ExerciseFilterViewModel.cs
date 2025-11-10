@@ -76,7 +76,7 @@ namespace ProyectoFinDeCurso.ViewModels
         }
 
         // Carga los ejercicios desde la base de datos
-        private async void LoadExercises()
+        public async void LoadExercises()
         {
             var exercises = await _dbService.GetEercises();
             

@@ -1,10 +1,12 @@
 ﻿using ProyectoFinDeCurso.Flyout;
+using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Pages;
 using ProyectoFinDeCurso.Services;
 namespace ProyectoFinDeCurso
 {
     public partial class App : Application
     {
+        [Obsolete]
         public App(LoginPage loginPage)
         {
             InitializeComponent();
@@ -16,10 +18,12 @@ namespace ProyectoFinDeCurso
         {
             try { 
                 var userId = await SecureStorage.GetAsync("user_id");
-
+                DbService _dbService = new DbService();
+                User user = await _dbService.GetUserById(int.Parse(userId));
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    MainPage = new userFlyoutPage(new DbService(), userId);
+                    
+                    MainPage = new userFlyoutPage(new DbService(), userId, user.userType);
                 }
                 else
                 {

@@ -18,11 +18,12 @@ public partial class userFlyoutPage : FlyoutPage
         verificationUserType(_userType);
 
     }
-    public userFlyoutPage(DbService dbService, string userId)
+    public userFlyoutPage(DbService dbService, string userId, userTypeEnum userType)
     {
        
         InitializeComponent();
         _dbService = dbService;
+        _userType = userType;
         _ = InitializeAsync(userId);
     }
     private async Task InitializeAsync(string userId)

@@ -15,6 +15,7 @@ namespace ProyectoFinDeCurso.ViewModels
         public string HeaderText => $"{DisplayPartName}   {DisplayDificultyName}";
         public string DisplayPartName => _muscleGroupId.ToFriendlyName();
         public string DisplayDificultyName => _dificulty.ToDificultyName();
+        private string _searchText = string.Empty;
 
         public ExerciseAndDificultyGroup(bodyPartEnum muscleGroupId, dificultyEnum dificulty, IEnumerable<Exercise> exercises)
             : base(exercises)

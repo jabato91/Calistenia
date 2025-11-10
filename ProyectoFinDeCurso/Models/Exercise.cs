@@ -18,7 +18,9 @@
             public string description { get; set; } = string.Empty;
             [Column("image")]
             public string image { get; set; } = string.Empty;
-            [Column("dificulty")]
+        [Column("video")]
+        public string video { get; set; } = string.Empty;
+        [Column("dificulty")]
             public dificultyEnum dificulty { get; set; } = dificultyEnum.nothing;
             [Column("BodyPart")]
             public bodyPartEnum muscleGroupId { get; set; } = bodyPartEnum.nothing;
@@ -31,6 +33,8 @@
         public int reps { get; set; } = -1;
         [Ignore]
         public int seconds { get; set; } = -1;
+        [Ignore]
+        public Boolean exerciseFinished { get; set; } = false;
         [Ignore]
         public DoubleCollection LinePattern { get; set; } = new() { 6, 4 }; // Patrón de línea discontinua si no es el ultimo ejercicio
         [Ignore]

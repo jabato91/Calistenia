@@ -35,7 +35,10 @@
     </ContentPage.Background>
 
     <ScrollView>
-        <VerticalStackLayout Padding="10" Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+        <VerticalStackLayout Padding="10"
+                             Spacing="10"
+                             HorizontalOptions="Fill"
+                             VerticalOptions="Fill">
 
             <!-- Barra de búsqueda -->
             <SearchBar Placeholder="Buscar ejercicio"
@@ -46,24 +49,31 @@
 
             <!-- CollectionView de ejercicios -->
             <CollectionView ItemsSource="{Binding FilteredExercises}"
-                            IsGrouped="True"
-                            ItemsUpdatingScrollMode="KeepScrollOffset">
+                IsGrouped="True"
+                ItemsUpdatingScrollMode="KeepScrollOffset"
+                HorizontalOptions="Fill">
 
                 <!-- Encabezado de grupo -->
                 <CollectionView.GroupHeaderTemplate>
                     <DataTemplate>
-                        <Frame BorderColor="#1F1C1C" 
-                               CornerRadius="8"
-                               Padding="6"
-                               Margin="2"
-                               HasShadow="False"
-                               BackgroundColor="Transparent">
-                            <Frame.Background>
+                        <Border Stroke="#66605E"
+                            StrokeThickness="1"
+                            BackgroundColor="#232020"
+                            Padding="2"
+                            Margin="5"
+                            HorizontalOptions="Fill"
+                            VerticalOptions="Fill">    
+
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+
+                            <Border.Background>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                     <GradientStop Color="#3B2928" Offset="0.0"/>
                                     <GradientStop Color="#3B2523" Offset="0.5"/>
                                 </LinearGradientBrush>
-                            </Frame.Background>
+                            </Border.Background>
 
                             <StackLayout Padding="8">
                                 <Label Text="{Binding DisplayName}" 
@@ -73,7 +83,7 @@
                                        FontFamily="Forresten"
                                        FontSize="30"/>
                             </StackLayout>
-                        </Frame>
+                        </Border>
                     </DataTemplate>
                 </CollectionView.GroupHeaderTemplate>
 
@@ -86,12 +96,17 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="0.5,5,2,5">
-                            <Frame BorderColor="#66605E"
-                                   BackgroundColor="#232020"
-                                   CornerRadius="12"
-                                   HasShadow="True"
-                                   VerticalOptions="Center"
-                                   Padding="0.4">
+                            <Border
+                                Stroke="#66605E"
+                                StrokeThickness="1"
+                                BackgroundColor="#232020"
+                                VerticalOptions="Center"
+                                Padding="0.4">  
+
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+
 
                                 <Grid>
 
@@ -152,16 +167,43 @@
                                     </Grid>
                                 </Grid>
 
-                                <Frame.GestureRecognizers>
+                                <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnExerciseTapped" CommandParameter="{Binding .}" />
-                                </Frame.GestureRecognizers>
+                                </Border.GestureRecognizers>
 
-                            </Frame>
+                            </Border>
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
 
             </CollectionView>
+            <Border
+                Stroke="#808080"
+                StrokeThickness="4"
+                Background="#3B2523"
+                Padding="16,8"
+                Margin="30,10"
+                HorizontalOptions="Fill"
+                AutomationProperties.Name="Crear rutina"
+                AutomationProperties.HelpText="Botón para crear una rutina">
+
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer
+                    Tapped="createExercise"
+                    CommandParameter="{Binding .}" />
+                </Border.GestureRecognizers>
+
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label 
+                        Text="Crear Ejercicio"
+                        TextColor="#CFC86D"
+                        FontAttributes="Bold"
+                        FontSize="20"
+                        FontFamily="Forresten"
+                        HorizontalTextAlignment="Center"
+                        VerticalTextAlignment="Center" />   
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

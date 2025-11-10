@@ -15,7 +15,8 @@ public partial class LoginPage : ContentPage
         _dbService = dbService;
     }
 
-	private async void LoginButton(object sender, EventArgs e)
+    [Obsolete]
+    private async void LoginButton(object sender, EventArgs e)
 	{
 		String emailInput = loginEmail.Text;
         String passwordInput = loginPassword.Text;

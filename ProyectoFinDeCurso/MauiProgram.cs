@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
 using ProyectoFinDeCurso.Pages;
 using ProyectoFinDeCurso.Pages.Authentication;
 using ProyectoFinDeCurso.Services;
-using CommunityToolkit.Maui;
+using SQLitePCL;
 
 
 namespace ProyectoFinDeCurso
@@ -11,29 +12,57 @@ namespace ProyectoFinDeCurso
     {
         public static MauiApp CreateMauiApp()
         {
+            // 🔹 Inicializa SQLite antes de cualquier uso
+            Batteries_V2.Init();
+
             var builder = MauiApp.CreateBuilder();
 
             builder
                 .UseMauiApp<App>()
-                .UseMauiCommunityToolkit()                    // agrega Community Toolkit
-                .UseMauiCommunityToolkitMediaElement()       // agrega media element
+                .UseMauiCommunityToolkit()                    // Toolkit principal
+                .UseMauiCommunityToolkitMediaElement()        // MediaElement
                 .ConfigureFonts(fonts =>
                 {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                    fonts.AddFont("Madina.ttf", "Mandina");
-                    fonts.AddFont("Avenue de Madison.ttf", "AvenueMadison");
-                    fonts.AddFont("Ananda Personal Use.ttf", "AnandaPersonal");
-                    fonts.AddFont("Ananda Black Personal Use.ttf", "AnandaBlack");
-                    fonts.AddFont("Eat Me Alive Blackout.ttf", "EatMeBlackout");
+                    
+                    //
                     fonts.AddFont("Eat Me Alive.ttf", "EatMeAlive");
+                    //
                     fonts.AddFont("Forresten.ttf", "Forresten");
-                    fonts.AddFont("Returns.ttf", "Returns");
-                    fonts.AddFont("Spel-Regular.ttf", "Spel-Regular");
-                    fonts.AddFont("Vanilla Pancake.ttf", "VanillaPacake");
-                    fonts.AddFont("Calculator.ttf", "calculator");
+                    //
+                    fonts.AddFont("Altone Trial-Bold.ttf", "AltoneTrialBold");
+                    fonts.AddFont("Altone Trial-BoldOblique.ttf", "AltoneTrialBoldOblique");
+                    fonts.AddFont("Altone Trial-Oblique.ttf", "AltoneTrialOblique");
+                    fonts.AddFont("Altone Trial-Regular.ttf", "AltoneTrialRegular");
+                    fonts.AddFont("Champagne & Limousines Bold Italic.ttf", "ChampagneYLimousinesBoldItalic");
+                    fonts.AddFont("Champagne & Limousines Bold.ttf", "ChampagneYLimousinesBold");
+                    fonts.AddFont("Champagne & Limousines Italic.ttf", "ChampagneYLimousinesItalic");
+                    fonts.AddFont("Champagne & Limousines.ttf", "ChampagneYLimousines");
+                    fonts.AddFont("Comfortaa-Bold.ttf", "ComfortaaBold");
+                    fonts.AddFont("Comfortaa-Light.ttf", "ComfortaaLight");
+                    fonts.AddFont("Comfortaa-Regular.ttf", "ComfortaaRegular");
+                    fonts.AddFont("cream-DEMO.ttf", "CreamDEMO");
+                    fonts.AddFont("FNCocoSans-Thin.ttf", "FNCocoSansThin");
+                    fonts.AddFont("Garet-Book.ttf", "GaretBook");
+                    fonts.AddFont("Garet-Heavy.ttf", "GaretHeavy");
+                    fonts.AddFont("LiberationSans-Bold.ttf", "LiberationSansBold");
+                    fonts.AddFont("LiberationSans-BoldItalic.ttf", "LiberationSansBoldItalic");
+                    fonts.AddFont("LiberationSans-Italic.ttf", "LiberationSansItalic");
+                    fonts.AddFont("LiberationSans-Regular.ttf", "LiberationSansRegular");
+                    fonts.AddFont("Louis George Cafe Bold Italic.ttf", "LouisGeorgeCafeBoldItalic");
+                    fonts.AddFont("Louis George Cafe Light Italic.ttf", "LouisGeorgeCafeLightItalic");
+                    fonts.AddFont("Louis George Cafe Light.ttf", "LouisGeorgeCafeLight");
+                    fonts.AddFont("Louis George Cafe.ttf", "LouisGeorgeCafe");
+                    fonts.AddFont("Nearo-Bold.ttf", "NearoBold");
+                    fonts.AddFont("Nearo-Light.ttf", "NearoLight");
+                    fonts.AddFont("Nearo-Medium.ttf", "NearoMedium");
+                    fonts.AddFont("Nearo-Regular.ttf", "NearoRegular");
+                    fonts.AddFont("Nearo-SemiBold.ttf", "NearoSemiBold");
+                    fonts.AddFont("Walkway Black RevOblique.ttf", "WalkwayBlackRevOblique");
+                    fonts.AddFont("Walkway Black.ttf", "WalkwayBlack");
+                    fonts.AddFont("Walkway Bold RevOblique.ttf", "WalkwayBoldRevOblique");
                 });
 
+            // 🔹 Inyección de dependencias
             builder.Services.AddSingleton<DbService>();
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<RegisterPage>();

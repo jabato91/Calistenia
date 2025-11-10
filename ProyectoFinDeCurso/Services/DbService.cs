@@ -55,17 +55,17 @@ namespace ProyectoFinDeCurso.Services
         {
             return await _connection.Table<User>().Where(x => x.Email == email).FirstOrDefaultAsync();
         }
-        public async Task Create(object create) //elimina objeto
+        public async Task Create(object create) //inserta objeto en cualquier tabla
         {
             await _connection.InsertAsync(create);
         }
 
-        public async Task Update(object update) //elimna objeto
+        public async Task Update(object update) //actualiza objeto de cualquier tabla
         {
             await _connection.UpdateAsync(update);
         }
 
-        public async Task Delete(object delete) //elimina objeto
+        public async Task Delete(object delete) //elimina objeto de cualquier tabla
         {
             await _connection.DeleteAsync(delete);
         }
