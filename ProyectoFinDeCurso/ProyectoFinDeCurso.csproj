@@ -40,33 +40,22 @@
   <!-- 🔹 Recursos MAUI -->
   <ItemGroup>
     <!-- Icono -->
-    <MauiIcon Include="Resources\AppIcon\appicon.svg"
-              ForegroundFile="Resources\AppIcon\appiconfg.svg"
-              Color="#512BD4" />
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
     <!-- Splash Screen -->
-    <MauiSplashScreen Include="Resources\Splash\splash.svg"
-                      Color="#512BD4"
-                      BaseSize="128,128"
-                      Condition="'$(TargetFramework)' != 'net9.0-windows10.0.19041.0'" />
+    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" Condition="'$(TargetFramework)' != 'net9.0-windows10.0.19041.0'" />
 
-    <MauiSplashScreen Include="Resources\Splash\splash.png"
-                      Color="#512BD4"
-                      BaseSize="128,128"
-                      Condition="'$(TargetFramework)' == 'net9.0-windows10.0.19041.0'" />
+    <MauiSplashScreen Include="Resources\Splash\splash.png" Color="#512BD4" BaseSize="128,128" Condition="'$(TargetFramework)' == 'net9.0-windows10.0.19041.0'" />
 
     <!-- Imágenes -->
     <MauiImage Include="Resources\Images\*" />
-    <MauiImage Update="Resources\Images\dotnet_bot.png"
-               Resize="True"
-               BaseSize="300,185" />
+    <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 
     <!-- Fuentes -->
     <MauiFont Include="Resources\Fonts\*" />
 
     <!-- Recursos sin procesar -->
-    <MauiAsset Include="Resources\Raw\**"
-               LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
   <!-- 🔹 XAML compilados -->

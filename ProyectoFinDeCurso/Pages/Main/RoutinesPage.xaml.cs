@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Layouts;
 using ProyectoFinDeCurso.Enums;
@@ -7,6 +8,7 @@ using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.ViewModels;
 using System.Collections.ObjectModel;
+using System.Reflection.PortableExecutable;
 
 namespace ProyectoFinDeCurso.Pages.Main;
 
@@ -198,6 +200,101 @@ public partial class RoutinesPage : ContentPage
                     }
                     }
                 };
+                var eleccionExercise = exercisesInRoutine.FirstOrDefault(x => !x.exerciseFinished && !x.expaded);
+                if(eleccionExercise != null)
+                {
+                    eleccionExercise.expaded = true;
+                }
+                CollectionView listExercise = new CollectionView
+                {
+                    ItemsSource = exercisesInRoutine,
+                    HorizontalScrollBarVisibility = ScrollBarVisibility.Default,
+                    VerticalScrollBarVisibility = ScrollBarVisibility.Default,
+                    ItemsUpdatingScrollMode = ItemsUpdatingScrollMode.KeepScrollOffset,
+                    ItemTemplate = new DataTemplate(() =>
+                    {
+                        
+                        var headerLabel = new Label
+                        {
+                            FontAttributes = FontAttributes.Bold,
+                            TextColor = Colors.White,
+                            FontSize = 18
+                        };
+                        headerLabel.SetBinding(Label.TextProperty, "name");
+                        var expanderExercise = new Expander
+                        {
+                            Header = headerLabel,
+                            
+
+                        };
+                        expanderExercise.BindingContextChanged += (s, e) =>
+                        {
+                            var exercise = (Exercise)((Expander)s).BindingContext;
+                            if (exercise != null)
+                            {
+                                // Ejemplo: si el ejercicio está terminado, no permitir expandir
+                                if (!exercise.expaded)
+                                {
+                                    ((Expander)s).IsExpanded = false;
+                                    ((Expander)s).IsEnabled = false;
+                                }
+                                else
+                                {
+                                    ((Expander)s).IsExpanded = true;
+                                    ((Expander)s).IsEnabled = true;
+                                }
+                            }
+                        };
+                        var startButton = new Button
+                        {
+                            Text = "Empezar Ejercicio",
+                            CommandParameter = new Binding(".") // El objeto Exercise actual
+                        };
+
+                        // Evento Clicked para manejar el botón
+                        startButton.Clicked += async (s, e) =>
+                        {
+                            var btn = (Button)s;
+                            var exercise = (Exercise)btn.BindingContext; // también puedes usar btn.CommandParameter
+
+                            if (exercise == null)
+                                return;
+
+                            await DisplayAlert(
+                                "Ejercicio",
+                                $"Has iniciado {exercise.name}",
+                                "OK"
+                            );
+                        };
+                        expanderExercise.Content = new HorizontalStackLayout
+                        {
+                            Padding = new Thickness(10),
+
+                            Children =
+                        {
+                            startButton
+                        }
+                        };
+                        var frame = new Border
+                        {
+                            Margin = 5,
+                            Padding = 10,
+                            BackgroundColor = Color.FromArgb("#3B2523"),
+                            StrokeShape = new RoundRectangle
+                            {
+                                CornerRadius = 8
+                            },
+                        };
+                        frame.Content = new VerticalStackLayout
+                        {
+                            Children = { expanderExercise }
+                        };
+                        return frame;
+                    })
+                };
+
+               
+
                 eliminateRoutine.GestureRecognizers.Add(new TapGestureRecognizer
                 {
                     Command = new Command(async () =>
@@ -533,10 +630,20 @@ public partial class RoutinesPage : ContentPage
                                                             await DisplayAlert("Error", "Introduce series y repeticiones.", "OK");
                                                             return;
                                                         }
-                                                        selectedExercise.reps = int.TryParse(repsLabel.Text, out int s) ? s : 0;
-                                                        selectedExercise.sets = int.TryParse(setsLabel.Text, out int r) ? r : 0;
-                                                        selectedExercise.name = getExerciseLabel.Text;
-                                                        exerciseSelection.Add(selectedExercise);
+                                                        // Crear una copia independiente del ejercicio base
+                                                        var newExercise = selectedExercise.Clone();
+
+                                                        // Asignar los valores específicos
+                                                        newExercise.reps = int.TryParse(repsLabel.Text, out int reps) ? reps : 0;
+                                                        newExercise.sets = int.TryParse(setsLabel.Text, out int sets) ? sets : 0;
+                                                        newExercise.name = getExerciseLabel.Text;
+
+                                                        // Inicializar propiedades de control
+                                                        newExercise.exerciseFinished = false;
+                                                        newExercise.expaded = false;
+
+                                                        // Agregar la copia a la selección
+                                                        exerciseSelection.Add(newExercise);
 
                                                         await Navigation.PopModalAsync();
                                                     })
@@ -642,7 +749,7 @@ public partial class RoutinesPage : ContentPage
                                             Children =
                                             {
                                                 new Button
-                                                {
+{
                                                     Text = "Crear",
                                                     Command = new Command(async () =>
                                                     {
@@ -651,10 +758,21 @@ public partial class RoutinesPage : ContentPage
                                                             await DisplayAlert("Error", "Introduce series y tiempo de ejecución.", "OK");
                                                             return;
                                                         }
-                                                        selectedExercise.sets = int.TryParse(repsLabel.Text, out int s) ? s : 0;
-                                                        selectedExercise.seconds = int.TryParse(timeLabel.Text, out int r) ? r : 0;
-                                                        selectedExercise.name = getExerciseLabel.Text;
-                                                        exerciseSelection.Add(selectedExercise);
+
+                                                        // Crear una copia del ejercicio seleccionado
+                                                        var newExercise = selectedExercise.Clone();
+
+                                                        // Asignar los valores específicos de este nuevo ejercicio
+                                                        newExercise.sets = int.TryParse(repsLabel.Text, out int s) ? s : 0;
+                                                        newExercise.seconds = int.TryParse(timeLabel.Text, out int r) ? r : 0;
+                                                        newExercise.name = getExerciseLabel.Text;
+
+                                                        // Inicializar propiedades dinámicas
+                                                        newExercise.exerciseFinished = false;
+                                                        newExercise.expaded = false;
+
+                                                        // Agregar la copia (no el original)
+                                                        exerciseSelection.Add(newExercise);
 
                                                         await Navigation.PopModalAsync();
                                                     })
@@ -790,19 +908,33 @@ public partial class RoutinesPage : ContentPage
                         Children =
                         {
                              new Button
-                        {
-                            Text = "Agregar",
-                            Command = new Command(async () =>
-                            {
-                                exercisesInRoutine.Clear();
-                                foreach (var exercise in exerciseSelection)
+                    {
+                                Text = "Agregar",
+                                Command = new Command(async () =>
                                 {
-                                    exercisesInRoutine.Add(exercise);
-                                }
-                                await Navigation.PopModalAsync();
+                                    exercisesInRoutine.Clear();
 
-                            })
-                        },
+                                    foreach (var exercise in exerciseSelection)
+                                    {
+                                        // 👇 Crear una copia del ejercicio
+                                        var copy = exercise.Clone();
+
+                                        // Mantener las mismas series y repeticiones
+                                        copy.sets = exercise.sets;
+                                        copy.reps = exercise.reps;
+                                        copy.seconds = exercise.seconds;
+
+                                        // Resetear estados visuales si hace falta
+                                        copy.exerciseFinished = false;
+                                        copy.expaded = false;
+
+                                        // Agregar la copia, no la referencia original
+                                        exercisesInRoutine.Add(copy);
+                                    }
+
+                                    await Navigation.PopModalAsync();
+                                })
+                            },
                         new Button
                         {
                             Text = "Cancelar",
@@ -985,7 +1117,18 @@ public partial class RoutinesPage : ContentPage
                     HorizontalOptions = LayoutOptions.Start,
                     VerticalOptions = LayoutOptions.End,
                     Margin = new Thickness(10, 0, 0, 10),
-                    Command = new Command(async () => await Navigation.PopModalAsync())
+                    Command = new Command(async () =>
+                    {
+                        await Navigation.PopModalAsync();
+
+                        foreach (Exercise exercise in exercisesInRoutine)
+                        {
+                                
+                                exercise.expaded = false;
+                                exercise.exerciseFinished = false;
+                            
+                        }
+                    })
                 };
 
                 // === Fila superior: título + botón tres puntos ===
@@ -1023,6 +1166,9 @@ public partial class RoutinesPage : ContentPage
                 // Fila 0 → header (texto + menú)
                 Grid.SetRow(headerGrid, 0);
                 baseGrid.Children.Add(headerGrid);
+
+                Grid.SetRow(listExercise, 1);
+                baseGrid.Children.Add(listExercise);
 
                 // Fila 2 → botón cancelar
                 Grid.SetRow(cancelButton, 2);

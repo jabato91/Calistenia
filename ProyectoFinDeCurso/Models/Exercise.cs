@@ -2,14 +2,15 @@
     using SQLite;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
+using System.ComponentModel;
+using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
 
     namespace ProyectoFinDeCurso.Models 
     {
-        public class Exercise 
-        {
+        public class Exercise
+    {
             [PrimaryKey, AutoIncrement, Column("exerciseID")]
             public int execiseID { get; set; } 
             [Column("Name")]
@@ -26,7 +27,8 @@
             public bodyPartEnum muscleGroupId { get; set; } = bodyPartEnum.nothing;
             [Column("typeUser")]
             public userTypeEnum typeUser { get; set; } = userTypeEnum.nothing;
-            
+            [Column("Materials")]
+            public string materials { get; set; } = string.Empty;
         [Ignore]
         public int sets { get; set; } = -1;
         [Ignore]
@@ -35,6 +37,8 @@
         public int seconds { get; set; } = -1;
         [Ignore]
         public Boolean exerciseFinished { get; set; } = false;
+        [Ignore]
+        public Boolean expaded { get; set; } = false;
         [Ignore]
         public DoubleCollection LinePattern { get; set; } = new() { 6, 4 }; // Patrón de línea discontinua si no es el ultimo ejercicio
         [Ignore]
@@ -89,6 +93,26 @@
                     new GradientStop(color1, 0.8f),
                     new GradientStop(color2, 1f)
                 }
+            };
+        }
+        public Exercise Clone()
+        {
+            return new Exercise
+            {
+                execiseID = this.execiseID,
+                name = this.name,
+                description = this.description,
+                image = this.image,
+                video = this.video,
+                dificulty = this.dificulty,
+                muscleGroupId = this.muscleGroupId,
+                typeUser = this.typeUser,
+                reps = this.reps,
+                sets = this.sets,
+                seconds = this.seconds,
+                exerciseFinished = false,
+                expaded = false,
+                IsAdmin = this.IsAdmin
             };
         }
     }
