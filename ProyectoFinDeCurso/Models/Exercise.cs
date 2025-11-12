@@ -9,7 +9,7 @@ using System.Linq;
 
     namespace ProyectoFinDeCurso.Models 
     {
-        public class Exercise
+        public class Exercise : INotifyPropertyChanged
     {
             [PrimaryKey, AutoIncrement, Column("exerciseID")]
             public int execiseID { get; set; } 
@@ -35,10 +35,40 @@ using System.Linq;
         public int reps { get; set; } = -1;
         [Ignore]
         public int seconds { get; set; } = -1;
+        private bool _expaded;
+        private bool _exerciseFinished;
         [Ignore]
-        public Boolean exerciseFinished { get; set; } = false;
+        public bool expaded
+        {
+            get => _expaded;
+            set
+            {
+                if (_expaded != value)
+                {
+                    _expaded = value;
+                    OnPropertyChanged(nameof(expaded));
+                }
+            }
+        }
         [Ignore]
-        public Boolean expaded { get; set; } = false;
+        public bool exerciseFinished
+        {
+            get => _exerciseFinished;
+            set
+            {
+                if (_exerciseFinished != value)
+                {
+                    _exerciseFinished = value;
+                    OnPropertyChanged(nameof(exerciseFinished));
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
         [Ignore]
         public DoubleCollection LinePattern { get; set; } = new() { 6, 4 }; // Patrón de línea discontinua si no es el ultimo ejercicio
         [Ignore]
