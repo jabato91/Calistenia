@@ -12,7 +12,75 @@ namespace ProyectoFinDeCurso.Pages.Detail
         private readonly DbService _dbService;
         private readonly ExerciseFilterViewModel _filter;
         private readonly Exercise _selectedExercise;
-        public ExerciseDetailPage(Exercise exercise)
+
+        private readonly ExerciseMode _mode;
+
+
+       
+
+        private async void editImage(object sender, EventArgs e)
+        {
+            try
+            {
+                var result = await FilePicker.Default.PickAsync(new PickOptions
+                {
+                    PickerTitle = "Selecciona una imagen",
+                    FileTypes = FilePickerFileType.Images
+                });
+
+                if (result != null && sender is ImageButton btn)
+                {
+                    // ✅ Copiamos la imagen a la carpeta local segura
+                    string nombreArchivo = Path.GetFileName(result.FullPath);
+                    string carpetaImagenes = Path.Combine(FileSystem.AppDataDirectory, "Images");
+
+                    if (!Directory.Exists(carpetaImagenes))
+                        Directory.CreateDirectory(carpetaImagenes);
+
+                    string rutaDestino = Path.Combine(carpetaImagenes, nombreArchivo);
+                    File.Copy(result.FullPath, rutaDestino, true);
+
+                    // ✅ Mostramos la imagen desde la carpeta interna
+                    btn.Source = ImageSource.FromFile(rutaDestino);
+                    btn.BindingContext = rutaDestino; // guardamos la ruta
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"No se pudo abrir el archivo: {ex.Message}", "OK");
+            }
+        }
+ 
+        
+
+        public ExerciseDetailPage(DbService dbService, ExerciseFilterViewModel filter, Exercise exercise = null, ExerciseMode mode = ExerciseMode.Create)
+        {
+            _dbService = dbService;
+            _filter = filter;
+            _selectedExercise = exercise;
+            _mode = mode;
+
+            BuildUI();
+        }
+        private void BuildUI()
+        {
+            switch (_mode)
+            {
+                case ExerciseMode.Create:
+                    BuildCreateUI();
+                    break;
+
+                case ExerciseMode.Edit:
+                    BuildEditUI();
+                    break;
+
+                case ExerciseMode.View:
+                    BuildViewUI();
+                    break;
+            }
+        }
+
+        private void BuildViewUI()
         {
             BackgroundColor = Color.FromArgb("#80000000");
 
@@ -36,7 +104,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             {
                                 new Label
                                 {
-                                    Text = exercise.name,
+                                    Text = _selectedExercise.name,
                                     FontSize = 26,
                                     HorizontalOptions = LayoutOptions.Center,
                                     TextColor = Color.FromArgb("#C49362"),
@@ -44,7 +112,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 },
                                 new Label
                                 {
-                                    Text = exercise.description,
+                                    Text = _selectedExercise.description,
                                     FontSize = 16,
                                     HorizontalTextAlignment = TextAlignment.Center,
                                     TextColor = Colors.White,
@@ -53,7 +121,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 },
                                 new Label
                                 {
-                                    Text = exercise.materials,
+                                    Text = _selectedExercise.materials,
                                     FontSize = 16,
                                     HorizontalTextAlignment = TextAlignment.Center,
                                     TextColor = Colors.YellowGreen,
@@ -69,7 +137,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     Margin = new Thickness(0, 10, 0, 10),
                                     Content = new MediaElement
                                     {
-                                        Source = MediaSource.FromResource(exercise.video),
+                                        Source = MediaSource.FromResource(_selectedExercise.video),
                                         Aspect = Aspect.AspectFit,
                                         ShouldShowPlaybackControls = true,
                                         HeightRequest = 325,
@@ -95,45 +163,175 @@ namespace ProyectoFinDeCurso.Pages.Detail
             };
         }
 
-        public ExerciseDetailPage(DbService dbService, ExerciseFilterViewModel filter, Exercise selectedExercise)
+        private async void BuildEditUI()
         {
-            
-            _dbService = dbService;
-            _filter = filter;
-            _selectedExercise = selectedExercise;
+            Exercise exerciseFromDb = await _dbService.GetExerciseById(_selectedExercise.execiseID);
 
-            // Cuando la página aparezca, carga los datos del ejercicio
-            Appearing += ExerciseDetailPage_Appearing;
+            var traducciones = new Dictionary<bodyPartEnum, string>
+    {
+        { bodyPartEnum.nothing, "Ninguno" },
+        { bodyPartEnum.chest, "Pecho" },
+        { bodyPartEnum.leg, "Piernas" },
+        { bodyPartEnum.triceps, "Tríceps" },
+        { bodyPartEnum.biceps, "Bíceps" },
+        { bodyPartEnum.abdomen, "Abdomen" },
+        { bodyPartEnum.back, "Espalda" },
+        { bodyPartEnum.shoulder, "Hombros" },
+        { bodyPartEnum.isometric, "Isométrico" },
+        { bodyPartEnum.arms, "Brazos" },
+        { bodyPartEnum.torso, "Torso" },
+        { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
+    };
+
+            var nameEntry = new Entry
+            {
+                Text = exerciseFromDb.name,
+                Placeholder = "Nombre",
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
+                HorizontalOptions = LayoutOptions.Fill
+            };
+
+            var descEntry = new Entry
+            {
+                Text = exerciseFromDb.description,
+                Placeholder = "Descripción",
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
+                HorizontalOptions = LayoutOptions.Fill
+            };
+
+            // ✅ Cargar imagen local si existe
+            string rutaImagen = Path.Combine(FileSystem.AppDataDirectory, "Images", exerciseFromDb.image ?? "");
+            var imageButton = new ImageButton
+            {
+                Source = File.Exists(rutaImagen)
+                    ? ImageSource.FromFile(rutaImagen)
+                    : null,
+                HorizontalOptions = LayoutOptions.Fill,
+                WidthRequest = 75,
+                HeightRequest = 75,
+                BackgroundColor = Color.FromArgb("#3B2523")
+            };
+
+            // ✅ Vinculamos con el método editImage corregido
+            imageButton.Clicked += editImage;
+
+            var bodyPartEnumPicker = new Picker
+            {
+                Title = "Tipo Cuerpo",
+                ItemsSource = traducciones.Values.ToList(),
+                SelectedItem = traducciones[exerciseFromDb.muscleGroupId],
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
+                HorizontalOptions = LayoutOptions.Fill
+            };
+
+            var modalPage = new ContentPage
+            {
+                BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
+                Content = new Frame
+                {
+                    BackgroundColor = Color.FromArgb("#2E1E1B"),
+                    CornerRadius = 20,
+                    Margin = 1,
+                    VerticalOptions = LayoutOptions.Center,
+                    HorizontalOptions = LayoutOptions.Center,
+                    Content = new VerticalStackLayout
+                    {
+                        Padding = 1,
+                        Spacing = 5,
+                        Children =
+                {
+                    new Label
+                    {
+                        Text = "Modificar ejercicio",
+                        FontSize = 24,
+                        TextColor = Color.FromArgb("#C77B30"),
+                        HorizontalOptions = LayoutOptions.Fill,
+                        HorizontalTextAlignment = TextAlignment.Center,
+                        FontFamily = "EatMeAlive"
+                    },
+                    nameEntry,
+                    descEntry,
+                    imageButton,
+                    bodyPartEnumPicker,
+                    new HorizontalStackLayout
+                    {
+                        Spacing = 10,
+                        Children =
+                        {
+                            new Button
+                            {
+                                Text = "Guardar",
+                                Command = new Command(async () =>
+                                {
+                                    exerciseFromDb.name = nameEntry.Text ?? "";
+                                    exerciseFromDb.description = descEntry.Text ?? "";
+
+                                    // ✅ Si el usuario cambió la imagen
+                                    if (imageButton.BindingContext is string rutaNueva && File.Exists(rutaNueva))
+                                    {
+                                        string nombreArchivo = Path.GetFileName(rutaNueva);
+                                        exerciseFromDb.image = nombreArchivo;
+                                    }
+
+                                    await _dbService.Update(exerciseFromDb);
+
+                                    var index = _filter.Exercises.IndexOf(_selectedExercise);
+                                    if (index >= 0)
+                                    {
+                                        _filter.Exercises[index] = exerciseFromDb;
+                                        _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
+                                    }
+
+                                    await DisplayAlert("Éxito", "Ejercicio actualizado correctamente", "OK");
+                                    await Navigation.PopModalAsync();
+                                })
+                            },
+                            new Button
+                            {
+                                Text = "Cancelar",
+                                Command = new Command(async () => await Navigation.PopModalAsync())
+                            }
+                        }
+                    }
+                }
+                    }
+                }
+            };
+
+            Content = modalPage.Content;
+            BackgroundColor = modalPage.BackgroundColor;
         }
-        public ExerciseDetailPage(DbService dbService, ExerciseFilterViewModel filter)
+
+        private void BuildCreateUI()
         {
-            _dbService = dbService;
-            _filter = filter;
 
             var transtation = new Dictionary<bodyPartEnum, string>
-        {
-            { bodyPartEnum.nothing, "Ninguno" },
-            { bodyPartEnum.chest, "Pecho" },
-            { bodyPartEnum.leg, "Piernas" },
-            { bodyPartEnum.triceps, "Tríceps" },
-            { bodyPartEnum.biceps, "Bíceps" },
-            { bodyPartEnum.abdomen, "Abdomen" },
-            { bodyPartEnum.back, "Espalda" },
-            { bodyPartEnum.shoulder, "Hombros" },
-            { bodyPartEnum.isometric, "Isométrico" },
-            { bodyPartEnum.arms, "Brazos" },
-            { bodyPartEnum.torso, "Torso" },
-            { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
-        };
+{
+    { bodyPartEnum.nothing, "Ninguno" },
+    { bodyPartEnum.chest, "Pecho" },
+    { bodyPartEnum.leg, "Piernas" },
+    { bodyPartEnum.triceps, "Tríceps" },
+    { bodyPartEnum.biceps, "Bíceps" },
+    { bodyPartEnum.abdomen, "Abdomen" },
+    { bodyPartEnum.back, "Espalda" },
+    { bodyPartEnum.shoulder, "Hombros" },
+    { bodyPartEnum.isometric, "Isométrico" },
+    { bodyPartEnum.arms, "Brazos" },
+    { bodyPartEnum.torso, "Torso" },
+    { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
+};
 
             var dificulty = new Dictionary<dificultyEnum, string>
-        {
-            { dificultyEnum.nothing, "Ninguno" },
-            { dificultyEnum.easy, "Fácil" },
-            { dificultyEnum.medium, "Medio" },
-            { dificultyEnum.hard, "Difícil" },
-            { dificultyEnum.extreme, "Muy Difícil" }
-        };
+{
+    { dificultyEnum.nothing, "Ninguno" },
+    { dificultyEnum.easy, "Fácil" },
+    { dificultyEnum.medium, "Medio" },
+    { dificultyEnum.hard, "Difícil" },
+    { dificultyEnum.extreme, "Muy Difícil" }
+};
 
             // Entradas de texto
             var nameEntry = new Entry
@@ -152,28 +350,51 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            // Botón para elegir imagen
+            // Botón para elegir imagen (✅ corregido)
             var imageButton = new ImageButton
             {
                 HorizontalOptions = LayoutOptions.Fill,
                 WidthRequest = 75,
-                HeightRequest = 75
+                HeightRequest = 75,
+                BackgroundColor = Color.FromArgb("#3B2523")
             };
 
             imageButton.Clicked += async (s, e) =>
             {
-                var result = await FilePicker.Default.PickAsync(new PickOptions
+                try
                 {
-                    PickerTitle = "Selecciona una imagen",
-                    FileTypes = FilePickerFileType.Images
-                });
+                    var result = await FilePicker.Default.PickAsync(new PickOptions
+                    {
+                        PickerTitle = "Selecciona una imagen",
+                        FileTypes = FilePickerFileType.Images
+                    });
 
-                if (result != null)
+                    if (result != null)
+                    {
+                        // ✅ Carpeta local segura
+                        string nombreArchivo = Path.GetFileName(result.FullPath);
+                        string carpetaImagenes = Path.Combine(FileSystem.AppDataDirectory, "Images");
+
+                        if (!Directory.Exists(carpetaImagenes))
+                            Directory.CreateDirectory(carpetaImagenes);
+
+                        string rutaDestino = Path.Combine(carpetaImagenes, nombreArchivo);
+
+                        // ✅ Copiar usando stream (no bloquea el archivo)
+                        using (var origen = await result.OpenReadAsync())
+                        using (var destino = File.Create(rutaDestino))
+                        {
+                            await origen.CopyToAsync(destino);
+                        }
+
+                        // ✅ Mostrar imagen desde la copia local
+                        imageButton.BindingContext = rutaDestino;
+                        imageButton.Source = ImageSource.FromFile(rutaDestino);
+                    }
+                }
+                catch (Exception ex)
                 {
-                    imageButton.Source = ImageSource.FromFile(result.FullPath);
-
-                    // ✅ Guardamos la ruta completa en el BindingContext
-                    imageButton.BindingContext = result.FullPath;
+                    await DisplayAlert("Error", $"No se pudo cargar la imagen: {ex.Message}", "OK");
                 }
             };
 
@@ -199,7 +420,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            // Frame principal de la página
+            // Frame principal de la página (mantengo todo tu diseño)
             var modalPage = new ContentPage
             {
                 BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
@@ -215,95 +436,105 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         Padding = 1,
                         Spacing = 5,
                         Children =
+                {
+                    new Label
                     {
-                        new Label
+                        Text = "Crear ejercicio",
+                        FontSize = 24,
+                        TextColor = Color.FromArgb("#C77B30"),
+                        HorizontalOptions = LayoutOptions.Fill,
+                        HorizontalTextAlignment = TextAlignment.Center,
+                        FontFamily = "EatMeAlive"
+                    },
+                    nameEntry,
+                    descEntry,
+                    imageButton,
+                    bodyPartEnumPicker,
+                    dificultyEnumPicker,
+                    new HorizontalStackLayout
+                    {
+                        Spacing = 10,
+                        Children =
                         {
-                            Text = "Crear ejercicio",
-                            FontSize = 24,
-                            TextColor = Color.FromArgb("#C77B30"),
-                            HorizontalOptions = LayoutOptions.Fill,
-                            HorizontalTextAlignment = TextAlignment.Center,
-                            FontFamily = "EatMeAlive"
-                        },
-                        nameEntry,
-                        descEntry,
-                        imageButton,
-                        bodyPartEnumPicker,
-                        dificultyEnumPicker,
-                        new HorizontalStackLayout
-                        {
-                            Spacing = 10,
-                            Children =
+                            // Botón Crear
+                            new Button
+{
+    Text = "Crear",
+    Command = new Command(async () =>
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(nameEntry.Text))
+            {
+                await DisplayAlert("Aviso", "Debes ingresar un nombre.", "OK");
+                return;
+            }
+
+            Exercise createExercise = new Exercise
+            {
+                name = nameEntry.Text,
+                description = descEntry.Text,
+                muscleGroupId = transtation.First(x => x.Value == bodyPartEnumPicker.SelectedItem.ToString()).Key,
+                dificulty = dificulty.First(x => x.Value == dificultyEnumPicker.SelectedItem.ToString()).Key,
+                typeUser = userTypeEnum.admin
+            };
+
+            if (imageButton.BindingContext is string rutaImagen && File.Exists(rutaImagen))
+{
+    string nombreArchivo = Path.GetFileName(rutaImagen);
+    string carpetaImagenes = Path.Combine(FileSystem.AppDataDirectory, "Images");
+
+    if (!Directory.Exists(carpetaImagenes))
+        Directory.CreateDirectory(carpetaImagenes);
+
+    string rutaDestino = Path.Combine(carpetaImagenes, nombreArchivo);
+
+    // Si ya está en la carpeta local, no se vuelve a copiar
+    if (!rutaImagen.Equals(rutaDestino, StringComparison.OrdinalIgnoreCase))
+    {
+        try
+        {
+            File.Copy(rutaImagen, rutaDestino, true);
+        }
+        catch (IOException)
+        {
+            // El archivo ya está en uso o existe, ignoramos para no duplicar
+        }
+    }
+
+    createExercise.image = nombreArchivo;
+}
+else
+{
+    await DisplayAlert("Aviso", "No se seleccionó una imagen válida.", "OK");
+    return;
+}
+
+            // ✅ Guarda solo una vez
+            await _dbService.Create(createExercise);
+            _filter.Exercises.Add(createExercise);
+            _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
+
+            await DisplayAlert("Éxito", "Ejercicio creado correctamente.", "OK");
+            await Navigation.PopModalAsync();
+            _filter.LoadExercises();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
+        }
+    })
+},
+
+                            // Botón Cancelar
+                            new Button
                             {
-                                // Botón Crear
-                                new Button
-                                {
-                                    Text = "Crear",
-                                    Command = new Command(async () =>
-                                    {
-                                        try
-                                        {
-                                            // Crear objeto Exercise
-                                            Exercise createExercise = new Exercise();
-
-                                            var selectedMuscleTranslation = bodyPartEnumPicker.SelectedItem?.ToString();
-                                            var selectedMuscleEnum = transtation.FirstOrDefault(x => x.Value == selectedMuscleTranslation).Key;
-                                            var selectedDificultyTranslation = dificultyEnumPicker.SelectedItem?.ToString();
-                                            var selectedDificultyEnum = dificulty.FirstOrDefault(x => x.Value == selectedDificultyTranslation).Key;
-
-                                            createExercise.name = nameEntry.Text ?? "";
-                                            createExercise.description = descEntry.Text ?? "";
-                                            createExercise.muscleGroupId = selectedMuscleEnum;
-                                            createExercise.dificulty = selectedDificultyEnum;
-                                            createExercise.typeUser = userTypeEnum.admin;
-
-                                            // ✅ Copiar la imagen (si existe)
-                                            if (imageButton.BindingContext is string rutaOrigen && File.Exists(rutaOrigen))
-                                            {
-                                                string nombreArchivo = IOPath.GetFileName(rutaOrigen);
-                                                string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images");
-                                                if (!Directory.Exists(carpetaImagenes))
-                                                    Directory.CreateDirectory(carpetaImagenes);
-
-                                                string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo);
-
-                                                if (!File.Exists(rutaDestino) || rutaOrigen != rutaDestino)
-                                                    File.Copy(rutaOrigen, rutaDestino, overwrite: true);
-
-                                                createExercise.image = nombreArchivo;
-                                            }
-                                            else
-                                            {
-                                                await DisplayAlert("Aviso", "No se seleccionó una imagen válida.", "OK");
-                                            }
-
-                                            // Guardar en la base de datos
-                                            await _dbService.Create(createExercise);
-
-                                            // Añadir a la lista y refrescar
-                                            _filter.Exercises.Add(createExercise);
-                                            _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
-
-                                            await DisplayAlert("Éxito", "Ejercicio creado correctamente", "OK");
-                                            await Navigation.PopModalAsync();
-                                            _filter.LoadExercises();
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            await DisplayAlert("Error", $"Ocurrió un error al crear el ejercicio:\n{ex.Message}", "OK");
-                                        }
-                                    })
-                                },
-
-                                // Botón Cancelar
-                                new Button
-                                {
-                                    Text = "Cancelar",
-                                    Command = new Command(async () => await Navigation.PopModalAsync())
-                                }
+                                Text = "Cancelar",
+                                Command = new Command(async () => await Navigation.PopModalAsync())
                             }
                         }
                     }
+                }
                     }
                 }
             };
@@ -312,202 +543,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
             Content = modalPage.Content;
             BackgroundColor = modalPage.BackgroundColor;
         }
-        private async void editImage(object sender, EventArgs e)
-        {
-            try
-            {
-                var result = await FilePicker.Default.PickAsync(new PickOptions
-                {
-                    PickerTitle = "Selecciona una imagen",
-                    FileTypes = FilePickerFileType.Images // Puedes poner .Pdf, .Videos, etc.
-                });
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", $"No se pudo abrir el archivo: {ex.Message}", "OK");
-            }
-
-        }
-        private async void ExerciseDetailPage_Appearing(object sender, EventArgs e)
-        {
-            await LoadExerciseDetailAsync();
-           
-        }
-
-        private async Task LoadExerciseDetailAsync()
-        {
-            Exercise exerciseFromDb = await _dbService.GetExerciseById(_selectedExercise.execiseID);
-
-            var traducciones = new Dictionary<bodyPartEnum, string>
-        {
-            { bodyPartEnum.nothing, "Ninguno" },
-            { bodyPartEnum.chest, "Pecho" },
-            { bodyPartEnum.leg, "Piernas" },
-            { bodyPartEnum.triceps, "Tríceps" },
-            { bodyPartEnum.biceps, "Bíceps" },
-            { bodyPartEnum.abdomen, "Abdomen" },
-            { bodyPartEnum.back, "Espalda" },
-            { bodyPartEnum.shoulder, "Hombros" },
-            { bodyPartEnum.isometric, "Isométrico" },
-            { bodyPartEnum.arms, "Brazos" },
-            { bodyPartEnum.torso, "Torso" },
-            { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
-        };
-
-            var nameEntry = new Entry
-            {
-                Text = exerciseFromDb.name,
-                Placeholder = "Nombre",
-                TextColor = Color.FromArgb("#C49362"),
-                BackgroundColor = Color.FromArgb("#3B2523"),
-                HorizontalOptions = LayoutOptions.Fill
-            };
-
-            var descEntry = new Entry
-            {
-                Text = exerciseFromDb.description,
-                Placeholder = "Descripción",
-                TextColor = Color.FromArgb("#C49362"),
-                BackgroundColor = Color.FromArgb("#3B2523"),
-                HorizontalOptions = LayoutOptions.Fill
-            };
-
-            var imageButton = new ImageButton
-            {
-                Source = exerciseFromDb.image,
-                HorizontalOptions = LayoutOptions.Fill,
-                WidthRequest = 75,
-                HeightRequest = 75
-            };
-
-            imageButton.Clicked += async (s, e) =>
-            {
-                var result = await FilePicker.Default.PickAsync(new PickOptions
-                {
-                    PickerTitle = "Selecciona una imagen",
-                    FileTypes = FilePickerFileType.Images
-                });
-
-                if (result != null)
-                {
-                    imageButton.Source = ImageSource.FromFile(result.FullPath);
-                }
-            };
-
-            var bodyPartEnumPicker = new Picker
-            {
-                Title = "Tipo Cuerpo",
-                ItemsSource = traducciones.Values.ToList(),
-                SelectedItem = traducciones[exerciseFromDb.muscleGroupId],
-                TextColor = Color.FromArgb("#C49362"),
-                BackgroundColor = Color.FromArgb("#3B2523"),
-                HorizontalOptions = LayoutOptions.Fill
-            };
-
-            // Creamos la interfaz (idéntica a la tuya)
-            var modalPage = new ContentPage
-            {
-                BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
-                Content = new Frame
-                {
-                    BackgroundColor = Color.FromArgb("#2E1E1B"),
-                    CornerRadius = 20,
-                    Margin = 1,
-                    VerticalOptions = LayoutOptions.Center,
-                    HorizontalOptions = LayoutOptions.Center,
-                    Content = new VerticalStackLayout
-                    {
-                        Padding = 1,
-                        Spacing = 5,
-                        Children =
-                    {
-                        new Label
-                        {
-                            Text = "Modificar ejercicio",
-                            FontSize = 24,
-                            TextColor = Color.FromArgb("#C77B30"),
-                            HorizontalOptions = LayoutOptions.Fill,
-                            HorizontalTextAlignment = TextAlignment.Center,
-                            FontFamily = "EatMeAlive"
-                        },
-                        nameEntry,
-                        descEntry,
-                        imageButton,
-                        bodyPartEnumPicker,
-                        new HorizontalStackLayout
-                        {
-                            Spacing = 10,
-                            Children =
-                            {
-                                new Button
-                                {
-                                    Text = "Guardar",
-                                    Command = new Command(async () =>
-                                    {
-                                        exerciseFromDb.name = nameEntry.Text ?? "";
-                                        exerciseFromDb.description = descEntry.Text ?? "";
-
-                                        if (imageButton.Source is FileImageSource fileSource)
-                                        {
-                                            string rutaOrigen = fileSource.File;
-                                            string nombreArchivo = IOPath.GetFileName(rutaOrigen);
-                                            string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images");
-
-                                            if (!Directory.Exists(carpetaImagenes))
-                                                Directory.CreateDirectory(carpetaImagenes);
-
-                                            string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo);
-
-                                            if (!File.Exists(rutaDestino) || rutaOrigen != rutaDestino)
-                                            {
-                                                try
-                                                {
-                                                    File.Copy(rutaOrigen, rutaDestino, overwrite: true);
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    await DisplayAlert("Error", $"No se pudo copiar la imagen: {ex.Message}", "OK");
-                                                }
-                                            }
-
-                                            exerciseFromDb.image = nombreArchivo;
-                                        }
-
-                                        await _dbService.Update(exerciseFromDb);
-
-                                        var index = _filter.Exercises.IndexOf(_selectedExercise);
-                                        if (index >= 0)
-                                        {
-                                            _filter.Exercises[index] = exerciseFromDb;
-                                            _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
-                                        }
-
-                                        await Navigation.PopModalAsync();
-                                    })
-                                },
-                                new Button
-                                {
-                                    Text = "Cancelar",
-                                    Command = new Command(async () => await Navigation.PopModalAsync())
-                                }
-                            }
-                        }
-                    }
-                    }
-                }
-            };
-
-            // 👇 Aquí la clave:
-            // usamos el contenido de modalPage directamente en esta página
-            Content = modalPage.Content;
-            BackgroundColor = modalPage.BackgroundColor;
-        }
-
-        private void LoadCreateExercise()
-        {
-           
-
-        }
     }
+
 }
-    
+

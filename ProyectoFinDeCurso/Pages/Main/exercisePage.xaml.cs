@@ -36,7 +36,7 @@ public partial class exercisePage : ContentPage
         {
             if ((sender as Border)?.BindingContext is Exercise selectedExercise)
             {
-                await Navigation.PushModalAsync(new ExerciseDetailPage(selectedExercise));
+                await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _filter,selectedExercise, ExerciseMode.View));
             }
         }
         catch (Exception ex)
@@ -72,11 +72,11 @@ public partial class exercisePage : ContentPage
         if ((sender as ImageButton)?.BindingContext is not Exercise selectedExercise)
             return;
 
-        await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _filter, selectedExercise));
+        await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _filter, selectedExercise, ExerciseMode.Edit));
     }
    
     private async void createExercise(object sender, TappedEventArgs e)
     {
-        await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _filter));
+        await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _filter,null, ExerciseMode.Create));
     }
 }

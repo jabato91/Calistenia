@@ -53,7 +53,7 @@ using System.Linq;
                     0 => false,
                     1 => true,
                     2 => true,
-                    _ => throw new NotImplementedException(),
+                    _ => false,
                 };
             }
         }
