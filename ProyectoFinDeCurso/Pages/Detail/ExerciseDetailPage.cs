@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui.Views;
+using Microsoft.Maui.Controls.Shapes;
 using ProyectoFinDeCurso.Enums;
 using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Services;
@@ -31,13 +32,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 if (result != null && sender is ImageButton btn)
                 {
                     // ✅ Copiamos la imagen a la carpeta local segura
-                    string nombreArchivo = Path.GetFileName(result.FullPath);
-                    string carpetaImagenes = Path.Combine(FileSystem.AppDataDirectory, "Images");
+                    string nombreArchivo = IOPath.GetFileName(result.FullPath);
+                    string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images");
 
                     if (!Directory.Exists(carpetaImagenes))
                         Directory.CreateDirectory(carpetaImagenes);
 
-                    string rutaDestino = Path.Combine(carpetaImagenes, nombreArchivo);
+                    string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo);
                     File.Copy(result.FullPath, rutaDestino, true);
 
                     // ✅ Mostramos la imagen desde la carpeta interna
@@ -50,10 +51,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 await DisplayAlert("Error", $"No se pudo abrir el archivo: {ex.Message}", "OK");
             }
         }
- 
-        
 
-        public ExerciseDetailPage(DbService dbService, ExerciseFilterViewModel filter, Exercise exercise = null, ExerciseMode mode = ExerciseMode.Create)
+
+
+        public ExerciseDetailPage(DbService? dbService = null,ExerciseFilterViewModel? filter = null,Exercise? exercise = null,ExerciseMode mode = ExerciseMode.filter)
         {
             _dbService = dbService;
             _filter = filter;
@@ -66,7 +67,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
         {
             switch (_mode)
             {
-                case ExerciseMode.Create:
+                case ExerciseMode.create:
                     BuildCreateUI();
                     break;
 
@@ -76,6 +77,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                 case ExerciseMode.View:
                     BuildViewUI();
+                    break;
+                case ExerciseMode.filter:
+                    BuildFilterExerciseUI();
                     break;
             }
         }
@@ -147,9 +151,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 new Button
                                 {
                                     Text = "Salir",
-                                    TextColor = Color.FromArgb("#C49362"),
-                                    BackgroundColor = Color.FromArgb("#3B2523"),
-                                    CornerRadius = 10,
+                                    BackgroundColor =  Color.FromArgb("ffd700"),
+                                TextColor = Colors.White,
+                                CornerRadius = 3,
                                     FontFamily = "ComfortaaBold",
                                     FontSize = 16,
                                     Padding = new Thickness(10, 6),
@@ -185,11 +189,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             var nameEntry = new Entry
             {
+                
                 Text = exerciseFromDb.name,
                 Placeholder = "Nombre",
                 TextColor = Color.FromArgb("#C49362"),
                 BackgroundColor = Color.FromArgb("#3B2523"),
-                HorizontalOptions = LayoutOptions.Fill
+                HorizontalOptions = LayoutOptions.Fill,
+                FontFamily = "ComfortaaBold",
             };
 
             var descEntry = new Entry
@@ -198,11 +204,12 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 Placeholder = "Descripción",
                 TextColor = Color.FromArgb("#C49362"),
                 BackgroundColor = Color.FromArgb("#3B2523"),
-                HorizontalOptions = LayoutOptions.Fill
+                HorizontalOptions = LayoutOptions.Fill,
+                FontFamily = "ComfortaaBold",
             };
 
             // ✅ Cargar imagen local si existe
-            string rutaImagen = Path.Combine(FileSystem.AppDataDirectory, "Images", exerciseFromDb.image ?? "");
+            string rutaImagen = IOPath.Combine(FileSystem.AppDataDirectory, "Images", exerciseFromDb.image ?? "");
             var imageButton = new ImageButton
             {
                 Source = File.Exists(rutaImagen)
@@ -220,11 +227,14 @@ namespace ProyectoFinDeCurso.Pages.Detail
             var bodyPartEnumPicker = new Picker
             {
                 Title = "Tipo Cuerpo",
+                TitleColor = Color.FromArgb("#C49362"),
                 ItemsSource = traducciones.Values.ToList(),
                 SelectedItem = traducciones[exerciseFromDb.muscleGroupId],
                 TextColor = Color.FromArgb("#C49362"),
                 BackgroundColor = Color.FromArgb("#3B2523"),
-                HorizontalOptions = LayoutOptions.Fill
+                HorizontalOptions = LayoutOptions.Fill,
+                FontFamily = "ComfortaaBold",
+                
             };
 
             var modalPage = new ContentPage
@@ -250,7 +260,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         TextColor = Color.FromArgb("#C77B30"),
                         HorizontalOptions = LayoutOptions.Fill,
                         HorizontalTextAlignment = TextAlignment.Center,
-                        FontFamily = "EatMeAlive"
+                        FontFamily = "EatMeAlive",
+                        
                     },
                     nameEntry,
                     descEntry,
@@ -264,6 +275,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             new Button
                             {
                                 Text = "Guardar",
+                                BackgroundColor =  Color.FromArgb("ffd700"),
+                                TextColor = Colors.White,
+                                CornerRadius = 3,
                                 Command = new Command(async () =>
                                 {
                                     exerciseFromDb.name = nameEntry.Text ?? "";
@@ -272,7 +286,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     // ✅ Si el usuario cambió la imagen
                                     if (imageButton.BindingContext is string rutaNueva && File.Exists(rutaNueva))
                                     {
-                                        string nombreArchivo = Path.GetFileName(rutaNueva);
+                                        string nombreArchivo = IOPath.GetFileName(rutaNueva);
                                         exerciseFromDb.image = nombreArchivo;
                                     }
 
@@ -291,7 +305,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             },
                             new Button
                             {
+                                Margin = new Thickness(10,0,0,0),
                                 Text = "Cancelar",
+                                BackgroundColor =  Color.FromArgb("ffd700"),
+                                TextColor = Colors.White,
+                                CornerRadius = 3,
                                 Command = new Command(async () => await Navigation.PopModalAsync())
                             }
                         }
@@ -372,13 +390,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     if (result != null)
                     {
                         // ✅ Carpeta local segura
-                        string nombreArchivo = Path.GetFileName(result.FullPath);
-                        string carpetaImagenes = Path.Combine(FileSystem.AppDataDirectory, "Images");
+                        string nombreArchivo = IOPath.GetFileName(result.FullPath);
+                        string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images");
 
                         if (!Directory.Exists(carpetaImagenes))
                             Directory.CreateDirectory(carpetaImagenes);
 
-                        string rutaDestino = Path.Combine(carpetaImagenes, nombreArchivo);
+                        string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo);
 
                         // ✅ Copiar usando stream (no bloquea el archivo)
                         using (var origen = await result.OpenReadAsync())
@@ -460,6 +478,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             new Button
 {
     Text = "Crear",
+    BackgroundColor =  Color.FromArgb("ffd700"),
+                                TextColor = Colors.White,
+                                CornerRadius = 3,
     Command = new Command(async () =>
     {
         try
@@ -481,13 +502,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             if (imageButton.BindingContext is string rutaImagen && File.Exists(rutaImagen))
 {
-    string nombreArchivo = Path.GetFileName(rutaImagen);
-    string carpetaImagenes = Path.Combine(FileSystem.AppDataDirectory, "Images");
+    string nombreArchivo = IOPath.GetFileName(rutaImagen);
+    string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images");
 
     if (!Directory.Exists(carpetaImagenes))
         Directory.CreateDirectory(carpetaImagenes);
 
-    string rutaDestino = Path.Combine(carpetaImagenes, nombreArchivo);
+    string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo);
 
     // Si ya está en la carpeta local, no se vuelve a copiar
     if (!rutaImagen.Equals(rutaDestino, StringComparison.OrdinalIgnoreCase))
@@ -530,6 +551,9 @@ else
                             new Button
                             {
                                 Text = "Cancelar",
+                                BackgroundColor =  Color.FromArgb("ffd700"),
+                                TextColor = Colors.White,
+                                CornerRadius = 3,
                                 Command = new Command(async () => await Navigation.PopModalAsync())
                             }
                         }
@@ -540,6 +564,164 @@ else
             };
 
             // Mostrar el diseño
+            Content = modalPage.Content;
+            BackgroundColor = modalPage.BackgroundColor;
+        }
+
+        private void BuildFilterExerciseUI()
+        {
+            var translationBodyPart = new Dictionary<bodyPartEnum, string>
+    {
+        { bodyPartEnum.nothing, "Ninguno" },
+        { bodyPartEnum.chest, "Pecho" },
+        { bodyPartEnum.leg, "Piernas" },
+        { bodyPartEnum.triceps, "Tríceps" },
+        { bodyPartEnum.biceps, "Bíceps" },
+        { bodyPartEnum.abdomen, "Abdomen" },
+        { bodyPartEnum.back, "Espalda" },
+        { bodyPartEnum.shoulder, "Hombros" },
+        { bodyPartEnum.isometric, "Isométrico" },
+        { bodyPartEnum.arms, "Brazos" },
+        { bodyPartEnum.torso, "Torso" },
+        { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
+    };
+
+            var translationDificulty = new Dictionary<dificultyEnum, string>
+    {
+        { dificultyEnum.nothing, "Ninguno" },
+        { dificultyEnum.easy, "Fácil" },
+        { dificultyEnum.medium, "Medio" },
+        { dificultyEnum.hard, "Difícil" },
+        { dificultyEnum.extreme, "Extremo" }
+    };
+
+            // PICKER: BODY PART
+            var filterBodyPartEntry = new Picker
+            {
+                Title = "Tipo Cuerpo",
+                TitleColor = Color.FromArgb("#C49362"),
+                ItemsSource = translationBodyPart.Values.ToList(),
+                SelectedItem = translationBodyPart[bodyPartEnum.nothing],
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
+                HorizontalOptions = LayoutOptions.Fill,
+                Margin = 1,
+                FontFamily = "ComfortaaBold"
+            };
+
+            // PICKER: DIFFICULTY
+            var filterDificultyEntry = new Picker
+            {
+                Title = "Tipo de dificultad",
+                TitleColor = Color.FromArgb("#C49362"),
+                ItemsSource = translationDificulty.Values.ToList(),
+                SelectedItem = translationDificulty[dificultyEnum.nothing],
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
+                HorizontalOptions = LayoutOptions.Fill,
+                Margin = 1,
+                FontFamily = "ComfortaaBold"
+            };
+
+            // ENTRY: NAME
+            var filterNameEntry = new Entry
+            {
+                Placeholder = "Nombre de la rutina",
+                PlaceholderColor = Color.FromArgb("#C49362"),
+                Keyboard = Keyboard.Text,
+                TextColor = Color.FromArgb("#C49362"),
+                Margin = 1,
+                FontFamily = "ComfortaaBold",
+                BackgroundColor = Color.FromArgb("#3B2523"),
+            };
+
+            // BOTÓN FILTRAR — ACTUALIZA EL VIEWMODEL
+            var filterButton = new Button
+            {
+                Text = "Filtrar",
+                BackgroundColor = Color.FromArgb("ffd700"),
+                TextColor = Colors.White,
+                CornerRadius = 3,
+                Command = new Command(async () =>
+                {
+                    // 🔥 1. Actualizar filtro de nombre
+                    _filter!.NameRoutineFilter =
+                    string.IsNullOrWhiteSpace(filterNameEntry.Text)
+                    ? null
+                    : filterNameEntry.Text;
+
+                    // 🔥 2. Actualizar filtro de dificultad
+                    var selectedDiff = translationDificulty.FirstOrDefault(x => x.Value == (string)filterDificultyEntry.SelectedItem).Key;
+                    _filter.DificultyFilter = selectedDiff;
+
+                    // 🔥 3. Actualizar filtro de parte del cuerpo
+                    var selectedBody = translationBodyPart.FirstOrDefault(x => x.Value == (string)filterBodyPartEntry.SelectedItem).Key;
+                    _filter.BodyPartFilter = selectedBody;
+
+                    // 🔥 4. Actualizar filtro de texto general (recuperar el buscador global si existe)
+                    _filter.SearchText = filterNameEntry.Text ?? string.Empty;
+
+                    // 🔥 5. Cerrar modal
+                    await Navigation.PopModalAsync();
+                })
+            };
+
+            var cancelButton = new Button
+            {
+                Text = "Cancelar",
+                BackgroundColor = Color.FromArgb("ffd700"),
+                TextColor = Colors.White,
+                CornerRadius = 3,
+                Command = new Command(async () => await Navigation.PopModalAsync())
+            };
+
+            // UI FINAL
+            var modalPage = new ContentPage
+            {
+                BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
+                Content = new Border
+                {
+                    BackgroundColor = Color.FromArgb("#2E1E1B"),
+                    StrokeShape = new RoundRectangle { CornerRadius = 10 },
+                    Margin = 1,
+                    Padding = 3,
+                    WidthRequest = 350,     
+                    HeightRequest = 350,
+                    Content = new VerticalStackLayout
+                    {
+                        Padding = 1,
+                        Spacing = 5,
+                        Children =
+                {
+                    new Label
+                    {
+                        Text = "Buscar Rutina",
+                        FontSize = 24,
+                        TextColor = Color.FromArgb("#C77B30"),
+                        HorizontalOptions = LayoutOptions.Fill,
+                        HorizontalTextAlignment = TextAlignment.Center,
+                        FontFamily = "EatMeAlive",
+                        Margin= 20
+                    },
+                    filterNameEntry,
+                    filterDificultyEntry,
+                    filterBodyPartEntry,
+
+                    new HorizontalStackLayout
+                    {
+                        HorizontalOptions = LayoutOptions.Center,
+                        Spacing = 10,
+                        Children =
+                        {
+                            filterButton,
+                            cancelButton
+                        }
+                    }
+                }
+                    }
+                }
+            };
+
             Content = modalPage.Content;
             BackgroundColor = modalPage.BackgroundColor;
         }

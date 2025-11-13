@@ -35,11 +35,16 @@
     </ContentPage.Background>
     <ScrollView>
         <VerticalStackLayout>
-            <SearchBar Placeholder="Buscar ejercicio"
+            <HorizontalStackLayout
+                HorizontalOptions="Fill">
+            <SearchBar Placeholder="Buscar ejercicio por nombre"
            Text="{Binding SearchText}"
            BackgroundColor="#2B2B2B"
            TextColor="#E0CFC2"
            PlaceholderColor="#A59D95"/>
+                <Button Text="Filtrar"
+                        Clicked="filterExercises"/>
+            </HorizontalStackLayout>
             <VerticalStackLayout Padding="20" Spacing="10"
                          BindableLayout.ItemsSource="{Binding FilteredRoutines}">
 

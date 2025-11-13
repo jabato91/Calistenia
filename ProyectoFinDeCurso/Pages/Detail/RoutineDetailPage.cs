@@ -14,13 +14,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
     {
         private readonly ExerciseMode _mode;
         private readonly Routines _routine;
-        private readonly RoutinesFilterViewModel _filterViewModel;
+        private RoutinesFilterViewModel? _filterViewModel;
         private readonly DbService _dbService;
         private static TimeSpan timeBetweenReps = TimeSpan.Zero;
         private static TimeSpan timeBetweenExercises = TimeSpan.Zero;
 
         private Boolean firstExercise = false;
-        public RoutineDetailPage(DbService dbService,RoutinesFilterViewModel filterViewModel, Routines routine,ExerciseMode mode = ExerciseMode.Create) { 
+        public RoutineDetailPage(DbService? dbService = null,RoutinesFilterViewModel? filterViewModel = null, Routines? routine = null,ExerciseMode mode = ExerciseMode.nothing) { 
             _filterViewModel = filterViewModel;
             _routine = routine;
             _mode = mode;
@@ -28,12 +28,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             BuildUI();
         }
-
         private void BuildUI()
         {
             switch (_mode)
             {
-                case ExerciseMode.Create:
+                case ExerciseMode.create:
                     BuildCreateUI();
                     break;
 
@@ -43,6 +42,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                 case ExerciseMode.View:
                     BuildViewUI();
+                    break;
+
+                case ExerciseMode.filter:
+                    BuildFilterRoutineUI();
                     break;
             }
         }
@@ -392,7 +395,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                                         exercise.expaded = false; // 🔹 se cerrará automáticamente
                                                         if (timeBetweenExercises.TotalSeconds > 0)
                                                         {
-                                                            await MostrarCuentaAtras(timeBetweenExercises);
+                                                            await ShowCountdown(timeBetweenExercises);
                                                         }
                                                         await Navigation.PopModalAsync();
 
@@ -411,7 +414,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                                         // 🔹 Aquí añadimos el temporizador antes de continuar
                                                         if (timeBetweenReps.TotalSeconds > 0)
                                                         {
-                                                            await MostrarCuentaAtras(timeBetweenReps);
+                                                            await ShowCountdown(timeBetweenReps);
                                                         }
                                                     }
                                                 })
@@ -2163,7 +2166,147 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 BackgroundColor = modalPage.BackgroundColor;
             };
         }
-        private async Task MostrarCuentaAtras(TimeSpan time)
+        private void BuildFilterRoutineUI()
+        {
+            var translationBodyPart = new Dictionary<bodyPartEnum, string>
+    {
+        { bodyPartEnum.nothing, "Ninguno" },
+        { bodyPartEnum.chest, "Pecho" },
+        { bodyPartEnum.leg, "Piernas" },
+        { bodyPartEnum.triceps, "Tríceps" },
+        { bodyPartEnum.biceps, "Bíceps" },
+        { bodyPartEnum.abdomen, "Abdomen" },
+        { bodyPartEnum.back, "Espalda" },
+        { bodyPartEnum.shoulder, "Hombros" },
+        { bodyPartEnum.isometric, "Isométrico" },
+        { bodyPartEnum.arms, "Brazos" },
+        { bodyPartEnum.torso, "Torso" },
+        { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
+    };
+
+            var translationDificulty = new Dictionary<dificultyEnum, string>
+    {
+        { dificultyEnum.nothing, "Ninguno" },
+        { dificultyEnum.easy, "Fácil" },
+        { dificultyEnum.medium, "Medio" },
+        { dificultyEnum.hard, "Difícil" },
+        { dificultyEnum.extreme, "Extremo" }
+    };
+
+            // PICKER: BODY PART
+            var filterBodyPartEntry = new Picker
+            {
+                Title = "Tipo Cuerpo",
+                ItemsSource = translationBodyPart.Values.ToList(),
+                SelectedItem = translationBodyPart[bodyPartEnum.nothing],
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
+                HorizontalOptions = LayoutOptions.Fill
+            };
+
+            // PICKER: DIFFICULTY
+            var filterDificultyEntry = new Picker
+            {
+                Title = "Tipo de dificultad",
+                ItemsSource = translationDificulty.Values.ToList(),
+                SelectedItem = translationDificulty[dificultyEnum.nothing],
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
+                HorizontalOptions = LayoutOptions.Fill
+            };
+
+            // ENTRY: NAME
+            var filterNameEntry = new Entry
+            {
+                Placeholder = "Nombre de la rutina",
+                Keyboard = Keyboard.Text,
+                TextColor = Color.FromArgb("#C49362")
+            };
+
+            // BOTÓN FILTRAR — ACTUALIZA EL VIEWMODEL
+            var filterButton = new Button
+            {
+                Text = "Filtrar",
+                Command = new Command(async () =>
+                {
+                    _filterViewModel ??= new RoutinesFilterViewModel(_dbService, userTypeEnum.nothing);
+                    // 🔥 1. Actualizar filtro de nombre
+                    _filterViewModel!.NameRoutineFilter =
+                    string.IsNullOrWhiteSpace(filterNameEntry.Text)
+                    ? null
+                    : filterNameEntry.Text;
+
+                    // 🔥 2. Actualizar filtro de dificultad
+                    var selectedDiff = translationDificulty.FirstOrDefault(x => x.Value == (string)filterDificultyEntry.SelectedItem).Key;
+                    _filterViewModel.DificultyFilter = selectedDiff;
+
+                    // 🔥 3. Actualizar filtro de parte del cuerpo
+                    var selectedBody = translationBodyPart.FirstOrDefault(x => x.Value == (string)filterBodyPartEntry.SelectedItem).Key;
+                    _filterViewModel.BodyPartFilter = selectedBody;
+
+                    // 🔥 4. Actualizar filtro de texto general (recuperar el buscador global si existe)
+                    _filterViewModel.SearchText = filterNameEntry.Text ?? string.Empty;
+
+                    // 🔥 5. Cerrar modal
+                    await Navigation.PopModalAsync();
+                })
+            };
+
+            var cancelButton = new Button
+            {
+                Text = "Cancelar",
+                Command = new Command(async () => await Navigation.PopModalAsync())
+            };
+
+            // UI FINAL
+            var modalPage = new ContentPage
+            {
+                BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
+                Content = new Border
+                {
+                    BackgroundColor = Color.FromArgb("#2E1E1B"),
+                    StrokeShape = new RoundRectangle { CornerRadius = 20 },
+                    Margin = 1,
+                    VerticalOptions = LayoutOptions.Center,
+                    HorizontalOptions = LayoutOptions.Center,
+                    Content = new VerticalStackLayout
+                    {
+                        Padding = 1,
+                        Spacing = 5,
+                        Children =
+                {
+                    new Label
+                    {
+                        Text = "Buscar Rutina",
+                        FontSize = 24,
+                        TextColor = Color.FromArgb("#C77B30"),
+                        HorizontalOptions = LayoutOptions.Fill,
+                        HorizontalTextAlignment = TextAlignment.Center,
+                        FontFamily = "EatMeAlive"
+                    },
+                    filterNameEntry,
+                    filterDificultyEntry,
+                    filterBodyPartEntry,
+
+                    new HorizontalStackLayout
+                    {
+                        Spacing = 10,
+                        Children =
+                        {
+                            filterButton,
+                            cancelButton
+                        }
+                    }
+                }
+                    }
+                }
+            };
+
+            Content = modalPage.Content;
+            BackgroundColor = modalPage.BackgroundColor;
+        }
+
+        private async Task ShowCountdown(TimeSpan time)
         {
             var tcs = new TaskCompletionSource<bool>();
             int segundosRestantes = (int)time.TotalSeconds;

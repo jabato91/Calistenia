@@ -76,7 +76,7 @@ public partial class RoutinesPage : ContentPage
 
     private async void createRoutine(object sender, TappedEventArgs e)
     {
-        await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, routinesViewModel, null, ExerciseMode.Create));
+        await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, routinesViewModel, null, ExerciseMode.create));
     } 
     
     private async void OnExpanded(object sender, ExpandedChangedEventArgs e)
@@ -99,5 +99,9 @@ public partial class RoutinesPage : ContentPage
         }
        
     }
+    private async void filterExercises(object sender, EventArgs e)
+    {
 
+        await Navigation.PushModalAsync(new RoutineDetailPage( filterViewModel: routinesViewModel, mode: ExerciseMode.filter));
+    }
 }

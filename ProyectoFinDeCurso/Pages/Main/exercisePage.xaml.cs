@@ -77,6 +77,12 @@ public partial class exercisePage : ContentPage
    
     private async void createExercise(object sender, TappedEventArgs e)
     {
-        await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _filter,null, ExerciseMode.Create));
+        await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _filter,null, ExerciseMode.create));
+    }
+
+    private async void filterExercises(object sender, EventArgs e)
+    {
+
+        await Navigation.PushModalAsync(new ExerciseDetailPage(filter: _filter, mode: ExerciseMode.filter));
     }
 }

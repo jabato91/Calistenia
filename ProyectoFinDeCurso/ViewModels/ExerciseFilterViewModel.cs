@@ -12,6 +12,9 @@ namespace ProyectoFinDeCurso.ViewModels
     {
         private readonly DbService _dbService;
         private string _searchText = string.Empty;
+        private static dificultyEnum _dificultyFilter = dificultyEnum.nothing;
+        private static bodyPartEnum _bodyPartFilter = bodyPartEnum.nothing;
+        private static String _nameRoutineFilter = string.Empty;
         private Brush _auraColor;
         private static userTypeEnum _userType;
         // Lista completa de ejercicios
@@ -40,14 +43,14 @@ namespace ProyectoFinDeCurso.ViewModels
                 {
                     _searchText = value;
                     OnPropertyChanged(nameof(SearchText));
-                    OnPropertyChanged(nameof(FilteredExercises)); // actualizar la vista
+                    OnPropertyChanged(nameof(FilteredExercisesByName)); // actualizar la vista
                     OnPropertyChanged(nameof(ExercisesCount));
                 }
             }
         }
 
         // Propiedad calculada para filtrar ejercicios sin vaciar la colección
-        public IEnumerable<ExerciseGroup> FilteredExercises
+        public IEnumerable<ExerciseGroup> FilteredExercisesByName
         {
             get
             {
@@ -58,6 +61,73 @@ namespace ProyectoFinDeCurso.ViewModels
                 return filtered
                     .GroupBy(e => e.muscleGroupId)
                     .Select(g => new ExerciseGroup(g.Key, g.OrderBy(e => e.dificulty)))
+                    .ToList();
+            }
+        }
+        public string NameRoutineFilter
+        {
+            get => _nameRoutineFilter;
+            set
+            {
+                if (_nameRoutineFilter != value)
+                {
+                    _nameRoutineFilter = value;
+                    OnPropertyChanged(nameof(SearchText));
+                    OnPropertyChanged(nameof(FilteredExercises));
+                }
+            }
+        }
+        public bodyPartEnum BodyPartFilter
+        {
+            get => _bodyPartFilter;
+            set
+            {
+                if (_bodyPartFilter != value)
+                {
+                    _bodyPartFilter = value;
+                    OnPropertyChanged(nameof(_bodyPartFilter));
+                    OnPropertyChanged(nameof(FilteredExercises));
+                }
+            }
+        }
+        public dificultyEnum DificultyFilter
+        {
+            get => _dificultyFilter;
+            set
+            {
+                if (_dificultyFilter != value)
+                {
+                    _dificultyFilter = value;
+                    OnPropertyChanged(nameof(_dificultyFilter));
+                    OnPropertyChanged(nameof(FilteredExercises));
+                }
+            }
+        }
+        public IEnumerable<ExerciseGroup> FilteredExercises
+        {
+            get
+            {
+                IEnumerable<Exercise> filtered = Exercises;
+
+                if (!string.IsNullOrWhiteSpace(NameRoutineFilter))
+                {
+                    filtered = filtered.Where(r =>
+                        r.name?.Contains(NameRoutineFilter, StringComparison.OrdinalIgnoreCase) ?? false);
+                }
+
+                if (BodyPartFilter != bodyPartEnum.nothing)
+                {
+                    filtered = filtered.Where(r => r.muscleGroupId == BodyPartFilter);
+                }
+
+                if (DificultyFilter != dificultyEnum.nothing)
+                {
+                    filtered = filtered.Where(r => r.dificulty == DificultyFilter);
+                }
+
+                return filtered
+                    .GroupBy(r => r.muscleGroupId)
+                    .Select(g => new ExerciseGroup(g.Key, g))
                     .ToList();
             }
         }

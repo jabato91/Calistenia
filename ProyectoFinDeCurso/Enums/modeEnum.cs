@@ -8,9 +8,10 @@ namespace ProyectoFinDeCurso.Enums
 {
     public enum ExerciseMode
     {
-        Create,
+        nothing,
         Edit,
         View,
-
+        filter,
+        create
     }
 }

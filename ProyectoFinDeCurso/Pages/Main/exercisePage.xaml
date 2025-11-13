@@ -41,12 +41,16 @@
                              VerticalOptions="Fill">
 
             <!-- Barra de búsqueda -->
-            <SearchBar Placeholder="Buscar ejercicio"
-                       Text="{Binding SearchText}"
-                       BackgroundColor="#2B2B2B"
-                       TextColor="#E0CFC2"
-                       PlaceholderColor="#A59D95"/>
-
+            <HorizontalStackLayout
+             HorizontalOptions="Fill">
+                <SearchBar Placeholder="Buscar ejercicio por nombre"
+                Text="{Binding SearchText}"
+                BackgroundColor="#2B2B2B"
+                TextColor="#E0CFC2"
+                PlaceholderColor="#A59D95"/>
+                <Button Text="Filtrar"
+                Clicked="filterExercises"/>
+            </HorizontalStackLayout>
             <!-- CollectionView de ejercicios -->
             <CollectionView ItemsSource="{Binding FilteredExercises}"
                 IsGrouped="True"

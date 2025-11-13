@@ -23,7 +23,8 @@ namespace ProyectoFinDeCurso.Models
         public bodyPartEnum muscleGroup { get; set; } = bodyPartEnum.nothing;
         [Column("typeUser")]
         public userTypeEnum typeUser { get; set; } = userTypeEnum.nothing;
-
+        [Column("difficultyRoutine")]
+        public dificultyEnum difficulty { get; set; } = dificultyEnum.nothing;
         [Ignore] 
         public ObservableCollection<Exercise> Exercises { get; set; } = new(); //obtiene los ejercicios de la rutina
         [Ignore]

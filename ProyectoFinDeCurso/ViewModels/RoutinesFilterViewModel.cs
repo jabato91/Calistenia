@@ -11,6 +11,9 @@ namespace ProyectoFinDeCurso.ViewModels
         private readonly DbService _dbService;
         private string _searchText = string.Empty;
         private static userTypeEnum _userType;
+        private static dificultyEnum _dificultyFilter = dificultyEnum.nothing;
+        private static bodyPartEnum _bodyPartFilter = bodyPartEnum.nothing;
+        private static String _nameRoutineFilter = string.Empty;
         public ObservableCollection<Routines> Routines { get; set; } = new();
 
         public RoutinesFilterViewModel(DbService dbService, userTypeEnum userType)
@@ -30,19 +33,86 @@ namespace ProyectoFinDeCurso.ViewModels
                 {
                     _searchText = value;
                     OnPropertyChanged(nameof(SearchText));
+                    OnPropertyChanged(nameof(FilteredRoutinesForName));
+                }
+            }
+        }
+        public string NameRoutineFilter
+        {
+            get => _nameRoutineFilter;
+            set
+            {
+                if (_nameRoutineFilter != value)
+                {
+                    _nameRoutineFilter = value;
+                    OnPropertyChanged(nameof(SearchText));
+                    OnPropertyChanged(nameof(FilteredRoutinesForName));
+                }
+            }
+        }
+        public bodyPartEnum BodyPartFilter
+        {
+            get => _bodyPartFilter;
+            set
+            {
+                if (_bodyPartFilter != value)
+                {
+                    _bodyPartFilter = value;
+                    OnPropertyChanged(nameof(_bodyPartFilter));
                     OnPropertyChanged(nameof(FilteredRoutines));
                 }
             }
         }
-
+        public dificultyEnum DificultyFilter
+        {
+            get => _dificultyFilter;
+            set
+            {
+                if (_dificultyFilter != value)
+                {
+                    _dificultyFilter = value;
+                    OnPropertyChanged(nameof(_dificultyFilter));
+                    OnPropertyChanged(nameof(FilteredRoutines));
+                }
+            }
+        }
         // 🔹 Agrupación por parte del cuerpo
-        public IEnumerable<RoutineGroup> FilteredRoutines
+        public IEnumerable<RoutineGroup> FilteredRoutinesForName
         {
             get
             {
                 var filtered = string.IsNullOrWhiteSpace(SearchText)
                     ? Routines
                     : Routines.Where(r => r.nameRoutine.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+
+                return filtered
+                    .GroupBy(r => r.muscleGroup)
+                    .Select(g => new RoutineGroup(g.Key, g))
+                    .ToList();
+            }
+        }
+        public IEnumerable<RoutineGroup> FilteredRoutines
+        {
+            get
+            {
+                IEnumerable<Routines> filtered = Routines;
+
+
+                if (!string.IsNullOrWhiteSpace(NameRoutineFilter))
+                {
+                    filtered = filtered.Where(r =>
+                        r.nameRoutine?.Contains(NameRoutineFilter, StringComparison.OrdinalIgnoreCase) ?? false);
+                }
+
+                if (BodyPartFilter != bodyPartEnum.nothing)
+                {
+                    filtered = filtered.Where(r => r.muscleGroup == BodyPartFilter);
+                }
+
+                if (DificultyFilter != dificultyEnum.nothing)
+                {
+                    filtered = filtered.Where(r => r.difficulty == DificultyFilter);
+                }
 
                 return filtered
                     .GroupBy(r => r.muscleGroup)
