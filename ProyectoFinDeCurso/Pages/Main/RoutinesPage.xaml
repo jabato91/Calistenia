@@ -38,7 +38,7 @@
             <HorizontalStackLayout
                 HorizontalOptions="Fill">
             <SearchBar Placeholder="Buscar ejercicio por nombre"
-           Text="{Binding SearchText}"
+           Text="{Binding NameRoutineFilter}"
            BackgroundColor="#2B2B2B"
            TextColor="#E0CFC2"
            PlaceholderColor="#A59D95"/>
@@ -75,29 +75,59 @@
 
                                             <!-- Header de la rutina -->
                                             <toolkit:Expander.Header>
-                                                <Border Stroke="#171616" StrokeThickness="4"
-                                                Background="#3B2523" Padding="16,8"
-                                                HorizontalOptions="Fill">
+                                                <Border
+        Background="#3B2523"
+        Stroke="#171616"
+        StrokeThickness="4"
+        Padding="0"
+        HorizontalOptions="Fill">
+
                                                     <Border.StrokeShape>
                                                         <RoundRectangle CornerRadius="40,40,0,0"/>
                                                     </Border.StrokeShape>
 
-                                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" VerticalOptions="Center">
-                                                        <Label Text="{Binding nameRoutine}"
-                                                       FontAttributes="Bold" FontSize="20"
-                                                       TextColor="#C77B30" VerticalOptions="Center"
-                                                       FontFamily="EatMeAlive"/>
-                                                        
-                                                        <Border Stroke="#F5E8E0" StrokeThickness="4"
-                                                        Background="#F5E8E0" Padding="8"
-                                                        HorizontalOptions="End" Grid.Column="3">
-                                                            <Border.StrokeShape>
-                                                                <RoundRectangle CornerRadius="40,40,0,0"/>
-                                                            </Border.StrokeShape>
-                                                            <Image Source="{Binding image}"
-                                                           Aspect="AspectFit" WidthRequest="40" HeightRequest="40"/>
-                                                        </Border>
+                                                    <!-- CONTENEDOR INTERNO DEL BORDE -->
+                                                    <Grid RowDefinitions="Auto,Auto">
 
+                                                        <!-- 🌟 AURA SUPERIOR CON DEGRADADO 🌟 -->
+                                                        <BoxView 
+                Grid.Row="0"
+                HeightRequest="20"
+                Background="{Binding AuraColor}"
+                Opacity="0.6"
+                CornerRadius="40,40,0,0"
+                />
+
+                                                        <!-- CONTENIDO DEL HEADER -->
+                                                        <Grid Grid.Row="1"
+                  ColumnDefinitions="*,Auto,Auto,Auto"
+                  Padding="16,8">
+
+                                                            <Label Text="{Binding nameRoutine}"
+                       FontAttributes="Bold"
+                       FontSize="20"
+                       TextColor="#C77B30"
+                       VerticalOptions="Center"
+                       FontFamily="EatMeAlive" />
+
+                                                            <!-- Imagen derecha -->
+                                                            <Border Stroke="#F5E8E0"
+                        StrokeThickness="4"
+                        Background="#F5E8E0"
+                        Padding="8"
+                        HorizontalOptions="End"
+                        Grid.Column="3">
+                                                                <Border.StrokeShape>
+                                                                    <RoundRectangle CornerRadius="40,40,0,0"/>
+                                                                </Border.StrokeShape>
+
+                                                                <Image Source="{Binding image}"
+                           Aspect="AspectFit"
+                           WidthRequest="40"
+                           HeightRequest="40"/>
+                                                            </Border>
+
+                                                        </Grid>
                                                     </Grid>
                                                 </Border>
                                             </toolkit:Expander.Header>
@@ -117,17 +147,17 @@
                                                                      TextColor="#E0CFC2" Grid.Column="0"
                                                                      Margin="10,0" Padding="3"/>
                                                                     <Label Text="{Binding sets}" FontSize="16"
-                     TextColor="#E0CFC2" Grid.Column="1"
-                     HorizontalOptions="End" Margin="10,0"
-                     FontFamily="calculator"/>
+                                                                     TextColor="#E0CFC2" Grid.Column="1"
+                                                                     HorizontalOptions="End" Margin="10,0"
+                                                                     FontFamily="calculator"/>
                                                                     <Label Text="X" FontSize="16"
-                     TextColor="#E0CFC2" Grid.Column="2"
-                     HorizontalOptions="End" Margin="10,0"
-                     FontFamily="calculator"/>
+                                                                         TextColor="#E0CFC2" Grid.Column="2"
+                                                                         HorizontalOptions="End" Margin="10,0"
+                                                                         FontFamily="calculator"/>  
                                                                     <Label Text="{Binding reps}" FontSize="16"
-                     TextColor="#E0CFC2" Grid.Column="3"
-                     HorizontalOptions="End" Margin="10,0"
-                     FontFamily="calculator"/>
+                                                                     TextColor="#E0CFC2" Grid.Column="3"
+                                                                     HorizontalOptions="End" Margin="10,0"
+                                                                     FontFamily="calculator"/>
 
                                                                     <!-- Bordes -->
                                                                     <Border WidthRequest="3" Stroke="#171616" StrokeThickness="20"
@@ -189,7 +219,8 @@
     Margin="30,10"
     HorizontalOptions="Fill"
     AutomationProperties.Name="Crear rutina"
-    AutomationProperties.HelpText="Botón para crear una rutina">
+    AutomationProperties.HelpText="Botón para crear una rutina"
+                x:Name="Create">
 
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer

@@ -27,7 +27,10 @@ public partial class exercisePage : ContentPage
         // Solo asignamos el BindingContext, no llamamos OnAppearing manualmente
         _filter = new ExerciseFilterViewModel(_dbService,_userType);
         BindingContext = _filter;
-
+        if (!_userType.Equals(userTypeEnum.admin))
+        {
+            Create.IsVisible = false;
+        }
     }
 
     private async void OnExerciseTapped(object sender, EventArgs e)
@@ -36,7 +39,7 @@ public partial class exercisePage : ContentPage
         {
             if ((sender as Border)?.BindingContext is Exercise selectedExercise)
             {
-                await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _filter,selectedExercise, ExerciseMode.View));
+                await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _filter,selectedExercise, ExerciseMode.View ));
             }
         }
         catch (Exception ex)

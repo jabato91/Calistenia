@@ -64,11 +64,11 @@ namespace ProyectoFinDeCurso.ViewModels
         {
             List<Routines> routineList = new List<Routines>
             {
-                new Routines { nameRoutine = "Rutina Pierna", description = "Rutina completa para trabajar pierna.", image = "pie.png", muscleGroup = Enums.bodyPartEnum.leg,typeUser = userTypeEnum.admin,difficulty = dificultyEnum.easy},
-                 new Routines { nameRoutine = "Rutina Triceps", description = "Rutina completa para trabajar brazo.", image = "triceps.png", muscleGroup = Enums.bodyPartEnum.triceps,typeUser = userTypeEnum.admin, difficulty = dificultyEnum.medium },
-                 new Routines { nameRoutine = "Rutina Pecho", description = "Rutina completa para trabajar pecho.", image = "pecho.png", muscleGroup = Enums.bodyPartEnum.chest,typeUser = userTypeEnum.admin, difficulty = dificultyEnum.hard },
-                  new Routines { nameRoutine = "Rutina Espalda", description = "Rutina completa para trabajar espalda.", image = "espalda.png", muscleGroup = Enums.bodyPartEnum.back,typeUser = userTypeEnum.admin,difficulty = dificultyEnum.easy },
-                  new Routines { nameRoutine = "Rutina Full Planche", description = "Rutina completa para sacar la full planche.", image = "full_planche.png", muscleGroup = Enums.bodyPartEnum.isometric,typeUser = userTypeEnum.admin, difficulty = dificultyEnum.extreme }
+                new Routines { nameRoutine = "Rutina Pierna", description = "Rutina completa para trabajar pierna.", image = "pie.png", muscleGroup = Enums.bodyPartEnum.leg,typeUser = userTypeEnum.admin,difficulty = dificultyEnum.easy, userID = 0},
+                 new Routines { nameRoutine = "Rutina Triceps", description = "Rutina completa para trabajar brazo.", image = "triceps.png", muscleGroup = Enums.bodyPartEnum.triceps,typeUser = userTypeEnum.admin, difficulty = dificultyEnum.medium, userID = 0 },
+                 new Routines { nameRoutine = "Rutina Pecho", description = "Rutina completa para trabajar pecho.", image = "pecho.png", muscleGroup = Enums.bodyPartEnum.chest,typeUser = userTypeEnum.admin, difficulty = dificultyEnum.hard, userID = 0 },
+                  new Routines { nameRoutine = "Rutina Espalda", description = "Rutina completa para trabajar espalda.", image = "espalda.png", muscleGroup = Enums.bodyPartEnum.back,typeUser = userTypeEnum.admin,difficulty = dificultyEnum.easy, userID = 0 },
+                  new Routines { nameRoutine = "Rutina Full Planche", description = "Rutina completa para sacar la full planche.", image = "full_planche.png", muscleGroup = Enums.bodyPartEnum.isometric,typeUser = userTypeEnum.admin, difficulty = dificultyEnum.extreme, userID = 0 }
             };
             return routineList;
         }

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProyectoFinDeCurso.ViewModels
+ namespace ProyectoFinDeCurso.ViewModels
 {
     public class ExerciseGroup : List<Exercise>
     {

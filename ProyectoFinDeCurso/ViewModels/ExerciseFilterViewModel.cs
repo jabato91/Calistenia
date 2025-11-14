@@ -33,37 +33,9 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-        // Texto de búsqueda
-        public string SearchText
-        {
-            get => _searchText;
-            set
-            {
-                if (_searchText != value)
-                {
-                    _searchText = value;
-                    OnPropertyChanged(nameof(SearchText));
-                    OnPropertyChanged(nameof(FilteredExercisesByName)); // actualizar la vista
-                    OnPropertyChanged(nameof(ExercisesCount));
-                }
-            }
-        }
+       
 
-        // Propiedad calculada para filtrar ejercicios sin vaciar la colección
-        public IEnumerable<ExerciseGroup> FilteredExercisesByName
-        {
-            get
-            {
-                var filtered = string.IsNullOrWhiteSpace(SearchText)
-                    ? Exercises
-                    : Exercises.Where(e => e.name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
-
-                return filtered
-                    .GroupBy(e => e.muscleGroupId)
-                    .Select(g => new ExerciseGroup(g.Key, g.OrderBy(e => e.dificulty)))
-                    .ToList();
-            }
-        }
+        
         public string NameRoutineFilter
         {
             get => _nameRoutineFilter;
@@ -72,7 +44,7 @@ namespace ProyectoFinDeCurso.ViewModels
                 if (_nameRoutineFilter != value)
                 {
                     _nameRoutineFilter = value;
-                    OnPropertyChanged(nameof(SearchText));
+                    OnPropertyChanged(nameof(NameRoutineFilter));
                     OnPropertyChanged(nameof(FilteredExercises));
                 }
             }
@@ -127,7 +99,10 @@ namespace ProyectoFinDeCurso.ViewModels
 
                 return filtered
                     .GroupBy(r => r.muscleGroupId)
-                    .Select(g => new ExerciseGroup(g.Key, g))
+                    .Select(g => new ExerciseGroup(
+                        g.Key,
+                        g.OrderBy(r => r.dificulty)   
+                    ))
                     .ToList();
             }
         }

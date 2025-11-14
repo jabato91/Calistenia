@@ -25,6 +25,8 @@ namespace ProyectoFinDeCurso.Models
         public userTypeEnum typeUser { get; set; } = userTypeEnum.nothing;
         [Column("difficultyRoutine")]
         public dificultyEnum difficulty { get; set; } = dificultyEnum.nothing;
+        [Column("userID")]
+        public int userID { get; set; } = -1; 
         [Ignore] 
         public ObservableCollection<Exercise> Exercises { get; set; } = new(); //obtiene los ejercicios de la rutina
         [Ignore]
@@ -42,6 +44,36 @@ namespace ProyectoFinDeCurso.Models
                     _ => throw new NotImplementedException(),
                 };
             }
+        }
+        [Ignore]
+        public Brush AuraColor
+        {
+            get
+            {
+                return difficulty switch
+                {
+                    dificultyEnum.easy => CreateBrush(Colors.LightGreen, Colors.Green),
+                    dificultyEnum.medium => CreateBrush(Colors.Orange, Colors.DarkOrange),
+                    dificultyEnum.hard => CreateBrush(Colors.Red, Colors.DarkRed),
+                    dificultyEnum.extreme => CreateBrush(Colors.Purple, Colors.DarkMagenta),
+                    _ => CreateBrush(Colors.Gray, Colors.DarkGray),
+                };
+            }
+        }
+
+        // Método privado para crear gradientes verticales
+        private Brush CreateBrush(Color start, Color end)
+        {
+            return new LinearGradientBrush
+            {
+                StartPoint = new Point(0.5, 1.5),
+                EndPoint = new Point(0.5, 1),
+                GradientStops =
+        {
+            new GradientStop(start.WithAlpha(0.75f), 0f),  // 25% opaco
+            new GradientStop(end.WithAlpha(0.5f), 1f)      // 0% opaco
+        }
+            };
         }
     }
 }

@@ -44,7 +44,7 @@
             <HorizontalStackLayout
              HorizontalOptions="Fill">
                 <SearchBar Placeholder="Buscar ejercicio por nombre"
-                Text="{Binding SearchText}"
+                Text="{Binding NameRoutineFilter}"
                 BackgroundColor="#2B2B2B"
                 TextColor="#E0CFC2"
                 PlaceholderColor="#A59D95"/>
@@ -189,7 +189,8 @@
                 Margin="30,10"
                 HorizontalOptions="Fill"
                 AutomationProperties.Name="Crear rutina"
-                AutomationProperties.HelpText="Botón para crear una rutina">
+                AutomationProperties.HelpText="Botón para crear una rutina"
+                x:Name="Create">
 
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer

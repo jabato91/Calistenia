@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Views;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Layouts;
 using ProyectoFinDeCurso.Enums;
@@ -14,13 +15,15 @@ namespace ProyectoFinDeCurso.Pages.Detail
     {
         private readonly ExerciseMode _mode;
         private readonly Routines _routine;
+        private static userTypeEnum _userType;
         private RoutinesFilterViewModel? _filterViewModel;
         private readonly DbService _dbService;
         private static TimeSpan timeBetweenReps = TimeSpan.Zero;
         private static TimeSpan timeBetweenExercises = TimeSpan.Zero;
 
         private Boolean firstExercise = false;
-        public RoutineDetailPage(DbService? dbService = null,RoutinesFilterViewModel? filterViewModel = null, Routines? routine = null,ExerciseMode mode = ExerciseMode.nothing) { 
+        public RoutineDetailPage(DbService? dbService = null,RoutinesFilterViewModel? filterViewModel = null,userTypeEnum userType = userTypeEnum.user ,Routines? routine = null,ExerciseMode mode = ExerciseMode.nothing) {
+            _userType = userType;
             _filterViewModel = filterViewModel;
             _routine = routine;
             _mode = mode;
@@ -50,7 +53,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
             }
         }
 
-        private void BuildViewUI()
+        private async void BuildViewUI()
         {
             ObservableCollection<Exercise> exercisesInRoutine = new ObservableCollection<Exercise>();
             var nameRoutine = new Label
@@ -109,7 +112,6 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 BackgroundColor = Colors.White,
                 StrokeShape = new RoundRectangle { CornerRadius = 10 },
                 Padding = 8,
-                IsVisible = false,
                 Margin = new Thickness(0, 30, 10, 0),
                 Content = new VerticalStackLayout
                 {
@@ -121,6 +123,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     }
                 }
             };
+            var userId = await SecureStorage.GetAsync("user_id");
+            var user = await _dbService.GetUserById(int.Parse(userId));
+            if (!_userType.Equals(userTypeEnum.admin) && !_routine.userID.Equals(user.UserID))
+            {
+                menuFrame.IsVisible = false;
+                menuButton.IsVisible = false;
+            }
             var eleccionExercise = exercisesInRoutine.FirstOrDefault(x => !x.exerciseFinished && !x.expaded);
             if (eleccionExercise != null)
             {
@@ -144,9 +153,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     headerLabel.SetBinding(Label.TextProperty, "name");
                     var expanderExercise = new Expander
                     {
-                        Header = headerLabel
+                        Header = headerLabel,
+                         
                     };
-
+                    
                     // Enlazamos las propiedades del modelo
                     expanderExercise.SetBinding(Expander.IsExpandedProperty, "expaded", BindingMode.TwoWay);
                     expanderExercise.SetBinding(Expander.IsEnabledProperty, "expaded", BindingMode.TwoWay);
@@ -154,6 +164,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     {
                         
                         var exercise = (Exercise)((Expander)s).BindingContext;
+                        if(exercise.expaded && !((Expander)s).IsExpanded)
+                        {
+                            ((Expander)s).IsExpanded = true;
+                        }
                         if (exercise != null)
                         {
                             if(eleccionExercise.Equals(exercise))
@@ -170,15 +184,22 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             {
                                 ((Expander)s).IsExpanded = true;
                                 ((Expander)s).IsEnabled = true;
+                                
                             }
                         }
                     };
                     var startButton = new Button
                     {
+                        BackgroundColor = Color.FromArgb("#3B2523"),
+                        TextColor = Color.FromArgb("#CFC86D"),
+                        HorizontalOptions = LayoutOptions.Fill,
+                        VerticalOptions = LayoutOptions.Fill,
+                        
+                        FontFamily = "Forresten",
                         Text = "Empezar Ejercicio",
                         CommandParameter = new Binding(".") // El objeto Exercise actual
                     };
-
+                    
                     // Evento Clicked para manejar el botón
                     startButton.Clicked += async (s, e) =>
                     {
@@ -428,7 +449,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     expanderExercise.Content = new HorizontalStackLayout
                     {
                         Padding = new Thickness(10),
-
+                        HorizontalOptions = LayoutOptions.Center, // <-- Este es el correcto en MAUI
+                        VerticalOptions = LayoutOptions.Center,
                         Children =
                         {
                             startButton
@@ -1342,8 +1364,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 VerticalOptions = LayoutOptions.Fill
             };
 
-            // Menú flotante (animación fade)
-            menuFrame.IsVisible = true;
+            
             menuFrame.Opacity = 0;
             AbsoluteLayout.SetLayoutBounds(menuFrame, new Rect(1, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize));
             AbsoluteLayout.SetLayoutFlags(menuFrame, AbsoluteLayoutFlags.PositionProportional);
@@ -1731,7 +1752,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                                         // Inicializar propiedades de control
                                                         newExercise.exerciseFinished = false;
                                                         newExercise.expaded = false;
-
+                                                        
+                                                        
                                                         // Agregar la copia a la selección
                                                         exerciseSelection.Add(newExercise);
 
@@ -2137,7 +2159,18 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 {
                                     var selectedTranslation = bodyPartEnumPicker.SelectedItem.ToString();
                                     var selectedEnum = translation.FirstOrDefault(x => x.Value == selectedTranslation).Key;
-                                    Routines createRoutine = new Routines{nameRoutine = nameRoutineEntry.Text,description = DescriptionRoutineEntry.Text,muscleGroup = selectedEnum,typeUser = userTypeEnum.all};
+                                    var userId = await SecureStorage.GetAsync("user_id");
+                                    var user = await _dbService.GetUserById(int.Parse(userId));
+                                    Routines createRoutine;
+                                    if (user.userType.Equals(userTypeEnum.admin))
+                                    {
+                                        createRoutine = new Routines{nameRoutine = nameRoutineEntry.Text,description = DescriptionRoutineEntry.Text,muscleGroup = selectedEnum,typeUser = userTypeEnum.all,userID = 0};
+                                    }
+                                    else
+                                    {
+                                        createRoutine = new Routines{nameRoutine = nameRoutineEntry.Text,description = DescriptionRoutineEntry.Text,muscleGroup = selectedEnum,typeUser = userTypeEnum.all,userID = user.UserID};
+                                    }
+
                                     await _dbService.Create(createRoutine);
 
                                     foreach (Exercise exercise in exercisesInRoutine)
@@ -2243,9 +2276,6 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     // 🔥 3. Actualizar filtro de parte del cuerpo
                     var selectedBody = translationBodyPart.FirstOrDefault(x => x.Value == (string)filterBodyPartEntry.SelectedItem).Key;
                     _filterViewModel.BodyPartFilter = selectedBody;
-
-                    // 🔥 4. Actualizar filtro de texto general (recuperar el buscador global si existe)
-                    _filterViewModel.SearchText = filterNameEntry.Text ?? string.Empty;
 
                     // 🔥 5. Cerrar modal
                     await Navigation.PopModalAsync();
@@ -2386,5 +2416,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
             timer.Start();
             await tcs.Task;
         }
+       
+       
     }
 }

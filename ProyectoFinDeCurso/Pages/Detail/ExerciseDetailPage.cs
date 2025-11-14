@@ -54,7 +54,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
 
 
-        public ExerciseDetailPage(DbService? dbService = null,ExerciseFilterViewModel? filter = null,Exercise? exercise = null,ExerciseMode mode = ExerciseMode.filter)
+        public ExerciseDetailPage(DbService? dbService = null,ExerciseFilterViewModel? filter = null,Exercise? exercise = null,ExerciseMode mode = ExerciseMode.nothing, userTypeEnum typeUser = userTypeEnum.nothing)
         {
             _dbService = dbService;
             _filter = filter;
@@ -658,8 +658,6 @@ else
                     var selectedBody = translationBodyPart.FirstOrDefault(x => x.Value == (string)filterBodyPartEntry.SelectedItem).Key;
                     _filter.BodyPartFilter = selectedBody;
 
-                    // 🔥 4. Actualizar filtro de texto general (recuperar el buscador global si existe)
-                    _filter.SearchText = filterNameEntry.Text ?? string.Empty;
 
                     // 🔥 5. Cerrar modal
                     await Navigation.PopModalAsync();
