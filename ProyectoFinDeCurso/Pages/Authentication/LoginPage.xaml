@@ -10,22 +10,27 @@
         Padding="40"
         VerticalOptions="Center"
         HorizontalOptions="Center">
+        <!--Contenedor vertical donde contiene todos los controladores-->
 
-        <!-- Título -->
         <Label Text="Bienvenido"
                FontSize="28"
                FontAttributes="Bold"
                TextColor="#333333"
                HorizontalOptions="Center" />
+        <!--Texto de bienbenida-->
 
-        <Frame HasShadow="True"
-               CornerRadius="20"
-               BackgroundColor="White"
-               Padding="25"
-               WidthRequest="300">
+
+        <Border BackgroundColor="White"
+            Padding="25"
+            WidthRequest="300">
+           <!--Border donde almacena el contenido para iniciar sesión, con el que podemos deficinir el contenido y el borde que está detrás-->
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="20" />
+            </Border.StrokeShape>
+            
 
             <VerticalStackLayout Spacing="20">
-
+            <!--Necesario para definir el interior de Border-->
                 <!-- Campo de Correo -->
                 <Entry x:Name="loginEmail"
                        Placeholder="Correo Electrónico"
@@ -67,6 +72,6 @@
                         />
 
             </VerticalStackLayout>
-        </Frame>
+        
     </VerticalStackLayout>
 </ContentPage>

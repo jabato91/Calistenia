@@ -8,18 +8,18 @@ namespace ProyectoFinDeCurso.Pages;
 public partial class LoginPage : ContentPage
 {
 
-	public DbService _dbService;
+	public DbService _dbService; // variable que obtiene la base de datos
     public LoginPage(DbService dbService)
 	{
 		InitializeComponent();
-        _dbService = dbService;
+        _dbService = dbService; //obtiene la base de datos ya iniciada
     }
 
     [Obsolete]
     private async void LoginButton(object sender, EventArgs e)
 	{
-		String emailInput = loginEmail.Text;
-        String passwordInput = loginPassword.Text;
+		String emailInput = loginEmail.Text; //obtiene el correo directamente del xaml
+        String passwordInput = loginPassword.Text; //obtiene la contraseña directamente del xaml
 
         if (string.IsNullOrWhiteSpace(emailInput) || string.IsNullOrWhiteSpace(passwordInput)) //Verifica que los campos no estén vacíos
         {

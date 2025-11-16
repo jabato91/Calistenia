@@ -88,82 +88,97 @@ namespace ProyectoFinDeCurso.Pages.Detail
         {
             BackgroundColor = Color.FromArgb("#80000000");
 
+            var titleLabel = new Label
+            {
+                Text = _selectedExercise.name,
+                FontSize = 26,
+                HorizontalOptions = LayoutOptions.Center,
+                TextColor = Color.FromArgb("#C49362"),
+                FontFamily = "EatMeAlive"
+            };
+
+            var descriptionLabel = new Label
+            {
+                Text = _selectedExercise.description,
+                FontSize = 16,
+                HorizontalTextAlignment = TextAlignment.Center,
+                TextColor = Colors.White,
+                FontFamily = "ComfortaaBold",
+                Margin = new Thickness(10, 0)
+            };
+
+            var materialsLabel = new Label
+            {
+                Text = _selectedExercise.materials,
+                FontSize = 16,
+                HorizontalTextAlignment = TextAlignment.Center,
+                TextColor = Colors.YellowGreen,
+                FontFamily = "ComfortaaBold",
+                Margin = new Thickness(10, 0)
+            };
+
+           
+
+            var videoElement = new MediaElement
+            {
+                Source = GetVideoSource(_selectedExercise.video),
+                Aspect = Aspect.AspectFit,
+                ShouldShowPlaybackControls = true,
+                HeightRequest = 325,
+                WidthRequest = 500
+            };
+
+            var videoFrame = new Frame
+            {
+                CornerRadius = 15,
+                HasShadow = true,
+                BackgroundColor = Colors.Black,
+                Padding = 0,
+                Margin = new Thickness(0, 10),
+                Content = videoElement
+            };
+
+
+            var exitButton = new Button
+            {
+                Text = "Salir",
+                BackgroundColor = Color.FromArgb("ffd700"),
+                TextColor = Colors.White,
+                CornerRadius = 3,
+                FontFamily = "ComfortaaBold",
+                FontSize = 16,
+                Padding = new Thickness(10, 6),
+                HorizontalOptions = LayoutOptions.Fill,
+                Command = new Command(async () => await Navigation.PopModalAsync())
+            };
+
             Content = new Grid
             {
                 VerticalOptions = LayoutOptions.Center,
                 HorizontalOptions = LayoutOptions.Center,
                 Children =
+    {
+        new Frame
+        {
+            BackgroundColor = Color.FromArgb("#2E1E1B"),
+            CornerRadius = 20,
+            Padding = new Thickness(20, 25),
+            HasShadow = true,
+            Content = new VerticalStackLayout
+            {
+                Spacing = 15,
+                HorizontalOptions = LayoutOptions.Center,
+                Children =
                 {
-                    new Frame
-                    {
-                        BackgroundColor = Color.FromArgb("#2E1E1B"),
-                        CornerRadius = 20,
-                        Padding = new Thickness(20, 25),
-                        HasShadow = true,
-                        Content = new VerticalStackLayout
-                        {
-                            Spacing = 15,
-                            HorizontalOptions = LayoutOptions.Center,
-                            Children =
-                            {
-                                new Label
-                                {
-                                    Text = _selectedExercise.name,
-                                    FontSize = 26,
-                                    HorizontalOptions = LayoutOptions.Center,
-                                    TextColor = Color.FromArgb("#C49362"),
-                                    FontFamily = "EatMeAlive"
-                                },
-                                new Label
-                                {
-                                    Text = _selectedExercise.description,
-                                    FontSize = 16,
-                                    HorizontalTextAlignment = TextAlignment.Center,
-                                    TextColor = Colors.White,
-                                    FontFamily = "ComfortaaBold",
-                                    Margin = new Thickness(10, 0)
-                                },
-                                new Label
-                                {
-                                    Text = _selectedExercise.materials,
-                                    FontSize = 16,
-                                    HorizontalTextAlignment = TextAlignment.Center,
-                                    TextColor = Colors.YellowGreen,
-                                    FontFamily = "ComfortaaBold",
-                                    Margin = new Thickness(10, 0)
-                                },
-                                new Frame
-                                {
-                                    CornerRadius = 15,
-                                    HasShadow = true,
-                                    BackgroundColor = Colors.Black,
-                                    Padding = 0,
-                                    Margin = new Thickness(0, 10, 0, 10),
-                                    Content = new MediaElement
-                                    {
-                                        Source = MediaSource.FromResource(_selectedExercise.video),
-                                        Aspect = Aspect.AspectFit,
-                                        ShouldShowPlaybackControls = true,
-                                        HeightRequest = 325,
-                                        WidthRequest = 500
-                                    }
-                                },
-                                new Button
-                                {
-                                    Text = "Salir",
-                                    BackgroundColor =  Color.FromArgb("ffd700"),
-                                TextColor = Colors.White,
-                                CornerRadius = 3,
-                                    FontFamily = "ComfortaaBold",
-                                    FontSize = 16,
-                                    Padding = new Thickness(10, 6),
-                                    HorizontalOptions = LayoutOptions.Fill,
-                                    Command = new Command(async () => await Navigation.PopModalAsync())
-                                }
-                            }
-                        }
-                    }
+                    titleLabel,
+                    descriptionLabel,
+                    materialsLabel,
+                    videoFrame,
+                    exitButton
                 }
+            }
+        }
+    }
             };
         }
 
@@ -186,7 +201,14 @@ namespace ProyectoFinDeCurso.Pages.Detail
         { bodyPartEnum.torso, "Torso" },
         { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
     };
-
+            var dificulty = new Dictionary<dificultyEnum, string>
+    {
+        { dificultyEnum.nothing, "Ninguno" },
+        { dificultyEnum.easy, "Fácil" },
+        { dificultyEnum.medium, "Medio" },
+        { dificultyEnum.hard, "Difícil" },
+        { dificultyEnum.extreme, "Muy Difícil" }
+    };
             var nameEntry = new Entry
             {
                 
@@ -206,16 +228,71 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 BackgroundColor = Color.FromArgb("#3B2523"),
                 HorizontalOptions = LayoutOptions.Fill,
                 FontFamily = "ComfortaaBold",
+
+            };
+            var videoFrame = new Frame
+            {
+                CornerRadius = 10,
+                BackgroundColor = Colors.Black,
+                HeightRequest = 100,
+                WidthRequest = 150,
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center,
+                Content = new Label
+                {
+                    Text = string.IsNullOrWhiteSpace(exerciseFromDb.video)
+            ? "Añadir video"
+            : "Cambiar video",
+                    TextColor = Colors.White,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    VerticalTextAlignment = TextAlignment.Center,
+                    FontFamily = "ComfortaaBold"
+                }
+            };
+            var videoTap = new TapGestureRecognizer();
+            videoTap.Tapped += async (s, e) =>
+            {
+                var result = await FilePicker.PickAsync(new PickOptions
+                {
+                    FileTypes = FilePickerFileType.Videos,
+                    PickerTitle = "Selecciona un video"
+                });
+
+                if (result == null)
+                    return;
+
+                string folder = IOPath.Combine(FileSystem.AppDataDirectory, "Videos");
+                Directory.CreateDirectory(folder);
+
+                string destPath = IOPath.Combine(folder, result.FileName);
+
+                try
+                {
+                    // Copiar archivo al directorio de videos
+                    using var src = await result.OpenReadAsync();
+                    using var dest = File.Create(destPath);
+                    await src.CopyToAsync(dest);
+
+                    // Guardar SOLO el nombre del archivo
+                    exerciseFromDb.video = result.FileName;
+
+                    // Actualizar UI
+                    (videoFrame.Content as Label).Text = "Cambiar video";
+
+                    await DisplayAlert("Éxito", "El video se ha guardado correctamente.", "OK");
+                }
+                catch (Exception ex)
+                {
+                    await DisplayAlert("Error", $"No se pudo guardar el video.\n{ex.Message}", "OK");
+                }
             };
 
-            // ✅ Cargar imagen local si existe
+            videoFrame.GestureRecognizers.Add(videoTap);
+   
             string rutaImagen = IOPath.Combine(FileSystem.AppDataDirectory, "Images", exerciseFromDb.image ?? "");
             var imageButton = new ImageButton
             {
-                Source = File.Exists(rutaImagen)
-                    ? ImageSource.FromFile(rutaImagen)
-                    : null,
-                HorizontalOptions = LayoutOptions.Fill,
+                Source = exerciseFromDb.image,  
                 WidthRequest = 75,
                 HeightRequest = 75,
                 BackgroundColor = Color.FromArgb("#3B2523")
@@ -236,7 +313,16 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 FontFamily = "ComfortaaBold",
                 
             };
-
+            var dificultyEnumPicker = new Picker
+            {
+                Title = "Tipo de dificultad",
+                TitleColor = Color.FromArgb("#C49362"),
+                ItemsSource = dificulty.Values.ToList(),
+                SelectedItem = dificulty[exerciseFromDb.dificulty],
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
+                HorizontalOptions = LayoutOptions.Fill
+            };
             var modalPage = new ContentPage
             {
                 BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
@@ -247,6 +333,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     Margin = 1,
                     VerticalOptions = LayoutOptions.Center,
                     HorizontalOptions = LayoutOptions.Center,
+                    MaximumWidthRequest = 500,
                     Content = new VerticalStackLayout
                     {
                         Padding = 1,
@@ -261,12 +348,14 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         HorizontalOptions = LayoutOptions.Fill,
                         HorizontalTextAlignment = TextAlignment.Center,
                         FontFamily = "EatMeAlive",
-                        
+
                     },
                     nameEntry,
                     descEntry,
                     imageButton,
+                    videoFrame,
                     bodyPartEnumPicker,
+                    dificultyEnumPicker,
                     new HorizontalStackLayout
                     {
                         Spacing = 10,
@@ -282,7 +371,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 {
                                     exerciseFromDb.name = nameEntry.Text ?? "";
                                     exerciseFromDb.description = descEntry.Text ?? "";
-
+                                    exerciseFromDb.dificulty = dificulty.First(x => x.Value == dificultyEnumPicker.SelectedItem.ToString()).Key;
+                                    exerciseFromDb.muscleGroupId = traducciones.First(x => x.Value == bodyPartEnumPicker.SelectedItem.ToString()).Key;
                                     // ✅ Si el usuario cambió la imagen
                                     if (imageButton.BindingContext is string rutaNueva && File.Exists(rutaNueva))
                                     {
@@ -295,7 +385,14 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     var index = _filter.Exercises.IndexOf(_selectedExercise);
                                     if (index >= 0)
                                     {
-                                        _filter.Exercises[index] = exerciseFromDb;
+                                        var ex = _filter.Exercises[index];
+
+                                        ex.name = exerciseFromDb.name;
+                                        ex.description = exerciseFromDb.description;
+                                        ex.image = exerciseFromDb.image;
+                                        ex.muscleGroupId = exerciseFromDb.muscleGroupId;
+                                        ex.dificulty = exerciseFromDb.dificulty;
+                                        ex.video = exerciseFromDb.video;
                                         _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
                                     }
 
@@ -325,33 +422,32 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
         private void BuildCreateUI()
         {
-
             var transtation = new Dictionary<bodyPartEnum, string>
-{
-    { bodyPartEnum.nothing, "Ninguno" },
-    { bodyPartEnum.chest, "Pecho" },
-    { bodyPartEnum.leg, "Piernas" },
-    { bodyPartEnum.triceps, "Tríceps" },
-    { bodyPartEnum.biceps, "Bíceps" },
-    { bodyPartEnum.abdomen, "Abdomen" },
-    { bodyPartEnum.back, "Espalda" },
-    { bodyPartEnum.shoulder, "Hombros" },
-    { bodyPartEnum.isometric, "Isométrico" },
-    { bodyPartEnum.arms, "Brazos" },
-    { bodyPartEnum.torso, "Torso" },
-    { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
-};
+    {
+        { bodyPartEnum.nothing, "Ninguno" },
+        { bodyPartEnum.chest, "Pecho" },
+        { bodyPartEnum.leg, "Piernas" },
+        { bodyPartEnum.triceps, "Tríceps" },
+        { bodyPartEnum.biceps, "Bíceps" },
+        { bodyPartEnum.abdomen, "Abdomen" },
+        { bodyPartEnum.back, "Espalda" },
+        { bodyPartEnum.shoulder, "Hombros" },
+        { bodyPartEnum.isometric, "Isométrico" },
+        { bodyPartEnum.arms, "Brazos" },
+        { bodyPartEnum.torso, "Torso" },
+        { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
+    };
 
             var dificulty = new Dictionary<dificultyEnum, string>
-{
-    { dificultyEnum.nothing, "Ninguno" },
-    { dificultyEnum.easy, "Fácil" },
-    { dificultyEnum.medium, "Medio" },
-    { dificultyEnum.hard, "Difícil" },
-    { dificultyEnum.extreme, "Muy Difícil" }
-};
+    {
+        { dificultyEnum.nothing, "Ninguno" },
+        { dificultyEnum.easy, "Fácil" },
+        { dificultyEnum.medium, "Medio" },
+        { dificultyEnum.hard, "Difícil" },
+        { dificultyEnum.extreme, "Muy Difícil" }
+    };
 
-            // Entradas de texto
+            // ENTRADAS
             var nameEntry = new Entry
             {
                 Placeholder = "Nombre",
@@ -368,10 +464,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            // Botón para elegir imagen (✅ corregido)
             var imageButton = new ImageButton
             {
-                HorizontalOptions = LayoutOptions.Fill,
+                
                 WidthRequest = 75,
                 HeightRequest = 75,
                 BackgroundColor = Color.FromArgb("#3B2523")
@@ -389,37 +484,82 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                     if (result != null)
                     {
-                        // ✅ Carpeta local segura
                         string nombreArchivo = IOPath.GetFileName(result.FullPath);
                         string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images");
-
-                        if (!Directory.Exists(carpetaImagenes))
-                            Directory.CreateDirectory(carpetaImagenes);
+                        Directory.CreateDirectory(carpetaImagenes);
 
                         string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo);
 
-                        // ✅ Copiar usando stream (no bloquea el archivo)
-                        using (var origen = await result.OpenReadAsync())
-                        using (var destino = File.Create(rutaDestino))
-                        {
-                            await origen.CopyToAsync(destino);
-                        }
+                        using var origen = await result.OpenReadAsync();
+                        using var destino = File.Create(rutaDestino);
+                        await origen.CopyToAsync(destino);
 
-                        // ✅ Mostrar imagen desde la copia local
                         imageButton.BindingContext = rutaDestino;
                         imageButton.Source = ImageSource.FromFile(rutaDestino);
                     }
                 }
                 catch (Exception ex)
                 {
-                    await DisplayAlert("Error", $"No se pudo cargar la imagen: {ex.Message}", "OK");
+                    await DisplayAlert("Error", ex.Message, "OK");
+                }
+            };
+            Label videoLabel = new Label
+            {
+                Text = "Añadir video",
+               
+                TextColor = Color.FromArgb("#C49362"),
+                HorizontalTextAlignment = TextAlignment.Center,
+                VerticalTextAlignment = TextAlignment.Center,
+                FontFamily = "ComfortaaBold"
+            };
+
+            var videoFrame = new Frame
+            {
+                CornerRadius = 10,
+                BackgroundColor = Colors.Black,
+                HeightRequest = 100,
+                WidthRequest = 150,
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center,
+                Content = videoLabel
+            };
+
+            string selectedVideoName = null;
+
+            var videoTap = new TapGestureRecognizer();
+            videoTap.Tapped += async (s, e) =>
+            {
+                var result = await FilePicker.PickAsync(new PickOptions
+                {
+                    PickerTitle = "Seleccionar video",
+                    FileTypes = FilePickerFileType.Videos
+                });
+
+                if (result != null)
+                {
+                    string folder = IOPath.Combine(FileSystem.AppDataDirectory, "Videos");
+                    Directory.CreateDirectory(folder);
+
+                    string destPath = IOPath.Combine(folder, result.FileName);
+
+                    using var src = await result.OpenReadAsync();
+                    using var dest = File.Create(destPath);
+                    await src.CopyToAsync(dest);
+
+                    selectedVideoName = result.FileName;
+                    videoLabel.Text = "Cambiar video";
+
+                    await DisplayAlert("Video añadido", "El video se ha guardado correctamente.", "OK");
                 }
             };
 
-            // Picker de grupo muscular
+            videoFrame.GestureRecognizers.Add(videoTap);
+
+            // PICKERS DE ENUMS
             var bodyPartEnumPicker = new Picker
             {
                 Title = "Tipo Cuerpo",
+                TitleColor = Color.FromArgb("#C49362"),
                 ItemsSource = transtation.Values.ToList(),
                 SelectedItem = transtation[bodyPartEnum.nothing],
                 TextColor = Color.FromArgb("#C49362"),
@@ -427,10 +567,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            // Picker de dificultad
             var dificultyEnumPicker = new Picker
             {
                 Title = "Tipo de dificultad",
+                TitleColor = Color.FromArgb("#C49362"),
                 ItemsSource = dificulty.Values.ToList(),
                 SelectedItem = dificulty[dificultyEnum.nothing],
                 TextColor = Color.FromArgb("#C49362"),
@@ -438,7 +578,6 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            // Frame principal de la página (mantengo todo tu diseño)
             var modalPage = new ContentPage
             {
                 BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
@@ -449,6 +588,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     Margin = 1,
                     VerticalOptions = LayoutOptions.Center,
                     HorizontalOptions = LayoutOptions.Center,
+                    MaximumWidthRequest = 500,
                     Content = new VerticalStackLayout
                     {
                         Padding = 1,
@@ -459,7 +599,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     {
                         Text = "Crear ejercicio",
                         FontSize = 24,
-                        TextColor = Color.FromArgb("#C77B30"),
+                        TextColor = Color.FromArgb("#C49362"),
                         HorizontalOptions = LayoutOptions.Fill,
                         HorizontalTextAlignment = TextAlignment.Center,
                         FontFamily = "EatMeAlive"
@@ -467,91 +607,67 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     nameEntry,
                     descEntry,
                     imageButton,
+                    videoFrame,
                     bodyPartEnumPicker,
                     dificultyEnumPicker,
+
                     new HorizontalStackLayout
                     {
                         Spacing = 10,
                         Children =
                         {
-                            // Botón Crear
                             new Button
-{
-    Text = "Crear",
-    BackgroundColor =  Color.FromArgb("ffd700"),
+                            {
+                                Text = "Crear",
+                                BackgroundColor = Color.FromArgb("ffd700"),
                                 TextColor = Colors.White,
                                 CornerRadius = 3,
-    Command = new Command(async () =>
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(nameEntry.Text))
-            {
-                await DisplayAlert("Aviso", "Debes ingresar un nombre.", "OK");
-                return;
-            }
+                                Command = new Command(async () =>
+                                {
+                                    try
+                                    {
+                                        if (string.IsNullOrWhiteSpace(nameEntry.Text))
+                                        {
+                                            await DisplayAlert("Aviso", "Debes ingresar un nombre.", "OK");
+                                            return;
+                                        }
 
-            Exercise createExercise = new Exercise
-            {
-                name = nameEntry.Text,
-                description = descEntry.Text,
-                muscleGroupId = transtation.First(x => x.Value == bodyPartEnumPicker.SelectedItem.ToString()).Key,
-                dificulty = dificulty.First(x => x.Value == dificultyEnumPicker.SelectedItem.ToString()).Key,
-                typeUser = userTypeEnum.admin
-            };
+                                        var newExercise = new Exercise
+                                        {
+                                            name = nameEntry.Text,
+                                            description = descEntry.Text,
+                                            muscleGroupId = transtation.First(x => x.Value == bodyPartEnumPicker.SelectedItem.ToString()).Key,
+                                            dificulty = dificulty.First(x => x.Value == dificultyEnumPicker.SelectedItem.ToString()).Key,
+                                            typeUser = userTypeEnum.admin,
+                                            video = selectedVideoName // <--- Guardamos solo el nombre del archivo
+                                        };
 
-            if (imageButton.BindingContext is string rutaImagen && File.Exists(rutaImagen))
-{
-    string nombreArchivo = IOPath.GetFileName(rutaImagen);
-    string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images");
+                                        // Guardar imagen
+                                        if (imageButton.BindingContext is string rutaImg && File.Exists(rutaImg))
+                                        {
+                                            string fileName = IOPath.GetFileName(rutaImg);
+                                            newExercise.image = fileName;
+                                        }
 
-    if (!Directory.Exists(carpetaImagenes))
-        Directory.CreateDirectory(carpetaImagenes);
+                                        await _dbService.Create(newExercise);
 
-    string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo);
+                                        _filter.Exercises.Add(newExercise);
+                                        _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
 
-    // Si ya está en la carpeta local, no se vuelve a copiar
-    if (!rutaImagen.Equals(rutaDestino, StringComparison.OrdinalIgnoreCase))
-    {
-        try
-        {
-            File.Copy(rutaImagen, rutaDestino, true);
-        }
-        catch (IOException)
-        {
-            // El archivo ya está en uso o existe, ignoramos para no duplicar
-        }
-    }
+                                        await DisplayAlert("Éxito", "Ejercicio creado correctamente", "OK");
+                                        await Navigation.PopModalAsync();
 
-    createExercise.image = nombreArchivo;
-}
-else
-{
-    await DisplayAlert("Aviso", "No se seleccionó una imagen válida.", "OK");
-    return;
-}
-
-            // ✅ Guarda solo una vez
-            await _dbService.Create(createExercise);
-            _filter.Exercises.Add(createExercise);
-            _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
-
-            await DisplayAlert("Éxito", "Ejercicio creado correctamente.", "OK");
-            await Navigation.PopModalAsync();
-            _filter.LoadExercises();
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", ex.Message, "OK");
-        }
-    })
-},
-
-                            // Botón Cancelar
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        await DisplayAlert("Error", ex.Message, "OK");
+                                    }
+                                })
+                            },
                             new Button
                             {
                                 Text = "Cancelar",
-                                BackgroundColor =  Color.FromArgb("ffd700"),
+                                BackgroundColor = Color.FromArgb("ffd700"),
                                 TextColor = Colors.White,
                                 CornerRadius = 3,
                                 Command = new Command(async () => await Navigation.PopModalAsync())
@@ -563,7 +679,6 @@ else
                 }
             };
 
-            // Mostrar el diseño
             Content = modalPage.Content;
             BackgroundColor = modalPage.BackgroundColor;
         }
@@ -722,6 +837,35 @@ else
 
             Content = modalPage.Content;
             BackgroundColor = modalPage.BackgroundColor;
+        }
+        private MediaSource GetVideoSource(string videoName)
+        {
+            if (string.IsNullOrWhiteSpace(videoName))
+                return null;
+
+            // 1️⃣ APPDATA → prioridad absoluta
+            string path = IOPath.Combine(FileSystem.AppDataDirectory, "Videos", videoName);
+
+            if (File.Exists(path))
+            {
+                Console.WriteLine("[VIDEO] Cargando desde APPDATA → " + path);
+                return MediaSource.FromFile(path);
+            }
+
+            // 2️⃣ RAW → si no está en AppData
+            try
+            {
+                var rawSource = MediaSource.FromResource(videoName);
+                Console.WriteLine("[VIDEO] Cargando desde RAW → " + videoName);
+                return rawSource;
+            }
+            catch
+            {
+                Console.WriteLine("[VIDEO ERROR] No existe en RAW → " + videoName);
+            }
+
+            Console.WriteLine("[VIDEO ERROR] No existe el video → " + videoName);
+            return null;
         }
     }
 

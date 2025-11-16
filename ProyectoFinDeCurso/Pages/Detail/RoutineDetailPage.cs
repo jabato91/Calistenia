@@ -89,6 +89,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
             {
                 ItemsSource = exercisesInRoutine,
                 IsGrouped = true,
+
                 GroupHeaderTemplate = new DataTemplate(() =>
                 {
                     var headerLabel = new Label
@@ -1138,6 +1139,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     var collectionExercises = new CollectionView
                     {
                         ItemsSource = exercisesInRoutine,
+                        WidthRequest = 300,
                         EmptyView = new Label
                         {
                             Text = "No hay ejercicios añadidos.",
@@ -1191,13 +1193,15 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                         {
                             BackgroundColor = Color.FromArgb("#2E1E1B"),
-                            StrokeShape = new RoundRectangle
-                            {
-                                CornerRadius = 20
-                            },
+                            Padding = 20,
+                            StrokeShape = new RoundRectangle { CornerRadius = 20 },
                             Margin = 1,
                             VerticalOptions = LayoutOptions.Center,
                             HorizontalOptions = LayoutOptions.Center,
+
+                            WidthRequest = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density * 0.9,
+                            MaximumWidthRequest = 450,
+                            MaximumHeightRequest = 500,
                             Content = new VerticalStackLayout
                             {
                                 Padding = 1, // padding interno mínimo
@@ -2055,6 +2059,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 var collectionExercises = new CollectionView
                 {
                     ItemsSource = exercisesInRoutine,
+                    WidthRequest = 300,
                     EmptyView = new Label
                     {
                         Text = "No hay ejercicios añadidos.",
@@ -2104,17 +2109,19 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 var modalPage = new ContentPage
                 {
                     BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
+                    
                     Content = new Border
 
                     {
                         BackgroundColor = Color.FromArgb("#2E1E1B"),
-                        StrokeShape = new RoundRectangle
-                        {
-                            CornerRadius = 20
-                        },
+                        Padding = 20,
+                        StrokeShape = new RoundRectangle { CornerRadius = 20 },
                         Margin = 1,
                         VerticalOptions = LayoutOptions.Center,
                         HorizontalOptions = LayoutOptions.Center,
+
+                        WidthRequest = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density * 0.9,
+                        MaximumWidthRequest = 500,
                         Content = new VerticalStackLayout
                         {
                             Padding = 1, // padding interno mínimo
@@ -2179,8 +2186,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                         await _dbService.Create(routineExercises);
                                     }
                                 }
-
-
+                                _filterViewModel.OnPropertyChanged(nameof(_filterViewModel.FilteredRoutines));
+                                _filterViewModel.LoadRoutines();
+                                await Navigation.PopModalAsync();
 
                             })
                         },

@@ -1,4 +1,5 @@
-﻿using ProyectoFinDeCurso.Models;
+﻿using ProyectoFinDeCurso.Enums;
+using ProyectoFinDeCurso.Models;
 using SQLite;
 
 namespace ProyectoFinDeCurso.Services
@@ -12,10 +13,14 @@ namespace ProyectoFinDeCurso.Services
         {
             string path = Path.Combine(FileSystem.AppDataDirectory, DB_NAME);
             _connection = new SQLiteAsyncConnection(Path.Combine(FileSystem.AppDataDirectory, DB_NAME)); //crea la conexión a la base de datos
+
+
             InitTablesAsync();
-            
+            CreateUserAdmin();
         }
-        private async void InitTablesAsync()
+      
+
+        private async Task InitTablesAsync()
         {
             await _connection.CreateTableAsync<User>();
             await _connection.CreateTableAsync<Exercise>();
@@ -83,6 +88,28 @@ namespace ProyectoFinDeCurso.Services
             if (exercise != null)
             {
                 await _connection.DeleteAsync(exercise);
+            }
+        }
+        public async Task CreateUserAdmin()
+        {
+            var user = new User
+            {
+                Name = "Admin",
+                FirstSurname = "Admin",
+                SecondSurname = "Admin",
+                Email = "admin@admin.com",
+                Password = "100000.cmGiRcXAazYJWv9YY7xDtw==.JXSvT+5gqMy6c9tyvGJ6RQIDA1GQxBqQrauSC3Hr1nA=",
+                Phone = "123456789",
+                userType = userTypeEnum.admin
+            };
+
+            List<User> users = await GetUsers();
+
+            bool exists = users.Any(u => u.Email == user.Email);
+
+            if (!exists)
+            {
+                await Create(user);
             }
         }
     }

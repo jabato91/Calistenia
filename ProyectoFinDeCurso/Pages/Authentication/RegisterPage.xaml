@@ -5,13 +5,13 @@
              Title="Registro"
              BackgroundColor="#F5F5F5">
 
-    <ScrollView>
+    <ScrollView> <!--ScrolView sirve para que si hay mucho contenido en pantalla poder deslizar la pantalla-->
         <VerticalStackLayout 
             Spacing="25"
             Padding="40"
             VerticalOptions="Center"
             HorizontalOptions="Center">
-
+        <!--Los objetos se ordenarán en vertical-->
             <!-- Título -->
             <Label Text="Crea tu cuenta"
                    FontSize="28"
@@ -21,14 +21,16 @@
                    Margin="0,0,0,10"/>
 
             <!-- Contenedor -->
-            <Frame HasShadow="True"
-                   CornerRadius="20"
+            <Border 
                    BackgroundColor="White"
                    Padding="25"
                    WidthRequest="320">
-
+                <!--Define el ancho del Border en 320, y da un espacio de 25 en el interior-->
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20" /><!--Radio del borde-->
+                </Border.StrokeShape>
                 <VerticalStackLayout Spacing="15">
-
+                <!--Los obtentos se separan del título, teniendo en el interior un espacio de 15 entre campos-->
                     <!-- Nombre -->
                     <Entry x:Name="nameRegister"
                            Placeholder="Nombre"
@@ -66,15 +68,7 @@
                            HeightRequest="45"
                            />
 
-                    <!-- Confirmar Correo -->
-                    <Entry x:Name="checkEmail"
-                           Placeholder="Repite tu Correo Electrónico"
-                           Keyboard="Email"
-                           TextColor="#333333"
-                           PlaceholderColor="#999999"
-                           BackgroundColor="#F1F1F1"
-                           HeightRequest="45"
-                           />
+                   
 
                     <!-- Contraseña -->
                     <Entry x:Name="Password"
@@ -85,7 +79,15 @@
                            BackgroundColor="#F1F1F1"
                            HeightRequest="45"
                            />
-
+                    <!-- Repetir contraseña -->
+                    <Entry x:Name="checkPassword"
+                            Placeholder="Repite tu contraseña"
+                            IsPassword="True"
+                            TextColor="#333333"
+                            PlaceholderColor="#999999"
+                            BackgroundColor="#F1F1F1"
+                            HeightRequest="45"
+                            />
                     <!-- Teléfono -->
                     <Entry x:Name="phone"
                            Placeholder="Teléfono Móvil"
@@ -106,7 +108,7 @@
                             FontAttributes="Bold"
                             />
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

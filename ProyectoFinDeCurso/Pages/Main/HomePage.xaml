@@ -3,13 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ProyectoFinDeCurso.Pages.HomePage"
              Title="HomePage">
-    <ContentPage.Background>
+    <ContentPage.Background> <!--Define el fondo de la página-->
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#1A1A1A" Offset="0.0"/>
             <GradientStop Color="#2E1E1B" Offset="1.0"/>
         </LinearGradientBrush>
     </ContentPage.Background>
-    <VerticalStackLayout>
+    <VerticalStackLayout><!--almacena los componentes en vertical-->
         <Label 
             Text="Bienvenido a mi aplicación de calistenia.&#10;Esta app está diseñada para ayudarte a mejorar tu entrenamiento de una forma práctica y personalizada. Aquí podrás explorar ejercicios y rutinas ya creadas, pero también tendrás la posibilidad de diseñar tus propias rutinas según tus objetivos y nivel de experiencia. La idea es darte libertad total para crear y ajustar tus entrenamientos, eligiendo los ejercicios, repeticiones y descansos que más te convengan. Con esta aplicación podrás organizar mejor tu progreso y entrenar a tu manera, sin depender de rutinas fijas."
             VerticalOptions="Center" 
@@ -18,6 +18,6 @@
             LineHeight="2.3"
             Margin="20,50,20,0"
             FontSize="15"/>
-        
+            <!--Texto de presentación-->
     </VerticalStackLayout>
 </ContentPage>

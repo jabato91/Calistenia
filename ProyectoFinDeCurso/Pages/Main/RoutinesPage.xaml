@@ -76,55 +76,51 @@
                                             <!-- Header de la rutina -->
                                             <toolkit:Expander.Header>
                                                 <Border
-        Background="#3B2523"
-        Stroke="#171616"
-        StrokeThickness="4"
-        Padding="0"
-        HorizontalOptions="Fill">
+                                                Background="#3B2523"
+                                                Stroke="#171616"
+                                                StrokeThickness="4"
+                                                Padding="0"
+                                                HorizontalOptions="Fill">   
 
                                                     <Border.StrokeShape>
                                                         <RoundRectangle CornerRadius="40,40,0,0"/>
                                                     </Border.StrokeShape>
 
-                                                    <!-- CONTENEDOR INTERNO DEL BORDE -->
                                                     <Grid RowDefinitions="Auto,Auto">
 
-                                                        <!-- 🌟 AURA SUPERIOR CON DEGRADADO 🌟 -->
                                                         <BoxView 
-                Grid.Row="0"
-                HeightRequest="20"
-                Background="{Binding AuraColor}"
-                Opacity="0.6"
-                CornerRadius="40,40,0,0"
-                />
+                                                        Grid.Row="0"
+                                                        HeightRequest="20"
+                                                        Background="{Binding AuraColor}"
+                                                        Opacity="0.6"
+                                                        CornerRadius="40,40,0,0"
+                                                        />  
 
-                                                        <!-- CONTENIDO DEL HEADER -->
                                                         <Grid Grid.Row="1"
-                  ColumnDefinitions="*,Auto,Auto,Auto"
-                  Padding="16,8">
+                                                          ColumnDefinitions="*,Auto,Auto,Auto"
+                                                          Padding="16,8">
 
                                                             <Label Text="{Binding nameRoutine}"
-                       FontAttributes="Bold"
-                       FontSize="20"
-                       TextColor="#C77B30"
-                       VerticalOptions="Center"
-                       FontFamily="EatMeAlive" />
+                                                               FontAttributes="Bold"
+                                                               FontSize="20"
+                                                               TextColor="#C77B30"
+                                                               VerticalOptions="Center"
+                                                               FontFamily="EatMeAlive" />   
 
-                                                            <!-- Imagen derecha -->
                                                             <Border Stroke="#F5E8E0"
-                        StrokeThickness="4"
-                        Background="#F5E8E0"
-                        Padding="8"
-                        HorizontalOptions="End"
-                        Grid.Column="3">
+                                                            StrokeThickness="4"
+                                                            Background="#F5E8E0"
+                                                            Padding="8"
+                                                            HorizontalOptions="End"
+                                                            Grid.Column="3">    
                                                                 <Border.StrokeShape>
                                                                     <RoundRectangle CornerRadius="40,40,0,0"/>
                                                                 </Border.StrokeShape>
 
                                                                 <Image Source="{Binding image}"
-                           Aspect="AspectFit"
-                           WidthRequest="40"
-                           HeightRequest="40"/>
+                                                                   Aspect="AspectFit"
+                                                                   WidthRequest="40"
+                                                                   HeightRequest="40"/> 
                                                             </Border>
 
                                                         </Grid>
@@ -134,12 +130,11 @@
 
                                             <!-- Contenido: ejercicios (también BindableLayout) -->
                                             <toolkit:Expander.Content>
-                                                <!-- ÚNICO hijo del Content -->
                                                 <Grid RowDefinitions="Auto,Auto" BackgroundColor="#3B2523">
 
                                                     <!-- Row 0: la lista con BindableLayout -->
                                                     <VerticalStackLayout Grid.Row="0"
-                           BindableLayout.ItemsSource="{Binding Exercises}">
+                                                       BindableLayout.ItemsSource="{Binding Exercises}">
                                                         <BindableLayout.ItemTemplate>
                                                             <DataTemplate>
                                                                 <Grid ColumnDefinitions="*,30,30,35">
@@ -161,26 +156,25 @@
 
                                                                     <!-- Bordes -->
                                                                     <Border WidthRequest="3" Stroke="#171616" StrokeThickness="20"
-                      VerticalOptions="Fill" HorizontalOptions="Start"
-                      Grid.ColumnSpan="4"/>
+                                                                      VerticalOptions="Fill" HorizontalOptions="Start"
+                                                                      Grid.ColumnSpan="4"/>
                                                                     <Border WidthRequest="3" Stroke="#171616" StrokeThickness="20"
-                      VerticalOptions="Fill" HorizontalOptions="End"
-                      Grid.ColumnSpan="4"/>
+                                                                      VerticalOptions="Fill" HorizontalOptions="End"
+                                                                      Grid.ColumnSpan="4"/>
                                                                     <Border Stroke="#171616" StrokeThickness="10"
-                      StrokeDashArray="{Binding LinePattern}"
-                      HorizontalOptions="Fill" VerticalOptions="End"
-                      HeightRequest="6" Grid.ColumnSpan="4"/>
+                                                                      StrokeDashArray="{Binding LinePattern}"
+                                                                      HorizontalOptions="Fill" VerticalOptions="End"
+                                                                      HeightRequest="6" Grid.ColumnSpan="4"/>   
 
                                                                     <Grid.GestureRecognizers>
                                                                         <TapGestureRecognizer Tapped="OnExerciseTapped"
-                                      CommandParameter="{Binding .}" />
+                                                                         CommandParameter="{Binding .}" />
                                                                     </Grid.GestureRecognizers>
                                                                 </Grid>
                                                             </DataTemplate>
                                                         </BindableLayout.ItemTemplate>
                                                     </VerticalStackLayout>
 
-                                                    <!-- Row 1: el botón al final -->
                                                     <Border Grid.Row="1"
                                                       Stroke="#3B2523" StrokeThickness="4"
                                                       Background="#3B2523" Padding="16,8"
@@ -212,14 +206,14 @@
 
             </VerticalStackLayout>
             <Border
-    Stroke="#808080"
-    StrokeThickness="4"
-    Background="#3B2523"
-    Padding="16,8"
-    Margin="30,10"
-    HorizontalOptions="Fill"
-    AutomationProperties.Name="Crear rutina"
-    AutomationProperties.HelpText="Botón para crear una rutina"
+            Stroke="#808080"
+            StrokeThickness="4"
+            Background="#3B2523"
+            Padding="16,8"
+            Margin="30,10"
+            HorizontalOptions="Fill"
+            AutomationProperties.Name="Crear rutina"
+            AutomationProperties.HelpText="Botón para crear una rutina"
                 x:Name="Create">
 
                 <Border.GestureRecognizers>
@@ -230,13 +224,13 @@
 
                 <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
                     <Label 
-            Text="Crear Rutina"
-            TextColor="#CFC86D"
-            FontAttributes="Bold"
-            FontSize="20"
-            FontFamily="Forresten"
-            HorizontalTextAlignment="Center"
-            VerticalTextAlignment="Center" />
+                    Text="Crear Rutina"
+                    TextColor="#CFC86D"
+                    FontAttributes="Bold"
+                    FontSize="20"
+                    FontFamily="Forresten"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center" />
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>

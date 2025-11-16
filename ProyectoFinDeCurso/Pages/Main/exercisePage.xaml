@@ -2,13 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ProyectoFinDeCurso.Pages.Main.exercisePage"
              Title="Ejercicios">
-    <!-- 👇 Zona personalizada del título -->
-    <NavigationPage.TitleView>
+    
+    <NavigationPage.TitleView> <!--Es la parte de arriba de la página-->
         <Grid Padding="10"
           ColumnDefinitions="Auto,*,Auto"
           VerticalOptions="Center">
-
-            <!-- Título centrado -->
+        <!--Grid permite ordenar los Campos internos, definiendo las columnas como Auto: Se ajusta al contenido, y *: Ocupa el espacio restante-->
+            
+            <!-- Título centrado donde Grid.Column lo define como la primera fila -->
             <Label Grid.Column="1"
                Text="Ejercicios"
                HorizontalOptions="Center"
@@ -18,7 +19,7 @@
                TextColor="#C77B30"
                FontFamily="Forresten"/>
 
-            <!-- Botón derecha -->
+            <!-- Botón derecha donde Grid.Column lo define como la segunda fila -->
             <ImageButton Grid.Column="2"
                      Source="icono_predeterminado.png"
                      WidthRequest="35"
@@ -26,40 +27,42 @@
                      BackgroundColor="Transparent"/>
         </Grid>
     </NavigationPage.TitleView>
-    <!-- Fondo con degradado sutil -->
-    <ContentPage.Background>
+    <!--Fondo con degradado sutil, que define los colores de la página actual-->
+    <ContentPage.Background> 
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#1A1A1A" Offset="0.0"/>
             <GradientStop Color="#2E1E1B" Offset="1.0"/>
         </LinearGradientBrush>
     </ContentPage.Background>
 
-    <ScrollView>
+    <ScrollView> <!--Permite vajar hacia habajo la página si no cabe en la pantalla-->
         <VerticalStackLayout Padding="10"
                              Spacing="10"
                              HorizontalOptions="Fill"
                              VerticalOptions="Fill">
+        <!--Coloca los campos en vertical, con un espacio interior de 10 y un espacio exterior de 10, con un ajuste vertical y horizontal indefinido-->
 
-            <!-- Barra de búsqueda -->
             <HorizontalStackLayout
              HorizontalOptions="Fill">
+                <!--Coloca los objetos en horizontal, un tamaño en horizontal indefinido-->
                 <SearchBar Placeholder="Buscar ejercicio por nombre"
                 Text="{Binding NameRoutineFilter}"
                 BackgroundColor="#2B2B2B"
                 TextColor="#E0CFC2"
                 PlaceholderColor="#A59D95"/>
+                <!--Barra de búsqueda que envía los datos escritos a un viewModel donde filtrá los ejercios por nombre, siendo obtenidos por la variable NameRoutineFilter-->
                 <Button Text="Filtrar"
                 Clicked="filterExercises"/>
+                <!--Boton donde se podra acceder a una página modal donde filtras los ejercicos-->
             </HorizontalStackLayout>
-            <!-- CollectionView de ejercicios -->
             <CollectionView ItemsSource="{Binding FilteredExercises}"
                 IsGrouped="True"
                 ItemsUpdatingScrollMode="KeepScrollOffset"
                 HorizontalOptions="Fill">
-
+                <!--Obtiene un lista de objetos desde FilteredExercises donde los organiza por su parte del cuerpo y su dificultad-->
                 <!-- Encabezado de grupo -->
-                <CollectionView.GroupHeaderTemplate>
-                    <DataTemplate>
+                <CollectionView.GroupHeaderTemplate><!--Parte superior de cada ejercicio, donde organiza por porte del cuerpo-->
+                    <DataTemplate> <!--Crea un bucle donde jenerará todos los ejercios obtenidos de FilteredExercises-->
                         <Border Stroke="#66605E"
                             StrokeThickness="1"
                             BackgroundColor="#232020"
@@ -67,37 +70,38 @@
                             Margin="5"
                             HorizontalOptions="Fill"
                             VerticalOptions="Fill">    
-
+                            
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="12" />
                             </Border.StrokeShape>
 
-                            <Border.Background>
+                            <Border.Background> <!--El color interior de Border-->
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                     <GradientStop Color="#3B2928" Offset="0.0"/>
                                     <GradientStop Color="#3B2523" Offset="0.5"/>
                                 </LinearGradientBrush>
                             </Border.Background>
 
-                            <StackLayout Padding="8">
+                            <StackLayout Padding="8"><!--Contenedor donde almacena dentro del CollectionView.GroupHeaderTemplate-->
                                 <Label Text="{Binding DisplayName}" 
                                        FontAttributes="Bold" 
                                        HorizontalTextAlignment="Center"
                                        TextColor="#C77B30"
                                        FontFamily="Forresten"
                                        FontSize="30"/>
+                                <!--Genera el nombre del tipo de parte del cuerpo -->
                             </StackLayout>
                         </Border>
                     </DataTemplate>
                 </CollectionView.GroupHeaderTemplate>
 
                 <!-- Layout de items -->
-                <CollectionView.ItemsLayout>
+                <CollectionView.ItemsLayout><!--Organiza En vertical los objetos en dos en dos -->
                     <GridItemsLayout Orientation="Vertical" Span="2" />
                 </CollectionView.ItemsLayout>
 
                 <!-- Plantilla de item -->
-                <CollectionView.ItemTemplate>
+                <CollectionView.ItemTemplate><!--Parte inferior de cada ejercicio -->
                     <DataTemplate>
                         <Grid Margin="0.5,5,2,5">
                             <Border
@@ -106,7 +110,7 @@
                                 BackgroundColor="#232020"
                                 VerticalOptions="Center"
                                 Padding="0.4">  
-
+                                <!--Define el interior del ejercicio-->
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="12" />
                                 </Border.StrokeShape>
@@ -114,15 +118,15 @@
 
                                 <Grid>
 
-                                    <!-- Aura verde pulsante -->
-                                    <BoxView Background="{Binding AuraColor}" />
+                                    <BoxView Background="{Binding AuraColor}" /> <!--Define el color de los ejercicios dependiendo de su dificultad-->
 
                                     <!-- Imagen de fondo -->
-                                    <Image Source="{Binding image}" 
-                                           Aspect="AspectFill"
-                                           WidthRequest="200"
-                                           HeightRequest="300"
-                                           />
+                                    <Image Source="{Binding image}"
+                                   Aspect="AspectFit"
+                                   HeightRequest="300"
+                                   WidthRequest="200"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" /><!--Define la imagen del fondo guardada en Resources/Images-->      
 
                                     <!-- Contenido de la carta -->
                                     <Grid>
@@ -130,7 +134,7 @@
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="*"/>
                                             <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
+                                        </Grid.RowDefinitions><!--Organiza el contenido del ejercicio-->
 
                                         <!-- Nombre -->
                                         <Label Text="{Binding name}" 
@@ -140,7 +144,7 @@
                                                FontFamily="EatMeAlive"
                                                HorizontalTextAlignment="Center"
                                                VerticalOptions="Start"
-                                               Margin="10"/>
+                                               Margin="10"/><!--Nombre del ejercicio-->
 
                                         <!-- Botones -->
                                         <StackLayout Grid.Row="2"
@@ -149,7 +153,7 @@
                                                      VerticalOptions="End"
                                                      Spacing="10"
                                                      Margin="0,0,10,10">
-
+                                                     <!--<StackLayout es como HorizontalLayout y VerticalLayout, pero puedes definir si los campos están en vertical o en horizontal-->
                                             <ImageButton Clicked="eliminateExercise"
                                                          Source="papelera.png"
                                                          WidthRequest="40"
@@ -158,22 +162,23 @@
                                                          Aspect="AspectFill"
                                                          x:Name="eliminateButton"
                                                          IsVisible="{Binding IsAdminMode}"/>
-
+                                                     <!--Boton que permite hacceder a un método llamado eliminateExercise que permite eliminar el ejercicio, solo es visible para los administradores-->
                                             <ImageButton Clicked="modifyExercise" 
                                                          Source="editar.png"
                                                          WidthRequest="75"
                                                          HeightRequest="75"
                                                          BackgroundColor="Transparent"
-                                                         x:Name="modifyButton"
+                                                         x:Name="modifyButton"  
                                                          IsVisible="{Binding IsAdminMode}"/>
+                                                    <!--Boton que permite hacceder a un método llamado modifyExercise, que permite modificar el ejercicio, solo es visible para los administradores-->
                                         </StackLayout>
-
+                                                   
                                     </Grid>
                                 </Grid>
 
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnExerciseTapped" CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
+                                </Border.GestureRecognizers><!--Permite que el ejercicio sea el mismo un boton, pudiendo acceder a un método llamado OnExerciseTapped, con el que envía los datos del mismo ejercicio-->
 
                             </Border>
                         </Grid>
@@ -188,10 +193,10 @@
                 Padding="16,8"
                 Margin="30,10"
                 HorizontalOptions="Fill"
-                AutomationProperties.Name="Crear rutina"
+                AutomationProperties.Name="Crear ejercicio"
                 AutomationProperties.HelpText="Botón para crear una rutina"
                 x:Name="Create">
-
+                <!--<Border que permite acceder a un método llamado createExercise, con el que se podrá crear ejercicios, es visible solo para administradores-->
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer
                     Tapped="createExercise"
