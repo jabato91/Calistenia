@@ -23,14 +23,13 @@
         <Border BackgroundColor="White"
             Padding="25"
             WidthRequest="300">
-           <!--Border donde almacena el contenido para iniciar sesión, con el que podemos deficinir el contenido y el borde que está detrás-->
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="20" />
             </Border.StrokeShape>
-            
+            <!--Border donde almacena el contenido para iniciar sesión, con el que podemos deficinir el contenido y el borde que está detrás-->
 
             <VerticalStackLayout Spacing="20">
-            <!--Necesario para definir el interior de Border-->
+                <!--Necesario para definir el interior de Border-->
                 <!-- Campo de Correo -->
                 <Entry x:Name="loginEmail"
                        Placeholder="Correo Electrónico"
@@ -72,6 +71,6 @@
                         />
 
             </VerticalStackLayout>
-        
+        </Border>
     </VerticalStackLayout>
 </ContentPage>

@@ -15,8 +15,7 @@ namespace ProyectoFinDeCurso.Services
             _connection = new SQLiteAsyncConnection(Path.Combine(FileSystem.AppDataDirectory, DB_NAME)); //crea la conexión a la base de datos
 
 
-            InitTablesAsync();
-            CreateUserAdmin();
+            
         }
       
 
@@ -105,9 +104,9 @@ namespace ProyectoFinDeCurso.Services
 
             List<User> users = await GetUsers();
 
-            bool exists = users.Any(u => u.Email == user.Email);
+            User exists = users.FirstOrDefault(u => u.Name == user.Name);
 
-            if (!exists)
+            if (exists == null)
             {
                 await Create(user);
             }

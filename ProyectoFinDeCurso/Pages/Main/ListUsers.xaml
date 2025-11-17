@@ -25,11 +25,11 @@
                     Stroke="LightGray"
                     StrokeThickness="1"
                     BackgroundColor="#3B2523">
-                    <!--Fondo de cada usuario-->
+
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="10"/>
                         </Border.StrokeShape>
-
+                        <!--Fondo de cada usuario-->
                         <!-- Usamos un Grid para alinear texto e íconos -->
                         <Grid ColumnDefinitions="*,Auto"
                           VerticalOptions="Center"
@@ -39,7 +39,8 @@
                             <VerticalStackLayout Grid.Column="0"
                                  Spacing="3"
                                  VerticalOptions="Center">
-                                <Label Text="{Binding Id}" /><!--Id del usuario-->
+                                <Label Text="{Binding Id}" />
+                                <!--Id del usuario-->
                                 <Label Text="{Binding FullName}"
                                     FontSize="18"
                                     FontAttributes="Bold"
@@ -52,7 +53,8 @@
                                 <!--Correo del usuario-->
                                 <Label Text="{Binding Phone, StringFormat='Teléfono: {0}'}"
                        FontSize="14"
-                       TextColor="Gray" /><!--Telefono del usuario-->
+                       TextColor="Gray" />
+                                <!--Telefono del usuario-->
                                 <Label Text="{Binding listUserType, StringFormat='Tipo de Usuario: {0}'}" 
                        FontSize="14"
                        TextColor="Gray" />
@@ -68,7 +70,8 @@
                              WidthRequest="24"
                              HeightRequest="24"
                              BackgroundColor="Transparent"
-                             Clicked="modifyUser" /><!--Boton en el que hazcedes al metodo modifyUser para modificar el usuario-->
+                             Clicked="modifyUser" />
+                                <!--Boton en el que hazcedes al metodo modifyUser para modificar el usuario-->
 
                                 <ImageButton Source="papelera.png"
                              WidthRequest="24"
@@ -78,7 +81,7 @@
                                 <!--Boton en el que hazcedes al metodo EliminateUser para eliminar el usuario-->
                             </HorizontalStackLayout>
                         </Grid>
-                   
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
