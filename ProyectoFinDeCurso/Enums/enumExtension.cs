@@ -41,5 +41,29 @@ namespace ProyectoFinDeCurso.Enums
                 _ => throw new NotImplementedException(),
             };
         }
+        public static readonly Dictionary<bodyPartEnum, string> BodyTranslations = new()
+{
+    { bodyPartEnum.nothing, "Ninguno" },
+    { bodyPartEnum.chest, "Pecho" },
+    { bodyPartEnum.leg, "Piernas" },
+    { bodyPartEnum.triceps, "Tríceps" },
+    { bodyPartEnum.biceps, "Bíceps" },
+    { bodyPartEnum.abdomen, "Abdomen" },
+    { bodyPartEnum.back, "Espalda" },
+    { bodyPartEnum.shoulder, "Hombros" },
+    { bodyPartEnum.isometric, "Isométrico" },
+    { bodyPartEnum.arms, "Brazos" },
+    { bodyPartEnum.torso, "Torso" },
+    { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
+};
+
+public  static readonly Dictionary<dificultyEnum, string> DifficultyTranslations = new()
+{
+    { dificultyEnum.nothing, "Ninguno" },
+    { dificultyEnum.easy, "Fácil" },
+    { dificultyEnum.medium, "Medio" },
+    { dificultyEnum.hard, "Difícil" },
+    { dificultyEnum.extreme, "Muy Difícil" }
+};
     }
 }
