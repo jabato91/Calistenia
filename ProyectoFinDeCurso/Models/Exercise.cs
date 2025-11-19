@@ -72,21 +72,9 @@ using System.Linq;
         [Ignore]
         public DoubleCollection LinePattern { get; set; } = new() { 6, 4 }; // Patrón de línea discontinua si no es el ultimo ejercicio
         [Ignore]
-        public int IsAdmin { get; set; } = -1; // Indica si el ejercicio está siendo visto en modo administrador
+        public bool IsAdmin { get; set; } = false; // Indica si el ejercicio está siendo visto en modo administrador
 
-        public bool IsAdminMode
-        {
-            get
-            {
-                return IsAdmin switch
-                {
-                    0 => false,
-                    1 => true,
-                    2 => true,
-                    _ => false,
-                };
-            }
-        }
+        
 
         public Brush AuraColor // propiedad calculada para obtener el pincel de degradado según la dificultad
         {

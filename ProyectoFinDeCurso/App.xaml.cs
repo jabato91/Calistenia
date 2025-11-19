@@ -1,38 +1,59 @@
 ﻿using ProyectoFinDeCurso.Flyout;
 using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Pages;
+using ProyectoFinDeCurso.Pages.Main;
 using ProyectoFinDeCurso.Services;
 namespace ProyectoFinDeCurso
 {
     public partial class App : Application
     {
-        [Obsolete]
-        public App(LoginPage loginPage)
+        private readonly DbService _dbService = new DbService();
+        
+        public App()
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new LoginPage(new DbService()));
+            // Página temporal mientras cargamos (puede ser un splash o similar)
+            MainPage = new NavigationPage(new ContentPage
+            {
+                Content = new ActivityIndicator
+                {
+                    IsRunning = true,
+                    VerticalOptions = LayoutOptions.Center,
+                    HorizontalOptions = LayoutOptions.Center
+                },
+                Title = "Cargando..."
+            });
+
+            _ = InitAsync();
         }
 
-        protected override async void OnStart()
+        private async Task InitAsync()
         {
-            try { 
+            try
+            {
+                await _dbService.InitTablesAsync();
+
                 var userId = await SecureStorage.GetAsync("user_id");
-                DbService _dbService = new DbService();
-                User user = await _dbService.GetUserById(int.Parse(userId));
-                if (!string.IsNullOrEmpty(userId))
+
+                if (string.IsNullOrEmpty(userId))
                 {
-                    
-                    MainPage = new userFlyoutPage(new DbService(), userId, user.userType);
+                    await _dbService.CreateUserAdmin();
+                    // No hay sesión -> a login
+                    MainPage = new NavigationPage(new LoginPage(_dbService));   
                 }
                 else
                 {
-                    MainPage = new NavigationPage(new LoginPage(new DbService()));
+                    var user = await _dbService.GetUserById(int.Parse(userId));
+                    exercisePage createExercise = new exercisePage(_dbService, user.userType);
+                    RoutinesPage routinesPage = new RoutinesPage(_dbService, user.userType);
+                    MainPage = new userFlyoutPage(_dbService, user.userType, createExercise, routinesPage);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                MainPage = new NavigationPage(new LoginPage(new DbService()));
+                Console.WriteLine("Error en InitAsync: " + ex.Message);
+                MainPage = new NavigationPage(new LoginPage(_dbService));
             }
         }
     }

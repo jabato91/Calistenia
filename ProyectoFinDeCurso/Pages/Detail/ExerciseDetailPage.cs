@@ -565,7 +565,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                             exercise.description = descEntry.Text ?? "";
                                             exercise.dificulty = enumExtension.DifficultyTranslations.First(x => x.Value == dificultyEnumPicker.SelectedItem.ToString()).Key;
                                             exercise.muscleGroupId = enumExtension.BodyTranslations.First(x => x.Value == bodyPartEnumPicker.SelectedItem.ToString()).Key;
-                                            // ✅ Si el usuario cambió la imagen
+                                            
                                             if (imageButton.BindingContext is string rutaNueva && File.Exists(rutaNueva))
                                             {
                                                 string nombreArchivo = IOPath.GetFileName(rutaNueva);
@@ -585,13 +585,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                                 ex.muscleGroupId = exercise.muscleGroupId;
                                                 ex.dificulty = exercise.dificulty;
                                                 ex.video = exercise.video;
-                                                _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
                                             }
 
                                             await DisplayAlert("Éxito", "Ejercicio actualizado correctamente", "OK");
                                         }
-
-                                        _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
+                                        _filter.UpdateFilteredExercises();
 
                                         await Navigation.PopModalAsync();
 

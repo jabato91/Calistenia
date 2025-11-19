@@ -12,80 +12,101 @@ namespace ProyectoFinDeCurso.Pages.Main;
 
 public partial class exercisePage : ContentPage
 {
-    private HashSet<VisualElement> animatedElements = new HashSet<VisualElement>();
-  
     private readonly DbService _dbService;
-    private ExerciseFilterViewModel _filter;
-    private static userTypeEnum _userType;
-   
+    private readonly ExerciseFilterViewModel _filter;
+    private readonly userTypeEnum _userType;
+    public bool IsAdminMode => _userType == userTypeEnum.admin;
     public exercisePage(DbService dbService, userTypeEnum userType)
     {
-        _userType = userTypeEnum.nothing;
-        _userType = userType;
         InitializeComponent();
+
         _dbService = dbService;
-        // Solo asignamos el BindingContext, no llamamos OnAppearing manualmente
-        _filter = new ExerciseFilterViewModel(_dbService,_userType);
+        _userType = userType;
+
+        // crear solo una vez
+        _filter = new ExerciseFilterViewModel(_dbService, _userType);
         BindingContext = _filter;
-        if (!_userType.Equals(userTypeEnum.admin))
+
+    }
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (!_filter.Initialized)
         {
-            Create.IsVisible = false;
+            await Task.Delay(50); // Deja renderizar la UI
+            await _filter.LoadExercisesAsync();
         }
     }
-
     private async void OnExerciseTapped(object sender, EventArgs e)
     {
         try
         {
             if ((sender as Border)?.BindingContext is Exercise selectedExercise)
             {
-                await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _filter,selectedExercise, ExerciseMode.View ));
+                await Navigation.PushModalAsync(
+                    new ExerciseDetailPage(_dbService, _filter, selectedExercise, ExerciseMode.View)
+                );
             }
         }
         catch (Exception ex)
         {
-            // Muestra un mensaje de error amigable
-            await DisplayAlert(
-                "Error",
-                $"Ocurrió un error al abrir el ejercicio:\n{ex.Message}",
-                "OK"
-            );
+            await DisplayAlert("Error", $"Ocurrió un error al abrir el ejercicio:\n{ex.Message}", "OK");
         }
     }
-    
+
     private async void eliminateExercise(object sender, EventArgs e)
     {
-        var eliminate = sender as ImageButton;
+        if ((sender as ImageButton)?.BindingContext is not Exercise exercise)
+            return;
 
-        var exercise = eliminate?.BindingContext as Exercise; //recoge el ejercicio al que está asociado
+        bool confirm = await DisplayAlert(
+            "Confirmar",
+            $"¿Seguro deseas eliminar '{exercise.name}'?",
+            "Sí",
+            "No"
+        );
 
-        if (exercise != null)
-        {
-            await _dbService.DeleteExerciseById(exercise.execiseID);
-            // Actualizamos la colección del ViewModel
-            _filter.Exercises.Remove(exercise);
-            _filter.OnPropertyChanged(nameof(_filter.Exercises));
-            _filter.OnPropertyChanged(nameof(_filter.FilteredExercises));
+        if (!confirm) return;
 
-        }
+        await _dbService.DeleteExerciseById(exercise.execiseID);
+
+        // 🔥 Esto actualiza la colección correctamente
+        _filter.Exercises.Remove(exercise);
+
+        // No necesitas llamar a OnPropertyChanged para Exercises,
+        // ObservableCollection ya notifica automáticamente.
+        _filter.UpdateFilteredExercises();
     }
-
     private async void modifyExercise(object sender, EventArgs e)
     {
         if ((sender as ImageButton)?.BindingContext is not Exercise selectedExercise)
             return;
 
-        await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _filter, selectedExercise, ExerciseMode.Edit));
+        await Navigation.PushModalAsync(
+            new ExerciseDetailPage(_dbService, _filter, selectedExercise, ExerciseMode.Edit)
+        );
     }
-   
+
     private async void createExercise(object sender, TappedEventArgs e)
     {
-        await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _filter,null, ExerciseMode.create));
+        await Navigation.PushModalAsync(
+            new ExerciseDetailPage(_dbService, _filter, null, ExerciseMode.create)
+        );
     }
 
     private async void filterExercises(object sender, EventArgs e)
     {
+        await Navigation.PushModalAsync(
+            new ExerciseDetailPage(filter: _filter, mode: ExerciseMode.filter)
+        );
+    }
+    private void OnSwipeRight(object sender, SwipedEventArgs e)
+    {
 
-        await Navigation.PushModalAsync(new ExerciseDetailPage(filter: _filter, mode: ExerciseMode.filter));
+        if (Application.Current.MainPage is FlyoutPage flyout)
+        {
+            flyout.IsPresented = true; // Abre el menú lateral
+        }
     }
 }

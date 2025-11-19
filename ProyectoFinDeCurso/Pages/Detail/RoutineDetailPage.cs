@@ -483,10 +483,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     await _dbService.Delete(_routine);
 
                     _filterViewModel.Routines.Clear();
-                    var routines = await _dbService.GetRoutines();
-                    var rountinesExercises = await _dbService.GetRoutinesExercises();
-
-                    foreach (RoutinesExercises routineExercise in rountinesExercises)
+                    var routines = await _dbService.GetRoutinesCached();
+                    var routinesExercises = await _dbService.GetRoutinesExercisesCached();
+                    foreach (RoutinesExercises routineExercise in routinesExercises)
                     {
                         if (routineExercise.RoutineID.Equals(_routine.routineID))
                         {
@@ -494,8 +493,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         }
                     }
 
-                    _filterViewModel.OnPropertyChanged(nameof(_filterViewModel.FilteredRoutines));
-                    _filterViewModel.LoadRoutines();
+                    _filterViewModel.UpdateFilteredRoutines();
                     await Navigation.PopModalAsync();
                 })
             });
@@ -975,7 +973,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 }
                 else
                 {
-                    List<Exercise> exercises = await _dbService.GetEercises();
+                    List<Exercise> exercises = await _dbService.GetExercisesCached();
                     List<Exercise> ExercisesSelecter;
 
                     if (selectedEnum.Equals(bodyPartEnum.torsoAndArms))
@@ -1645,7 +1643,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                             await _dbService.Create(routineExercises);
                                         }
                                     }else{
-                                        var existingRelations = await _dbService.GetRoutinesExercises();
+                                        var existingRelations = await _dbService.GetRoutinesExercisesCached();
 
 
                                         var selectedTranslation = bodyPartEnumPicker.SelectedItem.ToString();
@@ -1674,8 +1672,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     }
                                 }
 
-                                _filterViewModel.OnPropertyChanged(nameof(_filterViewModel.FilteredRoutines));
-                                _filterViewModel.LoadRoutines();
+                                _filterViewModel.UpdateFilteredRoutines();
                                 await Navigation.PopModalAsync();
 
                             })

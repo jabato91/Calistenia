@@ -1,5 +1,6 @@
 using ProyectoFinDeCurso.Flyout;
 using ProyectoFinDeCurso.Pages.Authentication;
+using ProyectoFinDeCurso.Pages.Main;
 using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.ViewModels;
 
@@ -27,7 +28,7 @@ public partial class LoginPage : ContentPage
             return;
         }
 
-        var users = await _dbService.GetUsers(); //Obtiene todos los usuarios de la base de datos
+        var users = await _dbService.GetUsersCached(); //Obtiene todos los usuarios de la base de datos
         var user = users.FirstOrDefault(u => u.Email == emailInput && PasswordHasher.VerifyPassword(passwordInput,u.Password)); //Busca el primer usuario con el email y la contraseña introducido
 
         if (user == null) //Si no encuentra el usuario, muestra un mensaje de error
@@ -41,7 +42,9 @@ public partial class LoginPage : ContentPage
 
         if (Application.Current != null)
         {
-            Application.Current.MainPage = new userFlyoutPage(new DbService(),user.userType); //Navega hacia la página Home, permitiendo no volver a la página anterior
+            exercisePage exercisePage = new exercisePage(new DbService(), user.userType); //Crea la página de ejercicios
+            RoutinesPage routinesPage = new RoutinesPage(new DbService(), user.userType); //Crea la página de rutinas
+            Application.Current.MainPage = new userFlyoutPage(new DbService(),user.userType, exercisePage, routinesPage); //Navega hacia la página Home, permitiendo no volver a la página anterior
         }
         else
         {
@@ -52,7 +55,7 @@ public partial class LoginPage : ContentPage
     {
         await Navigation.PushAsync(new RegisterPage(new DbService())); //Navega hacia la página Home, permitiendo volver a la página anterior
     }
+    
 
 
-	
 }

@@ -12,7 +12,7 @@ public partial class ListUsers : ContentPage
         _dbService = dbService;
         InitializeComponent();
 
-		BindingContext = new ListUsersViewModel();
+		BindingContext = new ListUsersViewModel(_dbService);
     }
     private async void EliminateUser(object sender, EventArgs e)
     {

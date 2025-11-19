@@ -4,35 +4,37 @@
              x:Class="ProyectoFinDeCurso.Pages.Authentication.RegisterPage"
              Title="Registro"
              BackgroundColor="#F5F5F5">
-
-    <ScrollView> <!--ScrolView sirve para que si hay mucho contenido en pantalla poder deslizar la pantalla-->
-        <VerticalStackLayout 
+    
+        <ScrollView>
+            <!--ScrolView sirve para que si hay mucho contenido en pantalla poder deslizar la pantalla-->
+            <VerticalStackLayout 
             Spacing="25"
             Padding="40"
             VerticalOptions="Center"
             HorizontalOptions="Center">
-        <!--Los objetos se ordenarán en vertical-->
-            <!-- Título -->
-            <Label Text="Crea tu cuenta"
+                <!--Los objetos se ordenarán en vertical-->
+                <!-- Título -->
+                <Label Text="Crea tu cuenta"
                    FontSize="28"
                    FontAttributes="Bold"
                    TextColor="#333333"
                    HorizontalOptions="Center"
                    Margin="0,0,0,10"/>
 
-            <!-- Contenedor -->
-            <Border 
+                <!-- Contenedor -->
+                <Border 
                    BackgroundColor="White"
                    Padding="25"
                    WidthRequest="320">
-                <!--Define el ancho del Border en 320, y da un espacio de 25 en el interior-->
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="20" /><!--Radio del borde-->
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="15">
-                <!--Los obtentos se separan del título, teniendo en el interior un espacio de 15 entre campos-->
-                    <!-- Nombre -->
-                    <Entry x:Name="nameRegister"
+                    <!--Define el ancho del Border en 320, y da un espacio de 25 en el interior-->
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20" />
+                        <!--Radio del borde-->
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="15">
+                        <!--Los obtentos se separan del título, teniendo en el interior un espacio de 15 entre campos-->
+                        <!-- Nombre -->
+                        <Entry x:Name="nameRegister"
                            Placeholder="Nombre"
                            TextColor="#333333"
                            PlaceholderColor="#999999"
@@ -40,8 +42,8 @@
                            HeightRequest="45"
                            />
 
-                    <!-- Primer Apellido -->
-                    <Entry x:Name="firstSurname"
+                        <!-- Primer Apellido -->
+                        <Entry x:Name="firstSurname"
                            Placeholder="Primer Apellido"
                            TextColor="#333333"
                            PlaceholderColor="#999999"
@@ -49,8 +51,8 @@
                            HeightRequest="45"
                            />
 
-                    <!-- Segundo Apellido -->
-                    <Entry x:Name="SecondSurname"
+                        <!-- Segundo Apellido -->
+                        <Entry x:Name="SecondSurname"
                            Placeholder="Segundo Apellido"
                            TextColor="#333333"
                            PlaceholderColor="#999999"
@@ -58,8 +60,8 @@
                            HeightRequest="45"
                            />
 
-                    <!-- Correo Electrónico -->
-                    <Entry x:Name="email"
+                        <!-- Correo Electrónico -->
+                        <Entry x:Name="email"
                            Placeholder="Correo Electrónico"
                            Keyboard="Email"
                            TextColor="#333333"
@@ -68,10 +70,10 @@
                            HeightRequest="45"
                            />
 
-                   
 
-                    <!-- Contraseña -->
-                    <Entry x:Name="Password"
+
+                        <!-- Contraseña -->
+                        <Entry x:Name="Password"
                            Placeholder="Contraseña"
                            IsPassword="True"
                            TextColor="#333333"
@@ -79,8 +81,8 @@
                            BackgroundColor="#F1F1F1"
                            HeightRequest="45"
                            />
-                    <!-- Repetir contraseña -->
-                    <Entry x:Name="checkPassword"
+                        <!-- Repetir contraseña -->
+                        <Entry x:Name="checkPassword"
                             Placeholder="Repite tu contraseña"
                             IsPassword="True"
                             TextColor="#333333"
@@ -88,8 +90,8 @@
                             BackgroundColor="#F1F1F1"
                             HeightRequest="45"
                             />
-                    <!-- Teléfono -->
-                    <Entry x:Name="phone"
+                        <!-- Teléfono -->
+                        <Entry x:Name="phone"
                            Placeholder="Teléfono Móvil"
                            Keyboard="Telephone"
                            TextColor="#333333"
@@ -98,8 +100,8 @@
                            HeightRequest="45"
                            />
 
-                    <!-- Botón de Registro -->
-                    <Button Text="Registrarse"
+                        <!-- Botón de Registro -->
+                        <Button Text="Registrarse"
                             Clicked="RegisterUser"
                             BackgroundColor="#3B82F6"
                             TextColor="White"
@@ -107,8 +109,9 @@
                             HeightRequest="45"
                             FontAttributes="Bold"
                             />
-                </VerticalStackLayout>
-            </Border>
-        </VerticalStackLayout>
-    </ScrollView>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+    
 </ContentPage>

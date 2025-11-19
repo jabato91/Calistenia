@@ -17,7 +17,7 @@ public partial class RoutinesPage : ContentPage
 {
     private readonly DbService _dbService;
     private static userTypeEnum _userType;
-    private RoutinesFilterViewModel routinesViewModel;
+    private RoutinesFilterViewModel _filter;
     private ExerciseFilterViewModel _exerciseFilterViewModel;
 
     public RoutinesPage(DbService dbService, userTypeEnum userType)
@@ -25,13 +25,22 @@ public partial class RoutinesPage : ContentPage
 
         _exerciseFilterViewModel = new ExerciseFilterViewModel(dbService, userType);
         _dbService = dbService;
-        _userType = userType; 
-        routinesViewModel = new RoutinesFilterViewModel(_dbService, _userType);
+        _userType = userType;
+        _filter = new RoutinesFilterViewModel(_dbService, _userType);
         InitializeComponent();
-        BindingContext = routinesViewModel;
+        BindingContext = _filter;
         
     }
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
 
+        if (!_filter.Initialized)
+        {
+            await Task.Delay(50); // Deja renderizar la UI
+            await _filter.LoadRoutinesAsync();
+        }
+    }
     private async void OnExerciseTapped(object sender, EventArgs e)
     {
         try
@@ -59,7 +68,7 @@ public partial class RoutinesPage : ContentPage
         {
             if ((sender as Border)?.BindingContext is Routines selectedRoutine)
             {
-                await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, routinesViewModel,mode: ExerciseMode.View, routine: selectedRoutine,userType: _userType));
+                await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, _filter,mode: ExerciseMode.View, routine: selectedRoutine,userType: _userType));
             }
         }
         catch (Exception ex)
@@ -79,7 +88,7 @@ public partial class RoutinesPage : ContentPage
     private async void createRoutine(object sender, TappedEventArgs e)
     {
         
-        await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, routinesViewModel,userType: _userType,mode: ExerciseMode.create));
+        await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, _filter,userType: _userType,mode: ExerciseMode.create));
     } 
     
     private async void OnExpanded(object sender, ExpandedChangedEventArgs e)
@@ -105,6 +114,6 @@ public partial class RoutinesPage : ContentPage
     private async void filterExercises(object sender, EventArgs e)
     {
 
-        await Navigation.PushModalAsync(new RoutineDetailPage( filterViewModel: routinesViewModel, mode: ExerciseMode.filter));
+        await Navigation.PushModalAsync(new RoutineDetailPage( filterViewModel: _filter, mode: ExerciseMode.filter));
     }
 }
