@@ -45,17 +45,17 @@
             <!--Coloca los campos en vertical, con un espacio interior de 10 y un espacio exterior de 10, con un ajuste vertical y horizontal indefinido-->
 
             <HorizontalStackLayout
-             HorizontalOptions="Fill">
-                <!--Coloca los objetos en horizontal, un tamaño en horizontal indefinido-->
-                <SearchBar Placeholder="Buscar ejercicio por nombre"
-                Text="{Binding NameRoutineFilter}"
-                BackgroundColor="#2B2B2B"
-                TextColor="#E0CFC2"
-                PlaceholderColor="#A59D95"/>
-                <!--Barra de búsqueda que envía los datos escritos a un viewModel donde filtrá los ejercios por nombre, siendo obtenidos por la variable NameRoutineFilter-->
+            HorizontalOptions="Center"
+            Spacing="10"
+                VerticalOptions="Fill">   
+                
+
+                <!-- BOTÓN MÁS PEQUEÑO A LA DERECHA -->
                 <Button Text="Filtrar"
-                Clicked="filterExercises"/>
-                <!--Boton donde se podra acceder a una página modal donde filtras los ejercicos-->
+            WidthRequest="200"
+            HorizontalOptions="Fill"
+            Clicked="filterExercises"
+            VerticalOptions="Fill"/>
             </HorizontalStackLayout>
             <CollectionView ItemsSource="{Binding FilteredExercises}"
                 IsGrouped="True"

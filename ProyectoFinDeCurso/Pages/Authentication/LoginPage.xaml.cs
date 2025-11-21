@@ -42,7 +42,8 @@ public partial class LoginPage : ContentPage
 
         if (Application.Current != null)
         {
-            exercisePage exercisePage = new exercisePage(new DbService(), user.userType); //Crea la página de ejercicios
+            var exerciseVm = new ExerciseFilterViewModel(_dbService, user.userType);
+            exercisePage exercisePage = new exercisePage(new DbService(), user.userType, exerciseVm); //Crea la página de ejercicios
             RoutinesPage routinesPage = new RoutinesPage(new DbService(), user.userType); //Crea la página de rutinas
             Application.Current.MainPage = new userFlyoutPage(new DbService(),user.userType, exercisePage, routinesPage); //Navega hacia la página Home, permitiendo no volver a la página anterior
         }

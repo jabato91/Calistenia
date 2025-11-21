@@ -16,27 +16,34 @@ public partial class exercisePage : ContentPage
     private readonly ExerciseFilterViewModel _filter;
     private readonly userTypeEnum _userType;
     public bool IsAdminMode => _userType == userTypeEnum.admin;
-    public exercisePage(DbService dbService, userTypeEnum userType)
+    public exercisePage(DbService dbService, userTypeEnum userType, ExerciseFilterViewModel filter)
     {
-        InitializeComponent();
+        try
+        {
+            InitializeComponent();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Ejercicios ERROR: " + ex.Message);
+            throw;
+        }
 
         _dbService = dbService;
         _userType = userType;
+        _filter = filter;
 
-        // crear solo una vez
-        _filter = new ExerciseFilterViewModel(_dbService, _userType);
         BindingContext = _filter;
-
-    }
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-
-        if (!_filter.Initialized)
+        if (DeviceInfo.Platform != DevicePlatform.Android)
         {
-            await Task.Delay(50); // Deja renderizar la UI
-            await _filter.LoadExercisesAsync();
+            _filter.LoadExercisesAsync(forceReload: true);
         }
+    }
+    public bool ShouldReload { get; set; }
+
+    // Método para cargar desde fuera
+    public async Task LoadAtStartup()
+    {
+        await _filter.LoadExercisesAsync(forceReload: true);
     }
     private async void OnExerciseTapped(object sender, EventArgs e)
     {
@@ -71,11 +78,8 @@ public partial class exercisePage : ContentPage
 
         await _dbService.DeleteExerciseById(exercise.execiseID);
 
-        // 🔥 Esto actualiza la colección correctamente
         _filter.Exercises.Remove(exercise);
 
-        // No necesitas llamar a OnPropertyChanged para Exercises,
-        // ObservableCollection ya notifica automáticamente.
         _filter.UpdateFilteredExercises();
     }
     private async void modifyExercise(object sender, EventArgs e)
@@ -101,12 +105,10 @@ public partial class exercisePage : ContentPage
             new ExerciseDetailPage(filter: _filter, mode: ExerciseMode.filter)
         );
     }
-    private void OnSwipeRight(object sender, SwipedEventArgs e)
-    {
 
-        if (Application.Current.MainPage is FlyoutPage flyout)
-        {
-            flyout.IsPresented = true; // Abre el menú lateral
-        }
+    public async Task PreloadAsync()
+    {
+        await _filter.LoadExercisesAsync(forceReload: true);
     }
+
 }

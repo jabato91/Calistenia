@@ -10,21 +10,25 @@ namespace ProyectoFinDeCurso.ViewModels
 {
     public class ExerciseFilterViewModel : INotifyPropertyChanged
     {
+        private bool _isLoaded;
+        public bool IsLoaded => _isLoaded;
         private readonly DbService _dbService;
         private readonly userTypeEnum _userType;
-
+        private List<Exercise> _cachedExercises = new();
         private Brush _auraColor;
         private string _nameRoutineFilter = string.Empty;
         private bodyPartEnum _bodyPartFilter = bodyPartEnum.nothing;
         private dificultyEnum _dificultyFilter = dificultyEnum.nothing;
 
-        private IEnumerable<ExerciseGroup> _filteredExercises = new List<ExerciseGroup>();
+        public ObservableCollection<ExerciseGroup> _filteredExercises { get; set; }
+    = new ObservableCollection<ExerciseGroup>();
 
         public ObservableCollection<Exercise> Exercises { get; set; }
+    = new ObservableCollection<Exercise>();
 
 
 
-        public Brush AuraColor
+        public Brush AuraColor  
         {
             get => _auraColor;
             set
@@ -79,7 +83,7 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-        public IEnumerable<ExerciseGroup> FilteredExercises
+        public ObservableCollection<ExerciseGroup> FilteredExercises
         {
             get => _filteredExercises;
             private set
@@ -90,8 +94,6 @@ namespace ProyectoFinDeCurso.ViewModels
         }
 
 
-        public bool Initialized { get; private set; } = false;
-
 
         public ExerciseFilterViewModel(DbService dbService, userTypeEnum userType)
         {
@@ -101,32 +103,24 @@ namespace ProyectoFinDeCurso.ViewModels
             Exercises = new ObservableCollection<Exercise>();
         }
 
-
-        public async Task LoadExercisesAsync()
+        public async Task LoadExercisesAsync(bool forceReload = false)
         {
-            if (Initialized)
+            if (_isLoaded && !forceReload)
                 return;
 
-            Initialized = true;
-
-            var exercises = await _dbService.GetExercisesCached();
-
+            _cachedExercises = await _dbService.GetExercisesCached();
 
             if (_userType == userTypeEnum.admin)
-                exercises.ForEach(ex => ex.IsAdmin = true);
+                _cachedExercises.ForEach(e => e.IsAdmin = true);
 
-            Exercises.Clear();
-
-            foreach (var ex in exercises)
-                Exercises.Add(ex);
+            _isLoaded = true;
 
             UpdateFilteredExercises();
         }
 
-
         public void UpdateFilteredExercises()
         {
-            IEnumerable<Exercise> filtered = Exercises;
+            var filtered = _cachedExercises.AsEnumerable();
 
             if (!string.IsNullOrWhiteSpace(NameRoutineFilter))
             {
@@ -135,25 +129,22 @@ namespace ProyectoFinDeCurso.ViewModels
             }
 
             if (BodyPartFilter != bodyPartEnum.nothing)
-            {
                 filtered = filtered.Where(r => r.muscleGroupId == BodyPartFilter);
-            }
 
             if (DificultyFilter != dificultyEnum.nothing)
-            {
                 filtered = filtered.Where(r => r.dificulty == DificultyFilter);
-            }
 
-            FilteredExercises =
-                filtered
-                    .GroupBy(r => r.muscleGroupId)
-                    .Select(g =>
-                        new ExerciseGroup(
-                            g.Key,
-                            g.OrderBy(r => r.dificulty)
-                        )
-                    )
-                    .ToList();
+            var grouped = filtered
+                .GroupBy(r => r.muscleGroupId)
+                .Select(g => new ExerciseGroup(
+                    g.Key,
+                    g.OrderBy(e => e.dificulty)
+                ));
+
+            FilteredExercises.Clear();
+
+            foreach (var g in grouped)
+                FilteredExercises.Add(g);
         }
 
 

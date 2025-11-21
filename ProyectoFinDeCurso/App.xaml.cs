@@ -3,6 +3,7 @@ using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Pages;
 using ProyectoFinDeCurso.Pages.Main;
 using ProyectoFinDeCurso.Services;
+using ProyectoFinDeCurso.ViewModels;
 namespace ProyectoFinDeCurso
 {
     public partial class App : Application
@@ -45,9 +46,16 @@ namespace ProyectoFinDeCurso
                 else
                 {
                     var user = await _dbService.GetUserById(int.Parse(userId));
-                    exercisePage createExercise = new exercisePage(_dbService, user.userType);
-                    RoutinesPage routinesPage = new RoutinesPage(_dbService, user.userType);
-                    MainPage = new userFlyoutPage(_dbService, user.userType, createExercise, routinesPage);
+                    if (DeviceInfo.Platform == DevicePlatform.Android)
+                    { 
+                        var exerciseVm = new ExerciseFilterViewModel(_dbService, user.userType);
+                        await exerciseVm.LoadExercisesAsync(forceReload: true);
+                        exercisePage createExercise = new exercisePage(_dbService, user.userType, exerciseVm);
+                        RoutinesPage routinesPage = new RoutinesPage(_dbService, user.userType);
+                        MainPage = new userFlyoutPage(_dbService, user.userType, createExercise, routinesPage);
+                    }
+
+                    MainPage = new userFlyoutPage(_dbService, user.userType);
                 }
             }
             catch (Exception ex)

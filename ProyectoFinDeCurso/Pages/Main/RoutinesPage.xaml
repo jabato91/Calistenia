@@ -37,13 +37,10 @@
         <VerticalStackLayout>
             <HorizontalStackLayout
                 HorizontalOptions="Fill">
-            <SearchBar Placeholder="Buscar ejercicio por nombre"
-           Text="{Binding NameRoutineFilter}"
-           BackgroundColor="#2B2B2B"
-           TextColor="#E0CFC2"
-           PlaceholderColor="#A59D95"/>
                 <Button Text="Filtrar"
-                        Clicked="filterExercises"/>
+                        Clicked="filterExercises"
+                        HorizontalOptions="Center"
+                        />
             </HorizontalStackLayout>
             <VerticalStackLayout Padding="20" Spacing="10"
                          BindableLayout.ItemsSource="{Binding FilteredRoutines}">

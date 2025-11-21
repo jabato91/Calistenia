@@ -306,7 +306,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 {
                     new Label
                     {
-                        Text = "Buscar Rutina",
+                        Text = "Buscar Ejercicio",
                         FontSize = 24,
                         TextColor = Color.FromArgb("#C77B30"),
                         HorizontalOptions = LayoutOptions.Fill,

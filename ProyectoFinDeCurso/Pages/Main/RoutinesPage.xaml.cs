@@ -27,7 +27,15 @@ public partial class RoutinesPage : ContentPage
         _dbService = dbService;
         _userType = userType;
         _filter = new RoutinesFilterViewModel(_dbService, _userType);
-        InitializeComponent();
+        try
+        {
+            InitializeComponent();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Routines ERROR: " + ex.Message);
+            throw;
+        }
         BindingContext = _filter;
         
     }
