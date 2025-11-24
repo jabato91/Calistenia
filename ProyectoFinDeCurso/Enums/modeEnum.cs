@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProyectoFinDeCurso.Enums
 {
-    public enum ExerciseMode
+    public enum ModeEnum
     {
         nothing,
         Edit,

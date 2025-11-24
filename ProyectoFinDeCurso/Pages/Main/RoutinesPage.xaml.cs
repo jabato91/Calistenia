@@ -55,7 +55,7 @@ public partial class RoutinesPage : ContentPage
         {
             if ((sender as Grid)?.BindingContext is Exercise selectedExercise)
             {
-                await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _exerciseFilterViewModel, selectedExercise, ExerciseMode.View));
+                await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _exerciseFilterViewModel, selectedExercise, ModeEnum.View));
             }
         }
        
@@ -76,7 +76,7 @@ public partial class RoutinesPage : ContentPage
         {
             if ((sender as Border)?.BindingContext is Routines selectedRoutine)
             {
-                await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, _filter,mode: ExerciseMode.View, routine: selectedRoutine,userType: _userType));
+                await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, _filter,mode: ModeEnum.View, routine: selectedRoutine,userType: _userType));
             }
         }
         catch (Exception ex)
@@ -96,7 +96,7 @@ public partial class RoutinesPage : ContentPage
     private async void createRoutine(object sender, TappedEventArgs e)
     {
         
-        await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, _filter,userType: _userType,mode: ExerciseMode.create));
+        await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, _filter,userType: _userType,mode: ModeEnum.create));
     } 
     
     private async void OnExpanded(object sender, ExpandedChangedEventArgs e)
@@ -122,6 +122,13 @@ public partial class RoutinesPage : ContentPage
     private async void filterExercises(object sender, EventArgs e)
     {
 
-        await Navigation.PushModalAsync(new RoutineDetailPage( filterViewModel: _filter, mode: ExerciseMode.filter));
+        await Navigation.PushModalAsync(new RoutineDetailPage( filterViewModel: _filter, mode: ModeEnum.filter));
+    }
+
+    private async void profile(object sender, EventArgs e)
+    {
+        await Navigation.PushModalAsync(
+           new UserDetailPage(_dbService, _userType, ModeEnum.View)
+       );
     }
 }

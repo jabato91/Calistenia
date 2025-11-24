@@ -14,7 +14,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
         private readonly ExerciseFilterViewModel _filter;
         private readonly Exercise _selectedExercise;
 
-        private readonly ExerciseMode _mode;
+        private readonly ModeEnum _mode;
 
 
        
@@ -54,7 +54,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
 
 
-        public ExerciseDetailPage(DbService? dbService = null,ExerciseFilterViewModel? filter = null,Exercise? exercise = null,ExerciseMode mode = ExerciseMode.nothing, userTypeEnum typeUser = userTypeEnum.nothing)
+        public ExerciseDetailPage(DbService? dbService = null,ExerciseFilterViewModel? filter = null,Exercise? exercise = null, ModeEnum mode = ModeEnum.nothing, userTypeEnum typeUser = userTypeEnum.nothing)
         {
             _dbService = dbService;
             _filter = filter;
@@ -67,18 +67,18 @@ namespace ProyectoFinDeCurso.Pages.Detail
         {
             switch (_mode)
             {
-                case ExerciseMode.create:
+                case ModeEnum.create:
                     ModifyOrCreateExercise();
                     break;
 
-                case ExerciseMode.Edit:
+                case ModeEnum.Edit:
                     ModifyOrCreateExercise(_selectedExercise);
                     break;
 
-                case ExerciseMode.View:
+                case ModeEnum.View:
                     BuildViewUI();
                     break;
-                case ExerciseMode.filter:
+                case ModeEnum.filter:
                     BuildFilterExerciseUI();
                     break;
             }
@@ -158,12 +158,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Center,
                 Children =
     {
-        new Frame
+        new Border
         {
-            BackgroundColor = Color.FromArgb("#2E1E1B"),
-            CornerRadius = 20,
-            Padding = new Thickness(20, 25),
-            HasShadow = true,
+            BackgroundColor = Color.FromArgb("#251A18"),
+                                    StrokeShape = new RoundRectangle { CornerRadius = 25 },
+                                    Stroke = Colors.Orange,
+                                    StrokeThickness = 2,
+                                    Padding = 20,
             Content = new VerticalStackLayout
             {
                 Spacing = 15,
@@ -183,38 +184,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
         }
         private void BuildFilterExerciseUI()
         {
-            var translationBodyPart = new Dictionary<bodyPartEnum, string>
-    {
-        { bodyPartEnum.nothing, "Ninguno" },
-        { bodyPartEnum.chest, "Pecho" },
-        { bodyPartEnum.leg, "Piernas" },
-        { bodyPartEnum.triceps, "Tríceps" },
-        { bodyPartEnum.biceps, "Bíceps" },
-        { bodyPartEnum.abdomen, "Abdomen" },
-        { bodyPartEnum.back, "Espalda" },
-        { bodyPartEnum.shoulder, "Hombros" },
-        { bodyPartEnum.isometric, "Isométrico" },
-        { bodyPartEnum.arms, "Brazos" },
-        { bodyPartEnum.torso, "Torso" },
-        { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
-    };
-
-            var translationDificulty = new Dictionary<dificultyEnum, string>
-    {
-        { dificultyEnum.nothing, "Ninguno" },
-        { dificultyEnum.easy, "Fácil" },
-        { dificultyEnum.medium, "Medio" },
-        { dificultyEnum.hard, "Difícil" },
-        { dificultyEnum.extreme, "Extremo" }
-    };
-
             // PICKER: BODY PART
             var filterBodyPartEntry = new Picker
             {
                 Title = "Tipo Cuerpo",
                 TitleColor = Color.FromArgb("#C49362"),
-                ItemsSource = translationBodyPart.Values.ToList(),
-                SelectedItem = translationBodyPart[bodyPartEnum.nothing],
+                ItemsSource = enumExtension.BodyTranslations.Values.ToList(),
+                SelectedItem = enumExtension.BodyTranslations[bodyPartEnum.nothing],
                 TextColor = Color.FromArgb("#C49362"),
                 BackgroundColor = Color.FromArgb("#3B2523"),
                 HorizontalOptions = LayoutOptions.Fill,
@@ -227,8 +203,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
             {
                 Title = "Tipo de dificultad",
                 TitleColor = Color.FromArgb("#C49362"),
-                ItemsSource = translationDificulty.Values.ToList(),
-                SelectedItem = translationDificulty[dificultyEnum.nothing],
+                ItemsSource = enumExtension.DifficultyTranslations.Values.ToList(),
+                SelectedItem = enumExtension.DifficultyTranslations[dificultyEnum.nothing],
                 TextColor = Color.FromArgb("#C49362"),
                 BackgroundColor = Color.FromArgb("#3B2523"),
                 HorizontalOptions = LayoutOptions.Fill,
@@ -264,11 +240,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     : filterNameEntry.Text;
 
                     // 🔥 2. Actualizar filtro de dificultad
-                    var selectedDiff = translationDificulty.FirstOrDefault(x => x.Value == (string)filterDificultyEntry.SelectedItem).Key;
+                    var selectedDiff = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == (string)filterDificultyEntry.SelectedItem).Key;
                     _filter.DificultyFilter = selectedDiff;
 
                     // 🔥 3. Actualizar filtro de parte del cuerpo
-                    var selectedBody = translationBodyPart.FirstOrDefault(x => x.Value == (string)filterBodyPartEntry.SelectedItem).Key;
+                    var selectedBody = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == (string)filterBodyPartEntry.SelectedItem).Key;
                     _filter.BodyPartFilter = selectedBody;
 
 

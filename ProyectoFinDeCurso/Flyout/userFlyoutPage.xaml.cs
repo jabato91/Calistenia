@@ -32,7 +32,7 @@ public partial class userFlyoutPage : FlyoutPage
         // Páginas permanentes
         _exercisePage = exercisePage;
         _routinesPage = routinesPage;
-        _homePage = new HomePage();
+        _homePage = new HomePage(_dbService,_userType);
         _usersPage = new ListUsers(dbService);
 
         verificationUserType(userType);

@@ -33,7 +33,10 @@ namespace ProyectoFinDeCurso.Models
 
         [Ignore] // Para que SQLite no intente mapearla
         public string FullName => $"{Name} {FirstSurname} {SecondSurname}".Trim();
-        
+
+        [Ignore] // Para que SQLite no intente mapearla
+        public string surNames => $"{FirstSurname} {SecondSurname}".Trim();
+
         public String listUserType
         {
             get { 

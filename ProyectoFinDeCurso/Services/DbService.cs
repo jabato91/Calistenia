@@ -42,6 +42,9 @@ namespace ProyectoFinDeCurso.Services
 
         public async Task<List<User>> GetUsersCached()
         {
+            #if WINDOWS
+                return await _connection.Table<User>().ToListAsync();
+            #endif
             if (_cachedUsers != null) return _cachedUsers;
             _cachedUsers = await _connection.Table<User>().ToListAsync();
             return _cachedUsers;
@@ -49,6 +52,9 @@ namespace ProyectoFinDeCurso.Services
 
         public async Task<List<Exercise>> GetExercisesCached()
         {
+            #if WINDOWS
+                return await _connection.Table<Exercise>().ToListAsync();
+            #endif
             if (_cachedExercises != null) return _cachedExercises;
             _cachedExercises = await _connection.Table<Exercise>().ToListAsync();
             return _cachedExercises;
@@ -56,6 +62,9 @@ namespace ProyectoFinDeCurso.Services
 
         public async Task<List<Routines>> GetRoutinesCached()
         {
+            #if WINDOWS
+                return await _connection.Table<Routines>().ToListAsync();
+            #endif
             if (_cachedRoutines != null) return _cachedRoutines;
             _cachedRoutines = await _connection.Table<Routines>().ToListAsync();
             return _cachedRoutines;
@@ -63,6 +72,9 @@ namespace ProyectoFinDeCurso.Services
 
         public async Task<List<RoutinesExercises>> GetRoutinesExercisesCached()
         {
+            #if WINDOWS
+                return await _connection.Table<RoutinesExercises>().ToListAsync();
+            #endif
             if (_cachedRoutinesExercises != null) return _cachedRoutinesExercises;
             _cachedRoutinesExercises = await _connection.Table<RoutinesExercises>().ToListAsync();
             return _cachedRoutinesExercises;
@@ -70,6 +82,9 @@ namespace ProyectoFinDeCurso.Services
 
         public async Task<List<SetsAndRepetitions>> GetSetsAndRepetitionsCached()
         {
+            #if WINDOWS
+                return await _connection.Table<SetsAndRepetitions>().ToListAsync();
+            #endif
             if (_cachedSetsAndReps != null) return _cachedSetsAndReps;
             _cachedSetsAndReps = await _connection.Table<SetsAndRepetitions>().ToListAsync();
             return _cachedSetsAndReps;

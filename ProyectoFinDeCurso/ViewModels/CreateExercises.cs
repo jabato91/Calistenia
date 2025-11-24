@@ -121,7 +121,7 @@ namespace ProyectoFinDeCurso.ViewModels
                         // Si existe una asociación definida, buscar los ejercicios y crear el vínculo
                         if (routineMappings.TryGetValue(routineToAdd.nameRoutine, out var routineData))
                         {
-                            var (exerciseNames, series, repeticiones) = routineData; //recoge los datos de la rutina
+                            var (exerciseNames, seriesORepeticiones, repeticiones) = routineData; //recoge los datos de la rutina
                             var selectedExercises = exercises
                            .Where(ex => exerciseNames.Contains(ex.name, StringComparer.OrdinalIgnoreCase))
                            .ToList(); //filtra los ejercicios que coinciden con los nombres definidos
@@ -135,9 +135,10 @@ namespace ProyectoFinDeCurso.ViewModels
                                 
                                     routineExercise = new RoutinesExercises
                                     {
+
                                         RoutineID = routineId,
                                         ExerciseID = ex.execiseID,
-                                        sets = i < series.Length ? series[i] : 0,
+                                        sets = i < seriesORepeticiones.Length ? seriesORepeticiones[i] : 0,
                                         reps = i < repeticiones.Length ? repeticiones[i] : 0
                                     };
 
@@ -148,8 +149,8 @@ namespace ProyectoFinDeCurso.ViewModels
                                     {
                                         RoutineID = routineId,
                                         ExerciseID = ex.execiseID,
-                                        reps = i < series.Length ? repeticiones[i] : 0,
-                                        seconds = ex.seconds
+                                        reps = i < repeticiones.Length ? repeticiones[i] : 0,
+                                        seconds = i < seriesORepeticiones.Length ? seriesORepeticiones[i] : 0,
                                     };
                                 }
                                     await _dbService.Create(routineExercise);

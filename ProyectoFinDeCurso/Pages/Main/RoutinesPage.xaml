@@ -5,26 +5,29 @@
              x:Class="ProyectoFinDeCurso.Pages.Main.RoutinesPage"
              Title="Rutinas">
     <NavigationPage.TitleView>
+        <!--Es la parte de arriba de la página-->
         <Grid Padding="10"
-      ColumnDefinitions="Auto,*,Auto"
-      VerticalOptions="Center">
+  ColumnDefinitions="Auto,*,Auto"
+  VerticalOptions="Center">
+            <!--Grid permite ordenar los Campos internos, definiendo las columnas como Auto: Se ajusta al contenido, y *: Ocupa el espacio restante-->
 
-            <!-- Título centrado -->
+            <!-- Título centrado donde Grid.Column lo define como la primera fila -->
             <Label Grid.Column="1"
-           Text="Rutinas"
-           HorizontalOptions="Center"
-           VerticalOptions="Center"
-           FontSize="22"
-           FontAttributes="Bold"
-           TextColor="#C77B30"
-           FontFamily="Forresten"/>
+       Text="Inicio"
+       HorizontalOptions="Center"
+       VerticalOptions="Center"
+       FontSize="22"
+       FontAttributes="Bold"
+       TextColor="#C77B30"
+       FontFamily="Forresten"/>
 
-            <!-- Botón derecha -->
+            <!-- Botón derecha donde Grid.Column lo define como la segunda fila -->
             <ImageButton Grid.Column="2"
-                 Source="icono_predeterminado.png"
-                 WidthRequest="35"
-                 HeightRequest="35"
-                 BackgroundColor="Transparent"/>
+             Source="icono_predeterminado.png"
+             WidthRequest="35"
+             HeightRequest="35"
+             BackgroundColor="Transparent"
+                 Clicked="profile"/>
         </Grid>
     </NavigationPage.TitleView>
     <ContentPage.Background>
@@ -34,14 +37,22 @@
         </LinearGradientBrush>
     </ContentPage.Background>
     <ScrollView>
-        <VerticalStackLayout>
-            <HorizontalStackLayout
-                HorizontalOptions="Fill">
-                <Button Text="Filtrar"
-                        Clicked="filterExercises"
-                        HorizontalOptions="Center"
-                        />
-            </HorizontalStackLayout>
+        <VerticalStackLayout
+            Padding="10"
+            Spacing="10"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill">
+
+            <Button Text="Filtrar"
+            BackgroundColor="#ffd700"
+            TextColor="White"
+            CornerRadius="3"
+            FontFamily="ComfortaaBold"
+            FontSize="16"
+            HorizontalOptions="Fill"
+            VerticalOptions="Center"
+            Clicked="filterExercises"/>
+            
             <VerticalStackLayout Padding="20" Spacing="10"
                          BindableLayout.ItemsSource="{Binding FilteredRoutines}">
 
@@ -50,7 +61,7 @@
                         <!-- Grupo -->
                         <VerticalStackLayout Spacing="6">
                             <!-- Header del grupo -->
-                            <VerticalStackLayout Spacing="2" Padding="0">
+                            <VerticalStackLayout>
                                 <Label Text="{Binding DisplayName}"
                                FontAttributes="Bold"
                                FontSize="20"
@@ -138,7 +149,7 @@
                                                                     <Label Text="{Binding name}" FontSize="16"
                                                                      TextColor="#E0CFC2" Grid.Column="0"
                                                                      Margin="10,0" Padding="3"/>
-                                                                    <Label Text="{Binding sets}" FontSize="16"
+                                                                    <Label Text="{Binding reps}" FontSize="16"
                                                                      TextColor="#E0CFC2" Grid.Column="1"
                                                                      HorizontalOptions="End" Margin="10,0"
                                                                      FontFamily="calculator"/>
@@ -146,7 +157,7 @@
                                                                          TextColor="#E0CFC2" Grid.Column="2"
                                                                          HorizontalOptions="End" Margin="10,0"
                                                                          FontFamily="calculator"/>  
-                                                                    <Label Text="{Binding reps}" FontSize="16"
+                                                                    <Label Text="{Binding sets}" FontSize="16"
                                                                      TextColor="#E0CFC2" Grid.Column="3"
                                                                      HorizontalOptions="End" Margin="10,0"
                                                                      FontFamily="calculator"/>

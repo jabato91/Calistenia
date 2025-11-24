@@ -29,9 +29,6 @@ namespace ProyectoFinDeCurso.ViewModels
         }
 
 
-        // ============================================================
-        // PROPIEDADES DE FILTRO
-        // ============================================================
         public string NameRoutineFilter
         {
             get => _nameRoutineFilter;
@@ -84,16 +81,9 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-
-        // ============================================================
-        // CARGA COMPLETA (CON CACHÉ + JOIN OPTIMIZADO)
-        // ============================================================
         public async Task LoadRoutinesAsync()
         {
-            if (Initialized)
-                return;
 
-            Initialized = true;
             var routines = await _dbService.GetRoutinesCached();
             var routinesExercises = await _dbService.GetRoutinesExercisesCached();
             var exercises = await _dbService.GetExercisesCached();
@@ -121,6 +111,7 @@ namespace ProyectoFinDeCurso.ViewModels
                         exercises,
                         re => re.ExerciseID,
                         ex => ex.execiseID,
+                        
                         (re, ex) => new
                         {
                             Base = ex,
@@ -150,9 +141,6 @@ namespace ProyectoFinDeCurso.ViewModels
         }
 
 
-        // ============================================================
-        // FILTRADO OPTIMIZADO
-        // ============================================================
         public void UpdateFilteredRoutines()
         {
             IEnumerable<Routines> filtered = Routines;

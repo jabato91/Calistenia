@@ -74,15 +74,5 @@
             </StackLayout>
         </ContentPage>
     </FlyoutPage.Flyout>
-    <FlyoutPage.Detail>
-        <NavigationPage>
-        <x:Arguments>
-            <pages:HomePage />
-            
-                <!-- Página inicial -->
-        </x:Arguments>
-    </NavigationPage>
     
-
-    </FlyoutPage.Detail>
 </FlyoutPage>

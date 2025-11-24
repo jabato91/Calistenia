@@ -13,7 +13,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
 {
     public class RoutineDetailPage : ContentPage
     {
-        private readonly ExerciseMode _mode;
+        private readonly ModeEnum _mode;
         private readonly Routines _routine;
         private static userTypeEnum _userType;
         private RoutinesFilterViewModel? _filterViewModel;
@@ -21,7 +21,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
         private static TimeSpan timeBetweenReps = TimeSpan.Zero;
         private static TimeSpan timeBetweenExercises = TimeSpan.Zero;
         private Boolean firstExercise = false;
-        public RoutineDetailPage(DbService? dbService = null,RoutinesFilterViewModel? filterViewModel = null,userTypeEnum userType = userTypeEnum.user ,Routines? routine = null,ExerciseMode mode = ExerciseMode.nothing) {
+        public RoutineDetailPage(DbService? dbService = null,RoutinesFilterViewModel? filterViewModel = null,userTypeEnum userType = userTypeEnum.user ,Routines? routine = null, ModeEnum mode = ModeEnum.nothing) {
             _userType = userType;
             _filterViewModel = filterViewModel;
             _routine = routine;
@@ -34,19 +34,19 @@ namespace ProyectoFinDeCurso.Pages.Detail
         {
             switch (_mode)
             {
-                case ExerciseMode.create:
+                case ModeEnum.create:
                     BuildCreateUI();
                     break;
 
-                case ExerciseMode.Edit:
+                case ModeEnum.Edit:
                     BuildEditUI();
                     break;
 
-                case ExerciseMode.View:
+                case ModeEnum.View:
                     BuildViewUI();
                     break;
 
-                case ExerciseMode.filter:
+                case ModeEnum.filter:
                     BuildFilterRoutineUI();
                     break;
             }
@@ -207,10 +207,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         
                         var btn = (Button)s;
                         var exercise = (Exercise)btn.BindingContext; // también puedes usar btn.CommandParameter
-                        int count = exercise.sets;
+                        
                         if (exercise == null)
                             return;
-                        if(eleccionExercise.Equals(exercise))
+                        
+                        if (eleccionExercise.Equals(exercise))
                         {
                             var tcs = new TaskCompletionSource<bool>();
                             var pickerMinutosSets = new Picker
@@ -253,83 +254,134 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 BackgroundColor = Color.FromArgb("#3B2523"),
                                 WidthRequest = 100
                             };
+                            var cancelButton = new Button
+                            {
+                                Text = "Salir",
+                                BackgroundColor = Colors.Orange,
+                                TextColor = Colors.White,
+                                CornerRadius = 10,
+                                FontFamily = "ComfortaaBold",
+                                Padding = new Thickness(10, 6),
+                                HorizontalOptions = LayoutOptions.Fill,
+                                Command = new Command(async () => await Navigation.PopModalAsync())
+                            };
                             for (int i = 0; i <= 59; i++)
                                 pickerSegundosReps.Items.Add(i.ToString("00"));
 
                             pickerMinutosReps.SelectedIndex = 0;
                             pickerSegundosReps.SelectedIndex = 30;
-                            var modalDuracion = new ContentPage
+                            
+                                var modalDuracion = new ContentPage
                             {
-                                BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
+                                BackgroundColor = Color.FromRgba(0, 0, 0, 0.45),
+
                                 Content = new Border
                                 {
-                                    BackgroundColor = Color.FromArgb("#2E1E1B"),
-                                    StrokeShape = new RoundRectangle { CornerRadius = 20 },
-                                    Margin = 1,
-                                    VerticalOptions = LayoutOptions.Center,
-                                    HorizontalOptions = LayoutOptions.Center,
+                                    BackgroundColor = Color.FromArgb("#251A18"),
+                                    StrokeShape = new RoundRectangle { CornerRadius = 25 },
+                                    Stroke = Colors.Orange,
+                                    StrokeThickness = 2,
+                                    Padding = 20,
+                                    Margin = new Thickness(30, 80),
+
+                                    Shadow = new Shadow
+                                    {
+                                        Offset = new Point(0, 6),
+                                        Radius = 12,
+                                    },
+
                                     Content = new VerticalStackLayout
                                     {
-                                        Padding = 15,
-                                        Spacing = 15,
+                                        Spacing = 25,
+
                                         Children =
-                                    {
-                                        new Label
-                                        {
-                                            Text = "Elige el tiempo de descanso entre repeticiones",
-                                            FontSize = 20,
-                                            TextColor = Colors.Orange,
-                                            HorizontalTextAlignment = TextAlignment.Center,
-                                            FontFamily="EatMeAlive"
-                                        },
+            {
+                new Label
+                {
+                    Text = "Configurar descansos",
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    FontSize = 26,
+                    TextColor = Colors.Orange,
+                    FontFamily = "EatMeAlive"
+                },
 
-                                        // fila de pickers
-                                        new HorizontalStackLayout
-                                        {
-                                            HorizontalOptions = LayoutOptions.Center,
-                                            Spacing = 10,
-                                            Children = { pickerMinutosSets, pickerSegundosSets }
-                                        },
-                                        new Label
-                                        {
-                                            Text = "Elige el tiempo de descanso entre ejercicios",
-                                            FontSize = 20,
-                                            TextColor = Colors.Orange,
-                                            HorizontalTextAlignment = TextAlignment.Center,
-                                            FontFamily="EatMeAlive"
-                                        },
+                new Label
+                {
+                    Text = "Tiempo entre repeticiones",
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    FontSize = 18,
+                    TextColor = Colors.White,
+                    Margin = new Thickness(0, 5)
+                },
 
-                                        // fila de pickers
-                                        new HorizontalStackLayout
-                                        {
-                                            HorizontalOptions = LayoutOptions.Center,
-                                            Spacing = 10,
-                                            Children = { pickerMinutosReps, pickerSegundosReps }
-                                        },
-                                        new Button
-                                        {
-                                            Text = "Aceptar",
-                                            BackgroundColor = Colors.Orange,
-                                            TextColor = Colors.White,
-                                            CornerRadius = 10,
-                                            Command = new Command(async () =>
-                                            {
-                                                int minSets = pickerMinutosSets.SelectedIndex;
-                                                int segSets = pickerSegundosSets.SelectedIndex;
+                new HorizontalStackLayout
+                {
+                    HorizontalOptions = LayoutOptions.Center,
+                    Spacing = 15,
+                    Children =
+                    {
+                        pickerMinutosSets,
+                        pickerSegundosSets
+                    }
+                },
 
-                                                timeBetweenReps = new TimeSpan(0, minSets, segSets);
+                new Label
+                {
+                    Text = "Tiempo entre ejercicios",
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    FontSize = 18,
+                    TextColor = Colors.White,
+                    Margin = new Thickness(0, 15, 0, 0)
+                },
 
-                                                int minReps = pickerMinutosReps.SelectedIndex;
-                                                int SegReps = pickerSegundosReps.SelectedIndex;
+                new HorizontalStackLayout
+                {
+                    HorizontalOptions = LayoutOptions.Center,
+                    Spacing = 15,
+                    Children =
+                    {
+                        pickerMinutosReps,
+                        pickerSegundosReps
+                    }
+                },
 
-                                                timeBetweenExercises = new TimeSpan(0, minReps, SegReps);
+                new Button
+                {
+                    Text = "Aceptar",
+                    BackgroundColor = Colors.Orange,
+                    TextColor = Colors.White,
+                    CornerRadius = 15,
+                    FontAttributes = FontAttributes.Bold,
+                    Padding = new Thickness(12, 10),
+                    FontFamily = "ComfortaaBold",
+                    Command = new Command(async () =>
+                    {
+                        int minSets = pickerMinutosSets.SelectedIndex;
+                        int segSets = pickerSegundosSets.SelectedIndex;
 
-                                                await Navigation.PopModalAsync();
-                                                tcs.TrySetResult(true);
+                        timeBetweenReps = new TimeSpan(0, minSets, segSets);
 
-                                                })
-                                            }
-                                        }
+                        int minReps = pickerMinutosReps.SelectedIndex;
+                        int segReps = pickerSegundosReps.SelectedIndex;
+
+                        timeBetweenExercises = new TimeSpan(0, minReps, segReps);
+
+                        await Navigation.PopModalAsync();
+                        tcs.TrySetResult(true);
+                    })
+                },
+
+                new Button
+                {
+                    Text = "Cancelar",
+                    BackgroundColor = Color.FromArgb("#4A2E2A"),
+                    TextColor = Colors.White,
+                    CornerRadius = 15,
+                    FontFamily = "ComfortaaBold",
+                    Padding = new Thickness(12, 10),
+                    Command = new Command(async () => await Navigation.PopModalAsync())
+                }
+            }
                                     }
                                 }
                             };
@@ -337,6 +389,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             await Navigation.PushModalAsync(modalDuracion);
                             await tcs.Task;
                         }
+                        int count = exercise.sets;
                         var nameExercise = new Label
                         {
                             FontAttributes = FontAttributes.Bold,
@@ -347,29 +400,17 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             Text = exercise.name
                         };
 
-                        var descriptionExercise = new Label
+                        var repetitionExercise = new Label
                         {
-                            Text = "Repeticion numero: ",
+                            Text = $"Repeticion numero: {count}",
                             TextColor = Colors.White,
                             Margin = new Thickness(10, 5)
                         };
-                        var RepsExercise = new Label
+                        var setsExercise = new Label
                         {
-                            FontAttributes = FontAttributes.Bold,
-                            FontSize = 16,
-                            FontFamily = "Forresten",
+                            Text = $"Series: {exercise.sets}",
                             TextColor = Colors.White,
-                            Margin = new Thickness(10, 5),
-                            Text = $"Repetición número: {exercise.reps}"
-                        };
-                        var SetsExercise = new Label
-                        {
-                            FontAttributes = FontAttributes.Bold,
-                            FontSize = 16,
-                            FontFamily = "Forresten",
-                            TextColor = Colors.White,
-                            Margin = new Thickness(10, 5),
-                            Text = $"Series: {count}"
+                            Margin = new Thickness(10, 5)
                         };
                         var imageExercise = new Image
                         {
@@ -379,68 +420,114 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             Aspect = Aspect.AspectFill,
                             HorizontalOptions = LayoutOptions.Center
                         };
+                        var pauseButton = new Button
+                        {
+                            Text = "Descansar",
+                            BackgroundColor = Colors.Orange,
+                            TextColor = Colors.White,
+                            CornerRadius = 15,
+                            FontFamily = "ComfortaaBold",
+                            FontSize = 16,
+                            Padding = new Thickness(12, 10),
+                            Margin = new Thickness(0, 10, 0, 0),
+                        };
+                        pauseButton.Command = new Command(async () =>
+                        {
+                            if (count == 0)
+                            {
+                                exercise.exerciseFinished = true;
+                                exercise.expaded = false;
+
+                                if (timeBetweenExercises.TotalSeconds > 0)
+                                    await ShowCountdown(timeBetweenExercises);
+
+                                await Navigation.PopModalAsync();
+
+                                var siguiente = exercisesInRoutine.FirstOrDefault(x => !x.exerciseFinished);
+                                if (siguiente != null)
+                                    siguiente.expaded = true;
+                            }
+                            else
+                            {
+                                count--;
+                                repetitionExercise.Text = $"Repetición número: {count}";
+                                if (count == 0)
+                                {
+                                    pauseButton.Text = "Terminar Ejercicio";
+                                }
+                                else
+                                {
+                                    pauseButton.Text = "Descansar";
+                                }
+                                if (timeBetweenReps.TotalSeconds > 0)
+                                    await ShowCountdown(timeBetweenReps);
+                            }
+                        });
                         var modalPage = new ContentPage
                         {
-                            BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
+                            BackgroundColor = Color.FromRgba(0, 0, 0, 0.5),
+
                             Content = new Border
                             {
-                                BackgroundColor = Color.FromArgb("#2E1E1B"),
-                                StrokeShape = new RoundRectangle
+                                BackgroundColor = Color.FromArgb("#241A18"),
+                                StrokeShape = new RoundRectangle { CornerRadius = 25 },
+                                StrokeThickness = 2,
+                                Stroke = Colors.Orange,
+                                Margin = new Thickness(30, 100, 30, 100),
+
+                                Shadow = new Shadow
                                 {
-                                    CornerRadius = 20
+                                    Offset = new Point(0, 6),
+                                    Radius = 12,
                                 },
-                                Margin = 1,
-                                VerticalOptions = LayoutOptions.Center,
-                                HorizontalOptions = LayoutOptions.Center,
+
                                 Content = new VerticalStackLayout
                                 {
-                                    Padding = 1,
-                                    Spacing = 5,
+                                    Padding = new Thickness(20),
+                                    Spacing = 15,
+
                                     Children =
-                                    {
-                                        
-                                        nameExercise,
-                                        imageExercise,
-                                        RepsExercise,
-                                        SetsExercise,
-                                        descriptionExercise,
-                                        new Button
-                                            {
-                                                Text = "Descansar",
-                                                Command = new Command(async () =>
-                                                {
-                                                    if (count == 0)
-                                                    {
-                                                        // Cerrar este ejercicio
-                                                        exercise.exerciseFinished = true;
-                                                        exercise.expaded = false; // 🔹 se cerrará automáticamente
-                                                        if (timeBetweenExercises.TotalSeconds > 0)
-                                                        {
-                                                            await ShowCountdown(timeBetweenExercises);
-                                                        }
-                                                        await Navigation.PopModalAsync();
+            {
+                nameExercise,
 
-                                                        // Abrir el siguiente ejercicio
-                                                        var siguiente = exercisesInRoutine.FirstOrDefault(x => !x.exerciseFinished);
-                                                        if (siguiente != null)
-                                                        {
-                                                            siguiente.expaded = true; // 🔹 se abrirá automáticamente
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        count--;
-                                                        descriptionExercise.Text = $"Repetición número: {count}";
+                new Border
+                {
+                    StrokeShape = new RoundRectangle { CornerRadius = 15 },
+                    BackgroundColor = Color.FromArgb("#3B2A28"),
+                    Padding = 8,
+                    Content = imageExercise,
+                    HorizontalOptions = LayoutOptions.Center,
+                },
 
-                                                        // 🔹 Aquí añadimos el temporizador antes de continuar
-                                                        if (timeBetweenReps.TotalSeconds > 0)
-                                                        {
-                                                            await ShowCountdown(timeBetweenReps);
-                                                        }
-                                                    }
-                                                })
-                                            }
-                                                                                }
+                repetitionExercise,
+                setsExercise,
+                pauseButton,
+
+                new Button
+                {
+                    Text = "Cancelar",
+                    BackgroundColor = Color.FromArgb("#4A2E2A"),
+                    TextColor = Colors.White,
+                    CornerRadius = 15,
+                    FontFamily = "ComfortaaBold",
+                    FontSize = 15,
+                    Padding = new Thickness(12, 8),
+                    Margin = new Thickness(0, 5, 0, 0),
+
+                    Command = new Command(async () =>
+                    {
+                        bool primer = true;
+                        foreach (var ex in exercisesInRoutine)
+                        {
+                            ex.expaded = primer;
+                            ex.exerciseFinished = false;
+                            primer = false;
+                        }
+
+                        await Navigation.PopModalAsync();
+                    })
+                }
+            }
                                 }
                             }
                         };
@@ -532,10 +619,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
             var headerGrid = new Grid
             {
                 ColumnDefinitions =
-    {
-        new ColumnDefinition(GridLength.Star),
-        new ColumnDefinition(GridLength.Auto)
-    }
+            {
+                new ColumnDefinition(GridLength.Star),
+                new ColumnDefinition(GridLength.Auto)
+            }
             };
 
             // Texto centrado en la izquierda
@@ -655,38 +742,14 @@ namespace ProyectoFinDeCurso.Pages.Detail
         }
         private void BuildFilterRoutineUI()
         {
-            var translationBodyPart = new Dictionary<bodyPartEnum, string>
-    {
-        { bodyPartEnum.nothing, "Ninguno" },
-        { bodyPartEnum.chest, "Pecho" },
-        { bodyPartEnum.leg, "Piernas" },
-        { bodyPartEnum.triceps, "Tríceps" },
-        { bodyPartEnum.biceps, "Bíceps" },
-        { bodyPartEnum.abdomen, "Abdomen" },
-        { bodyPartEnum.back, "Espalda" },
-        { bodyPartEnum.shoulder, "Hombros" },
-        { bodyPartEnum.isometric, "Isométrico" },
-        { bodyPartEnum.arms, "Brazos" },
-        { bodyPartEnum.torso, "Torso" },
-        { bodyPartEnum.torsoAndArms, "Torso y Brazos" }
-    };
-
-            var translationDificulty = new Dictionary<dificultyEnum, string>
-    {
-        { dificultyEnum.nothing, "Ninguno" },
-        { dificultyEnum.easy, "Fácil" },
-        { dificultyEnum.medium, "Medio" },
-        { dificultyEnum.hard, "Difícil" },
-        { dificultyEnum.extreme, "Extremo" }
-    };
-
             // PICKER: BODY PART
             var filterBodyPartEntry = new Picker
             {
                 Title = "Tipo Cuerpo",
-                ItemsSource = translationBodyPart.Values.ToList(),
-                SelectedItem = translationBodyPart[bodyPartEnum.nothing],
                 TextColor = Color.FromArgb("#C49362"),
+                TitleColor = Color.FromArgb("#856D54"),
+                ItemsSource = enumExtension.BodyTranslations.Values.ToList(),
+                SelectedItem = enumExtension.BodyTranslations[bodyPartEnum.nothing],
                 BackgroundColor = Color.FromArgb("#3B2523"),
                 HorizontalOptions = LayoutOptions.Fill
             };
@@ -695,25 +758,30 @@ namespace ProyectoFinDeCurso.Pages.Detail
             var filterDificultyEntry = new Picker
             {
                 Title = "Tipo de dificultad",
-                ItemsSource = translationDificulty.Values.ToList(),
-                SelectedItem = translationDificulty[dificultyEnum.nothing],
                 TextColor = Color.FromArgb("#C49362"),
+                TitleColor = Color.FromArgb("#856D54"),
+                ItemsSource = enumExtension.DifficultyTranslations.Values.ToList(),
+                SelectedItem = enumExtension.DifficultyTranslations[dificultyEnum.nothing],
                 BackgroundColor = Color.FromArgb("#3B2523"),
                 HorizontalOptions = LayoutOptions.Fill
             };
-
+            
             // ENTRY: NAME
             var filterNameEntry = new Entry
             {
                 Placeholder = "Nombre de la rutina",
                 Keyboard = Keyboard.Text,
-                TextColor = Color.FromArgb("#C49362")
+                TextColor = Color.FromArgb("#C49362"),
+                BackgroundColor = Color.FromArgb("#3B2523"),
             };
 
             // BOTÓN FILTRAR — ACTUALIZA EL VIEWMODEL
             var filterButton = new Button
             {
                 Text = "Filtrar",
+                BackgroundColor = Color.FromArgb("ffd700"),
+                TextColor = Colors.White,
+                CornerRadius = 3,
                 Command = new Command(async () =>
                 {
                     _filterViewModel ??= new RoutinesFilterViewModel(_dbService, userTypeEnum.nothing);
@@ -724,11 +792,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     : filterNameEntry.Text;
 
                     // 🔥 2. Actualizar filtro de dificultad
-                    var selectedDiff = translationDificulty.FirstOrDefault(x => x.Value == (string)filterDificultyEntry.SelectedItem).Key;
+                    var selectedDiff = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == (string)filterDificultyEntry.SelectedItem).Key;
                     _filterViewModel.DificultyFilter = selectedDiff;
 
                     // 🔥 3. Actualizar filtro de parte del cuerpo
-                    var selectedBody = translationBodyPart.FirstOrDefault(x => x.Value == (string)filterBodyPartEntry.SelectedItem).Key;
+                    var selectedBody = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == (string)filterBodyPartEntry.SelectedItem).Key;
                     _filterViewModel.BodyPartFilter = selectedBody;
 
                     // 🔥 5. Cerrar modal
@@ -739,6 +807,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
             var cancelButton = new Button
             {
                 Text = "Cancelar",
+                BackgroundColor = Color.FromArgb("ffd700"),
+                TextColor = Colors.White,
+                CornerRadius = 3,
                 Command = new Command(async () => await Navigation.PopModalAsync())
             };
 
@@ -749,10 +820,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 Content = new Border
                 {
                     BackgroundColor = Color.FromArgb("#2E1E1B"),
-                    StrokeShape = new RoundRectangle { CornerRadius = 20 },
+                    StrokeShape = new RoundRectangle { CornerRadius = 10 },
                     Margin = 1,
-                    VerticalOptions = LayoutOptions.Center,
-                    HorizontalOptions = LayoutOptions.Center,
+                    Padding = 3,
+                    WidthRequest = 350,
+                    HeightRequest = 350,
                     Content = new VerticalStackLayout
                     {
                         Padding = 1,
@@ -766,15 +838,26 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         TextColor = Color.FromArgb("#C77B30"),
                         HorizontalOptions = LayoutOptions.Fill,
                         HorizontalTextAlignment = TextAlignment.Center,
-                        FontFamily = "EatMeAlive"
+                        FontFamily = "EatMeAlive",
+                        Margin = new Thickness(0,0,0,30)
                     },
-                    filterNameEntry,
-                    filterDificultyEntry,
-                    filterBodyPartEntry,
-
-                    new HorizontalStackLayout
+                    new Label
                     {
+                        Text = "Nombre Routina",
+                        FontSize = 12,
+                        TextColor = Color.FromArgb("#856D54"),
+                        FontAttributes = FontAttributes.Bold,
+                        FontFamily = "ComfortaaBold"
+                    },
+                        filterNameEntry,
+                        filterDificultyEntry,
+                        filterBodyPartEntry,
+
+                   new HorizontalStackLayout
+                    {
+                        Margin = new Thickness(0,20,0,0),
                         Spacing = 10,
+                        HorizontalOptions = LayoutOptions.Center,
                         Children =
                         {
                             filterButton,
@@ -1092,74 +1175,75 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             var tapGesture = new TapGestureRecognizer();
                             if (bodyPartEnumPicker.SelectedItem is string selectedText)
                             {
-                                if (!selectedText.Equals(enumExtension.BodyTranslations[bodyPartEnum.isometric]))
-                                {
+                                
                                     // 🔹 Tap: abrir modal para añadir
 
                                     tapGesture.Tapped += async (s, e) =>
                                     {
                                         if (frame.BindingContext is Exercise selectedExercise)
                                         {
-                                            var getExerciseLabel = new Label
+                                            if (!selectedExercise.muscleGroupId.Equals(bodyPartEnum.isometric))
                                             {
-                                                FontAttributes = FontAttributes.Bold,
-                                                FontSize = 18,
-                                                FontFamily = "Forresten",
-                                                TextColor = Color.FromArgb("#C77B30"),
-                                                Margin = new Thickness(10, 5),
-                                                Text = selectedExercise.name
-                                            };
+                                                var getExerciseLabel = new Label
+                                                {
+                                                    FontAttributes = FontAttributes.Bold,
+                                                    FontSize = 18,
+                                                    FontFamily = "Forresten",
+                                                    TextColor = Color.FromArgb("#C77B30"),
+                                                    Margin = new Thickness(10, 5),
+                                                    Text = selectedExercise.name
+                                                };
 
-                                            var repsLabel = new Entry
-                                            {
-                                                Placeholder = "Número de repeticiones",
-                                                Keyboard = Keyboard.Numeric
-                                            };
-                                            repsLabel.TextChanged += (s, e) =>
-                                            {
-                                                if (!string.IsNullOrEmpty(repsLabel.Text))
+                                                var repsLabel = new Entry
                                                 {
-                                                    string onlyDigits = new string(repsLabel.Text.Where(char.IsDigit).ToArray());
-                                                    if (repsLabel.Text != onlyDigits)
+                                                    Placeholder = "Número de repeticiones",
+                                                    Keyboard = Keyboard.Numeric
+                                                };
+                                                repsLabel.TextChanged += (s, e) =>
+                                                {
+                                                    if (!string.IsNullOrEmpty(repsLabel.Text))
                                                     {
-                                                        repsLabel.Text = onlyDigits; // limpia si es texto
+                                                        string onlyDigits = new string(repsLabel.Text.Where(char.IsDigit).ToArray());
+                                                        if (repsLabel.Text != onlyDigits)
+                                                        {
+                                                            repsLabel.Text = onlyDigits; // limpia si es texto
+                                                        }
                                                     }
-                                                }
-                                            };
-                                            var setsLabel = new Entry
-                                            {
-                                                Placeholder = "Número de series",
-                                                Keyboard = Keyboard.Numeric
-                                            };
-                                            setsLabel.TextChanged += (s, e) =>
-                                            {
-                                                if (!string.IsNullOrEmpty(setsLabel.Text))
+                                                };
+                                                var setsLabel = new Entry
                                                 {
-                                                    string onlyDigits = new string(setsLabel.Text.Where(char.IsDigit).ToArray());
-                                                    if (setsLabel.Text != onlyDigits)
+                                                    Placeholder = "Número de series",
+                                                    Keyboard = Keyboard.Numeric
+                                                };
+                                                setsLabel.TextChanged += (s, e) =>
+                                                {
+                                                    if (!string.IsNullOrEmpty(setsLabel.Text))
                                                     {
-                                                        setsLabel.Text = onlyDigits; // limpia si es texto
+                                                        string onlyDigits = new string(setsLabel.Text.Where(char.IsDigit).ToArray());
+                                                        if (setsLabel.Text != onlyDigits)
+                                                        {
+                                                            setsLabel.Text = onlyDigits; // limpia si es texto
+                                                        }
                                                     }
-                                                }
-                                            };
-                                            var modalPage = new ContentPage
-                                            {
-                                                BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
-                                                Content = new Border
+                                                };
+                                                var modalPage = new ContentPage
                                                 {
-                                                    BackgroundColor = Color.FromArgb("#2E1E1B"),
-                                                    StrokeShape = new RoundRectangle
+                                                    BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
+                                                    Content = new Border
                                                     {
-                                                        CornerRadius = 20
-                                                    },
-                                                    Margin = 1,
-                                                    VerticalOptions = LayoutOptions.Center,
-                                                    HorizontalOptions = LayoutOptions.Center,
-                                                    Content = new VerticalStackLayout
-                                                    {
-                                                        Padding = 1,
-                                                        Spacing = 5,
-                                                        Children =
+                                                        BackgroundColor = Color.FromArgb("#2E1E1B"),
+                                                        StrokeShape = new RoundRectangle
+                                                        {
+                                                            CornerRadius = 20
+                                                        },
+                                                        Margin = 1,
+                                                        VerticalOptions = LayoutOptions.Center,
+                                                        HorizontalOptions = LayoutOptions.Center,
+                                                        Content = new VerticalStackLayout
+                                                        {
+                                                            Padding = 1,
+                                                            Spacing = 5,
+                                                            Children =
                                     {
                                         new Label
                                         {
@@ -1214,80 +1298,75 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                             }
                                         }
                                     }
+                                                        }
                                                     }
-                                                }
-                                            };
+                                                };
 
-                                            await Navigation.PushModalAsync(modalPage);
-                                        }
-                                    };
-                                }
-                                else
-                                {
-                                    tapGesture.Tapped += async (s, e) =>
-                                    {
-                                        if (frame.BindingContext is Exercise selectedExercise)
-                                        {
-                                            var getExerciseLabel = new Label
+                                                await Navigation.PushModalAsync(modalPage);
+                                            }
+                                            else
                                             {
-                                                FontAttributes = FontAttributes.Bold,
-                                                FontSize = 18,
-                                                FontFamily = "Forresten",
-                                                TextColor = Color.FromArgb("#C77B30"),
-                                                Margin = new Thickness(10, 5),
-                                                Text = selectedExercise.name
-                                            };
+                                               
+                                                    var getExerciseLabel = new Label
+                                                    {
+                                                        FontAttributes = FontAttributes.Bold,
+                                                        FontSize = 18,
+                                                        FontFamily = "Forresten",
+                                                        TextColor = Color.FromArgb("#C77B30"),
+                                                        Margin = new Thickness(10, 5),
+                                                        Text = selectedExercise.name
+                                                    };
 
-                                            var repsLabel = new Entry
-                                            {
-                                                Placeholder = "Número de repeticiones",
-                                                Keyboard = Keyboard.Numeric
-                                            };
-                                            repsLabel.TextChanged += (s, e) =>
-                                            {
-                                                if (!string.IsNullOrEmpty(repsLabel.Text))
-                                                {
-                                                    string onlyDigits = new string(repsLabel.Text.Where(char.IsDigit).ToArray());
-                                                    if (repsLabel.Text != onlyDigits)
+                                                    var repsLabel = new Entry
                                                     {
-                                                        repsLabel.Text = onlyDigits; // limpia si es texto
-                                                    }
-                                                }
-                                            };
-                                            var timeLabel = new Entry
-                                            {
-                                                Placeholder = "Tiempo de ejecución",
-                                                Keyboard = Keyboard.Numeric
-                                            };
-                                            timeLabel.TextChanged += (s, e) =>
-                                            {
-                                                if (!string.IsNullOrEmpty(timeLabel.Text))
-                                                {
-                                                    string onlyDigits = new string(timeLabel.Text.Where(char.IsDigit).ToArray());
-                                                    if (timeLabel.Text != onlyDigits)
+                                                        Placeholder = "Número de repeticiones",
+                                                        Keyboard = Keyboard.Numeric
+                                                    };
+                                                    repsLabel.TextChanged += (s, e) =>
                                                     {
-                                                        timeLabel.Text = onlyDigits; // limpia si es texto
-                                                    }
-                                                }
-                                            };
-                                            var modalPage = new ContentPage
-                                            {
-                                                BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
-                                                Content = new Border
-                                                {
-                                                    BackgroundColor = Color.FromArgb("#2E1E1B"),
-                                                    StrokeShape = new RoundRectangle
+                                                        if (!string.IsNullOrEmpty(repsLabel.Text))
+                                                        {
+                                                            string onlyDigits = new string(repsLabel.Text.Where(char.IsDigit).ToArray());
+                                                            if (repsLabel.Text != onlyDigits)
+                                                            {
+                                                                repsLabel.Text = onlyDigits; // limpia si es texto
+                                                            }
+                                                        }
+                                                    };
+                                                    var timeLabel = new Entry
                                                     {
-                                                        CornerRadius = 20
-                                                    },
-                                                    Margin = 1,
-                                                    VerticalOptions = LayoutOptions.Center,
-                                                    HorizontalOptions = LayoutOptions.Center,
-                                                    Content = new VerticalStackLayout
+                                                        Placeholder = "Tiempo de ejecución",
+                                                        Keyboard = Keyboard.Numeric
+                                                    };
+                                                    timeLabel.TextChanged += (s, e) =>
                                                     {
-                                                        Padding = 1,
-                                                        Spacing = 5,
-                                                        Children =
+                                                        if (!string.IsNullOrEmpty(timeLabel.Text))
+                                                        {
+                                                            string onlyDigits = new string(timeLabel.Text.Where(char.IsDigit).ToArray());
+                                                            if (timeLabel.Text != onlyDigits)
+                                                            {
+                                                                timeLabel.Text = onlyDigits; // limpia si es texto
+                                                            }
+                                                        }
+                                                    };
+                                                    var modalPage = new ContentPage
+                                                    {
+                                                        BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
+                                                        Content = new Border
+                                                        {
+                                                            BackgroundColor = Color.FromArgb("#2E1E1B"),
+                                                            StrokeShape = new RoundRectangle
+                                                            {
+                                                                CornerRadius = 20
+                                                            },
+                                                            Margin = 1,
+                                                            VerticalOptions = LayoutOptions.Center,
+                                                            HorizontalOptions = LayoutOptions.Center,
+                                                            Content = new VerticalStackLayout
+                                                            {
+                                                                Padding = 1,
+                                                                Spacing = 5,
+                                                                Children =
                                         {
                                         new Label
                                         {
@@ -1321,7 +1400,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                                         var newExercise = selectedExercise.Clone();
 
                                                         // Asignar los valores específicos de este nuevo ejercicio
-                                                        newExercise.sets = int.TryParse(repsLabel.Text, out int s) ? s : 0;
+                                                        newExercise.reps = int.TryParse(repsLabel.Text, out int s) ? s : 0;
                                                         newExercise.seconds = int.TryParse(timeLabel.Text, out int r) ? r : 0;
                                                         newExercise.name = getExerciseLabel.Text;
 
@@ -1343,14 +1422,21 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                             }
                                         }
                                         }
-                                                    }
-                                                }
-                                            };
+                                                            }
+                                                        }
+                                                    };
 
-                                            await Navigation.PushModalAsync(modalPage);
-                                        }
+                                                    await Navigation.PushModalAsync(modalPage);
+                                                }
+                                            }
+                                        
                                     };
-                                }
+                                        
+                                    tapGesture.Tapped += async (s, e) =>
+                                    {
+                                        
+                                    };
+                                
                                 frame.GestureRecognizers.Add(tapGesture);
                                 return frame;
                             }
@@ -1671,8 +1757,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                         
                                     }
                                 }
-
+                                await _filterViewModel.LoadRoutinesAsync();
                                 _filterViewModel.UpdateFilteredRoutines();
+
                                 await Navigation.PopModalAsync();
 
                             })

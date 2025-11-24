@@ -33,10 +33,10 @@ namespace ProyectoFinDeCurso
         {
             try
             {
+
                 await _dbService.InitTablesAsync();
-
                 var userId = await SecureStorage.GetAsync("user_id");
-
+                
                 if (string.IsNullOrEmpty(userId))
                 {
                     await _dbService.CreateUserAdmin();

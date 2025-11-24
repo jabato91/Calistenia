@@ -25,7 +25,8 @@
                      Source="icono_predeterminado.png"
                      WidthRequest="35"
                      HeightRequest="35"
-                     BackgroundColor="Transparent"/>
+                     BackgroundColor="Transparent"
+                         Clicked="profile"/>
         </Grid>
     </NavigationPage.TitleView>
     <!--Fondo con degradado sutil, que define los colores de la página actual-->
@@ -44,19 +45,15 @@
                              VerticalOptions="Fill">
             <!--Coloca los campos en vertical, con un espacio interior de 10 y un espacio exterior de 10, con un ajuste vertical y horizontal indefinido-->
 
-            <HorizontalStackLayout
-            HorizontalOptions="Center"
-            Spacing="10"
-                VerticalOptions="Fill">   
-                
-
-                <!-- BOTÓN MÁS PEQUEÑO A LA DERECHA -->
-                <Button Text="Filtrar"
-            WidthRequest="200"
+            <Button Text="Filtrar"
+            BackgroundColor="#ffd700"
+            TextColor="White"
+            CornerRadius="3"
+            FontFamily="ComfortaaBold"
+            FontSize="16"
             HorizontalOptions="Fill"
-            Clicked="filterExercises"
-            VerticalOptions="Fill"/>
-            </HorizontalStackLayout>
+            VerticalOptions="Center"
+            Clicked="filterExercises"/>
             <CollectionView ItemsSource="{Binding FilteredExercises}"
                 IsGrouped="True"
                 ItemsUpdatingScrollMode="KeepScrollOffset"
