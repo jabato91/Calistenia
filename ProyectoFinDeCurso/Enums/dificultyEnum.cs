@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProyectoFinDeCurso.Enums
 {
-    public enum dificultyEnum
+    public enum dificultyEnum // Dificultad del ejercicio y las rutinas
     {
         nothing,
         easy,

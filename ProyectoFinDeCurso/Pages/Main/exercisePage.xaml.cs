@@ -79,6 +79,7 @@ namespace ProyectoFinDeCurso.Pages.Main{
 
             await _dbService.DeleteExerciseById(exercise.execiseID);
 
+            _filter.CachedExercises.Remove(exercise);
             _filter.Exercises.Remove(exercise);
 
             _filter.UpdateFilteredExercises();
@@ -114,7 +115,7 @@ namespace ProyectoFinDeCurso.Pages.Main{
         private async void profile(object sender, EventArgs e)
         {
             await Navigation.PushModalAsync(
-               new UserDetailPage(_dbService, _userType, ModeEnum.View)
+               new UserDetailPage(null,_dbService, _userType, ModeEnum.View)
            );
         }
     }

@@ -11,34 +11,34 @@ using System.Linq;
     {
         public class Exercise : INotifyPropertyChanged
     {
-            [PrimaryKey, AutoIncrement, Column("exerciseID")]
-            public int execiseID { get; set; } 
+            [PrimaryKey, AutoIncrement, Column("exerciseID")] // Identificador único del ejercicio
+            public int execiseID { get; set; } // Identificador único del ejercicio
             [Column("Name")]
-            public string name { get; set; } = string.Empty;
-            [Column("Description")]
-            public string description { get; set; } = string.Empty;
-            [Column("image")]
-            public string image { get; set; } = string.Empty;
+            public string name { get; set; } = string.Empty; // Nombre del ejercicio en la base de datos
+        [Column("Description")]
+            public string description { get; set; } = string.Empty; // Descripción del ejercicio en la base de datos
+        [Column("image")]
+            public string image { get; set; } = string.Empty; //Nombre de la imagen del ejercicio en la base de datos
         [Column("video")]
-        public string video { get; set; } = string.Empty;
+            public string video { get; set; } = string.Empty; //Nombre del video del ejercicio en la base de datos
         [Column("dificulty")]
-            public dificultyEnum dificulty { get; set; } = dificultyEnum.nothing;
-            [Column("BodyPart")]
-            public bodyPartEnum muscleGroupId { get; set; } = bodyPartEnum.nothing;
-            [Column("typeUser")]
-            public userTypeEnum typeUser { get; set; } = userTypeEnum.nothing;
-            [Column("Materials")]
-            public string materials { get; set; } = string.Empty;
+            public dificultyEnum dificulty { get; set; } = dificultyEnum.nothing; // Dificultad del ejercicio en la base de datos
+        [Column("BodyPart")]
+            public bodyPartEnum muscleGroupId { get; set; } = bodyPartEnum.nothing; // Grupo muscular del ejercicio en la base de datos
+        [Column("typeUser")]
+            public userTypeEnum typeUser { get; set; } = userTypeEnum.nothing; // Tipo de usuario para el que está destinado el ejercicio en la base de datos
+        [Column("Materials")]
+            public string materials { get; set; } = string.Empty; // Materiales necesarios para el ejercicio en la base de datos
         [Ignore]
-        public int sets { get; set; } = -1;
+        public int sets { get; set; } = -1; // Número de series para el ejercicio
         [Ignore]
-        public int reps { get; set; } = -1;
+        public int reps { get; set; } = -1; // Número de repeticiones para el ejercicio
         [Ignore]
-        public int seconds { get; set; } = -1;
-        private bool _expaded;
-        private bool _exerciseFinished;
+        public int seconds { get; set; } = -1; // Número de segundos para el ejercicio
+        private bool _expaded; // Indica si el ejercicio está expandido en al entrar en la rutina
+        private bool _exerciseFinished; // Indica si el ejercicio ha sido completado en la rutina
         [Ignore]
-        public bool expaded
+        public bool expaded // Indica si el ejercicio está expandido en la interfaz de usuario
         {
             get => _expaded;
             set
@@ -51,7 +51,7 @@ using System.Linq;
             }
         }
         [Ignore]
-        public bool exerciseFinished
+        public bool exerciseFinished // Indica si el ejercicio ha sido completado en la rutina
         {
             get => _exerciseFinished;
             set
@@ -64,8 +64,8 @@ using System.Linq;
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
+        public event PropertyChangedEventHandler PropertyChanged; // Evento para notificar cambios en las propiedades
+        protected void OnPropertyChanged(string propertyName) // Método para invocar el evento PropertyChanged
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -90,7 +90,7 @@ using System.Linq;
                 };
             }
         }
-        public Color DifficultyColor => dificulty switch
+        public Color DifficultyColor => dificulty switch // propiedad calculada para obtener el color según la dificultad
         {
             dificultyEnum.easy => Colors.Green,
             dificultyEnum.medium => Colors.Orange,
@@ -113,7 +113,7 @@ using System.Linq;
                 }
             };
         }
-        public Exercise Clone()
+        public Exercise Clone() // Método para clonar el ejercicio
         {
             return new Exercise
             {

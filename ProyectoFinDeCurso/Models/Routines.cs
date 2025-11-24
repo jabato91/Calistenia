@@ -12,21 +12,21 @@ namespace ProyectoFinDeCurso.Models
     public class Routines
     {
         [PrimaryKey, AutoIncrement, Column("routineID")]
-        public int routineID { get; set; }
+        public int routineID { get; set; }// Identificador único de la rutina en la base de datos
         [Column("NameRoutine")]
-        public string nameRoutine { get; set; } = string.Empty;
+        public string nameRoutine { get; set; } = string.Empty; // Nombre de la rutina en la base de datos
         [Column("DescriptionRoutine")]
-        public string description { get; set; } = string.Empty;
+        public string description { get; set; } = string.Empty; // Descripción de la rutina en la base de datos
         [Column("imageRoutine")]
-        public string image { get; set; } = string.Empty;
+        public string image { get; set; } = string.Empty; // Nombre de la imagen de la rutina en la base de datos
         [Column("bodyPartRoutine")]
-        public bodyPartEnum muscleGroup { get; set; } = bodyPartEnum.nothing;
+        public bodyPartEnum muscleGroup { get; set; } = bodyPartEnum.nothing; // Grupo muscular de la rutina en la base de datos
         [Column("typeUser")]
-        public userTypeEnum typeUser { get; set; } = userTypeEnum.nothing;
+        public userTypeEnum typeUser { get; set; } = userTypeEnum.nothing; // Tipo de usuario para el que está destinada la rutina en la base de datos
         [Column("difficultyRoutine")]
-        public dificultyEnum difficulty { get; set; } = dificultyEnum.nothing;
+        public dificultyEnum difficulty { get; set; } = dificultyEnum.nothing; // Dificultad de la rutina en la base de datos
         [Column("userID")]
-        public int userID { get; set; } = -1; 
+        public int userID { get; set; } = -1;  // Identificador del usuario que creó la rutina en la base de datos
         [Ignore] 
         public ObservableCollection<Exercise> Exercises { get; set; } = new(); //obtiene los ejercicios de la rutina
         [Ignore]

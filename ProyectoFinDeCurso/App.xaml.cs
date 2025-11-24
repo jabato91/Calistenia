@@ -49,7 +49,7 @@ namespace ProyectoFinDeCurso
                     if (DeviceInfo.Platform == DevicePlatform.Android)
                     { 
                         var exerciseVm = new ExerciseFilterViewModel(_dbService, user.userType);
-                        await exerciseVm.LoadExercisesAsync(forceReload: true);
+                        await exerciseVm.LoadExercisesAsync();
                         exercisePage createExercise = new exercisePage(_dbService, user.userType, exerciseVm);
                         RoutinesPage routinesPage = new RoutinesPage(_dbService, user.userType);
                         MainPage = new userFlyoutPage(_dbService, user.userType, createExercise, routinesPage);

@@ -10,9 +10,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
 {
     public class ExerciseDetailPage : ContentPage
     {
-        private readonly DbService _dbService;
-        private readonly ExerciseFilterViewModel _filter;
-        private readonly Exercise _selectedExercise;
+        private readonly DbService? _dbService;
+        private readonly ExerciseFilterViewModel? _filter;
+        private readonly Exercise? _selectedExercise;
 
         private readonly ModeEnum _mode;
 
@@ -81,9 +81,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 case ModeEnum.filter:
                     BuildFilterExerciseUI();
                     break;
+                
             }
         }
-
+        
         private void BuildViewUI()
         {
             BackgroundColor = Color.FromArgb("#80000000");

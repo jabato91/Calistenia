@@ -13,7 +13,6 @@ namespace ProyectoFinDeCurso.Services
         private List<Exercise>? _cachedExercises;
         private List<Routines>? _cachedRoutines;
         private List<RoutinesExercises>? _cachedRoutinesExercises;
-        private List<SetsAndRepetitions>? _cachedSetsAndReps;
 
         public DbService()
         {
@@ -27,7 +26,6 @@ namespace ProyectoFinDeCurso.Services
             await _connection.CreateTableAsync<Exercise>();
             await _connection.CreateTableAsync<Routines>();
             await _connection.CreateTableAsync<RoutinesExercises>();
-            await _connection.CreateTableAsync<SetsAndRepetitions>();
         }
 
         public void ClearAllCache()
@@ -36,7 +34,6 @@ namespace ProyectoFinDeCurso.Services
             _cachedExercises = null;
             _cachedRoutines = null;
             _cachedRoutinesExercises = null;
-            _cachedSetsAndReps = null;
         }
 
 
@@ -80,15 +77,6 @@ namespace ProyectoFinDeCurso.Services
             return _cachedRoutinesExercises;
         }
 
-        public async Task<List<SetsAndRepetitions>> GetSetsAndRepetitionsCached()
-        {
-            #if WINDOWS
-                return await _connection.Table<SetsAndRepetitions>().ToListAsync();
-            #endif
-            if (_cachedSetsAndReps != null) return _cachedSetsAndReps;
-            _cachedSetsAndReps = await _connection.Table<SetsAndRepetitions>().ToListAsync();
-            return _cachedSetsAndReps;
-        }
 
         public async Task<User> GetUserById(int id) =>
             await _connection.Table<User>().Where(x => x.UserID == id).FirstOrDefaultAsync();
@@ -105,8 +93,6 @@ namespace ProyectoFinDeCurso.Services
         public async Task<RoutinesExercises> GetRoutinesExercisesByIdRoutine(int idRoutines) =>
             await _connection.Table<RoutinesExercises>().Where(x => x.Id == idRoutines).FirstOrDefaultAsync();
 
-        public async Task<SetsAndRepetitions> GetSetsAndRepsById(int idSetsAndReps) =>
-            await _connection.Table<SetsAndRepetitions>().Where(x => x.setsAndRepsID == idSetsAndReps).FirstOrDefaultAsync();
 
 
         public async Task Create(object create)

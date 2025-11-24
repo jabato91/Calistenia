@@ -39,10 +39,6 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-
-        // ====================================================
-        // CONSTRUCTOR
-        // ====================================================
         public ListUsersViewModel(DbService dbService)
         {
             _dbService = dbService;
@@ -52,13 +48,9 @@ namespace ProyectoFinDeCurso.ViewModels
             _ = LoadUsersAsync();
         }
 
-
-        // ====================================================
-        // CARGA DE USUARIOS (CON CACHÉ)
-        // ====================================================
         private async Task LoadUsersAsync()
         {
-            var allUsers = await _dbService.GetUsersCached(); // ⚡ Carga desde memoria
+            var allUsers = await _dbService.GetUsersCached(); 
 
             Users.Clear();
             foreach (var user in allUsers)
@@ -67,11 +59,7 @@ namespace ProyectoFinDeCurso.ViewModels
             UpdateFilteredUsers();
         }
 
-
-        // ====================================================
-        // FILTRADO OPTIMIZADO
-        // ====================================================
-        private void UpdateFilteredUsers()
+        public void UpdateFilteredUsers()
         {
             if (string.IsNullOrWhiteSpace(SearchText))
             {
@@ -87,11 +75,6 @@ namespace ProyectoFinDeCurso.ViewModels
 
             FilteredUsers = filtered;
         }
-
-
-        // ====================================================
-        // PROPERTY CHANGED
-        // ====================================================
         public event PropertyChangedEventHandler? PropertyChanged;
         private void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

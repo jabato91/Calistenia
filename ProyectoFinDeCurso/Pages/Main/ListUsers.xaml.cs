@@ -1,4 +1,7 @@
+
+using ProyectoFinDeCurso.Enums;
 using ProyectoFinDeCurso.Models;
+using ProyectoFinDeCurso.Pages.Detail;
 using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.ViewModels;
 namespace ProyectoFinDeCurso.Pages.Main;
@@ -6,13 +9,13 @@ namespace ProyectoFinDeCurso.Pages.Main;
 public partial class ListUsers : ContentPage
 {
     private DbService _dbService;
-
+    private ListUsersViewModel _viewModel;
     public ListUsers(DbService dbService)
 	{
         _dbService = dbService;
         InitializeComponent();
-
-		BindingContext = new ListUsersViewModel(_dbService);
+        _viewModel = new ListUsersViewModel(_dbService);
+        BindingContext = _viewModel;
     }
     private async void EliminateUser(object sender, EventArgs e)
     {
@@ -37,46 +40,9 @@ public partial class ListUsers : ContentPage
             return;
         }
 
-        User userFromDb = await _dbService.GetUserById(selectedExercise.UserID);
+        await Navigation.PushModalAsync(
+                new UserDetailPage(selectedExercise, _dbService, userTypeEnum.nothing, ModeEnum.Edit, _viewModel)
+            );
 
-        var nameEntry = new Entry
-        {
-            Text = userFromDb.Name,
-            Placeholder = "Nombre",
-            TextColor = Color.FromArgb("#C49362"),
-            BackgroundColor = Color.FromArgb("#3B2523"),
-
-            HorizontalOptions = LayoutOptions.Fill
-        };
-        var firstNameEntry = new Entry
-        {
-            Text = userFromDb.FirstSurname,
-            Placeholder = "Nombre",
-            TextColor = Color.FromArgb("#C49362"),
-            BackgroundColor = Color.FromArgb("#3B2523"),
-
-            HorizontalOptions = LayoutOptions.Fill
-        };
-        var secondSurnameEntry = new Entry
-        {
-            Text = userFromDb.SecondSurname,
-            Placeholder = "Nombre",
-            TextColor = Color.FromArgb("#C49362"),
-            BackgroundColor = Color.FromArgb("#3B2523"),
-
-            HorizontalOptions = LayoutOptions.Fill
-        };
-
-        
-
-        var modalPage = new ContentPage
-        {
-            BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
-            Content = new Frame
-
-            {
-            }
-        };
-        
     }
 }

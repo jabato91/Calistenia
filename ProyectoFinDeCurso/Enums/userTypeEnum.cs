@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProyectoFinDeCurso.Enums
 {
-    public enum userTypeEnum
+    public enum userTypeEnum // Tipo de usuario
     {
         nothing,
         user,

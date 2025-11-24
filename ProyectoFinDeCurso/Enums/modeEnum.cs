@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProyectoFinDeCurso.Enums
 {
-    public enum ModeEnum
+    public enum ModeEnum //tipo de modo en el que se abre la página
     {
         nothing,
         Edit,

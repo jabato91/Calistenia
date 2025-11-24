@@ -128,7 +128,7 @@ public partial class RoutinesPage : ContentPage
     private async void profile(object sender, EventArgs e)
     {
         await Navigation.PushModalAsync(
-           new UserDetailPage(_dbService, _userType, ModeEnum.View)
+           new UserDetailPage(null, _dbService, _userType, ModeEnum.View)
        );
     }
 }

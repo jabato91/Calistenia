@@ -27,7 +27,18 @@ namespace ProyectoFinDeCurso.ViewModels
     = new ObservableCollection<Exercise>();
 
 
-
+        public List<Exercise> CachedExercises
+        {
+            get => _cachedExercises;
+            set
+            {
+                if (_cachedExercises != value)
+                {
+                    _cachedExercises = value;
+                    OnPropertyChanged(nameof(AuraColor));
+                }
+            }
+        }
         public Brush AuraColor  
         {
             get => _auraColor;
@@ -105,13 +116,14 @@ namespace ProyectoFinDeCurso.ViewModels
 
         public async Task LoadExercisesAsync(bool forceReload = false)
         {
+
             if (_isLoaded && !forceReload)
                 return;
 
-            _cachedExercises = await _dbService.GetExercisesCached();
+            CachedExercises = await _dbService.GetExercisesCached();
 
             if (_userType == userTypeEnum.admin)
-                _cachedExercises.ForEach(e => e.IsAdmin = true);
+                CachedExercises.ForEach(e => e.IsAdmin = true);
 
             _isLoaded = true;
 
@@ -120,7 +132,7 @@ namespace ProyectoFinDeCurso.ViewModels
 
         public void UpdateFilteredExercises()
         {
-            var filtered = _cachedExercises.AsEnumerable();
+            var filtered = CachedExercises.AsEnumerable();
 
             if (!string.IsNullOrWhiteSpace(NameRoutineFilter))
             {

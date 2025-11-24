@@ -389,7 +389,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             await Navigation.PushModalAsync(modalDuracion);
                             await tcs.Task;
                         }
-                        int count = exercise.sets;
+                        int count = exercise.reps;
                         var nameExercise = new Label
                         {
                             FontAttributes = FontAttributes.Bold,
@@ -399,27 +399,65 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             Margin = new Thickness(10, 5),
                             Text = exercise.name
                         };
-
+                        
                         var repetitionExercise = new Label
                         {
                             Text = $"Repeticion numero: {count}",
                             TextColor = Colors.White,
                             Margin = new Thickness(10, 5)
                         };
-                        var setsExercise = new Label
+                        bool isIsometric = false;
+                        var setsOrTimeExercise = new Label();
+                        if (!exercise.muscleGroupId.Equals(bodyPartEnum.isometric))
                         {
-                            Text = $"Series: {exercise.sets}",
+                            setsOrTimeExercise = new Label
+                            {
+                                Text = $"Series: {exercise.sets}",
+                                TextColor = Colors.White,
+                                Margin = new Thickness(10, 5)
+                            };
+                            isIsometric = false;
+                        }
+                        else
+                        {
+                            setsOrTimeExercise = new Label
+                            {
+                                Text = $"Tiempo: {exercise.seconds} segundos",
+                                TextColor = Colors.White,
+                                Margin = new Thickness(10, 5)
+                            };
+                            isIsometric = true;
+                        }
+                        var timeButton = new Button
+                        {
+                            Text = "Empezar Ejercicio",
+                            BackgroundColor = Colors.Orange,
                             TextColor = Colors.White,
-                            Margin = new Thickness(10, 5)
-                        };
-                        var imageExercise = new Image
-                        {
-                            Source = exercise.image,
-                            HeightRequest = 200,
-                            WidthRequest = 200,
-                            Aspect = Aspect.AspectFill,
+                            HeightRequest = 40,
+                            WidthRequest = 150,  // usa el tamaño que quieras
+                            CornerRadius = 15,
+                            FontFamily = "ComfortaaBold",
+                            FontSize = 13,
+                            IsVisible = isIsometric,
                             HorizontalOptions = LayoutOptions.Center
                         };
+                        bool exerciseCompleted = false;
+                        timeButton.Command = new Command(async () =>
+                        {
+                            if (timeBetweenReps.TotalSeconds > 0)
+                                await ShowCountdown(TimeSpan.FromMinutes(exercise.seconds));
+
+                            timeButton.IsVisible = false;
+                            exerciseCompleted = true;
+                        });
+                        var imageExercise = new Image
+                            {
+                                Source = exercise.image,
+                                HeightRequest = 200,
+                                WidthRequest = 200,
+                                Aspect = Aspect.AspectFill,
+                                HorizontalOptions = LayoutOptions.Center
+                            };
                         var pauseButton = new Button
                         {
                             Text = "Descansar",
@@ -431,10 +469,22 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             Padding = new Thickness(12, 10),
                             Margin = new Thickness(0, 10, 0, 0),
                         };
+                        
                         pauseButton.Command = new Command(async () =>
                         {
+                            if (exercise.muscleGroupId.Equals(bodyPartEnum.isometric) && !exerciseCompleted)
+                            {
+                                await DisplayAlert(
+                                     "Ejercicio isométrico",
+                                     "Termina el ejercicio para poder descansar.",
+                                     "Aceptar"
+                                 );
+                                return;
+                            }
+                            
                             if (count == 0)
                             {
+                                timeButton.IsVisible = false;
                                 exercise.exerciseFinished = true;
                                 exercise.expaded = false;
 
@@ -454,10 +504,17 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 if (count == 0)
                                 {
                                     pauseButton.Text = "Terminar Ejercicio";
+                                    if (exercise.muscleGroupId.Equals(bodyPartEnum.isometric)){
+                                        timeButton.IsVisible = true;
+                                    }
+                                    
                                 }
                                 else
                                 {
                                     pauseButton.Text = "Descansar";
+                                    if (exercise.muscleGroupId.Equals(bodyPartEnum.isometric)){
+                                        timeButton.IsVisible = true;
+                                    }
                                 }
                                 if (timeBetweenReps.TotalSeconds > 0)
                                     await ShowCountdown(timeBetweenReps);
@@ -481,53 +538,65 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     Radius = 12,
                                 },
 
-                                Content = new VerticalStackLayout
+                                Content = new ScrollView
                                 {
-                                    Padding = new Thickness(20),
-                                    Spacing = 15,
+                                    Content = new VerticalStackLayout
+                                    {
+                                        Padding = new Thickness(20),
+                                        Spacing = 15,
+                                        Children =
+                                        {
+                                            nameExercise,
 
-                                    Children =
-            {
-                nameExercise,
+                                            new Border
+                                            {
+                                                StrokeShape = new RoundRectangle { CornerRadius = 15 },
+                                                BackgroundColor = Color.FromArgb("#3B2A28"),
+                                                Padding = 8,
+                                                Content = imageExercise,
+                                                HorizontalOptions = LayoutOptions.Center,
+                                            },
 
-                new Border
-                {
-                    StrokeShape = new RoundRectangle { CornerRadius = 15 },
-                    BackgroundColor = Color.FromArgb("#3B2A28"),
-                    Padding = 8,
-                    Content = imageExercise,
-                    HorizontalOptions = LayoutOptions.Center,
-                },
+                                            repetitionExercise,
 
-                repetitionExercise,
-                setsExercise,
-                pauseButton,
+                                            new HorizontalStackLayout
+                                            {
+                                                Spacing = 10,
+                                                Children =
+                                                {
+                                                    setsOrTimeExercise,
+                                                    timeButton
+                                                }
+                                            },
 
-                new Button
-                {
-                    Text = "Cancelar",
-                    BackgroundColor = Color.FromArgb("#4A2E2A"),
-                    TextColor = Colors.White,
-                    CornerRadius = 15,
-                    FontFamily = "ComfortaaBold",
-                    FontSize = 15,
-                    Padding = new Thickness(12, 8),
-                    Margin = new Thickness(0, 5, 0, 0),
+                                            pauseButton,
 
-                    Command = new Command(async () =>
-                    {
-                        bool primer = true;
-                        foreach (var ex in exercisesInRoutine)
-                        {
-                            ex.expaded = primer;
-                            ex.exerciseFinished = false;
-                            primer = false;
-                        }
+                                            new Button
+                                            {
+                                                Text = "Cancelar",
+                                                BackgroundColor = Color.FromArgb("#4A2E2A"),
+                                                TextColor = Colors.White,
+                                                CornerRadius = 15,
+                                                FontFamily = "ComfortaaBold",
+                                                FontSize = 15,
+                                                Padding = new Thickness(12, 8),
+                                                Margin = new Thickness(0, 5, 0, 0),
 
-                        await Navigation.PopModalAsync();
-                    })
-                }
-            }
+                                                Command = new Command(async () =>
+                                                {
+                                                    bool primer = true;
+                                                    foreach (var ex in exercisesInRoutine)
+                                                    {
+                                                        ex.expaded = primer;
+                                                        ex.exerciseFinished = false;
+                                                        primer = false;
+                                                    }
+
+                                                    await Navigation.PopModalAsync();
+                                                })
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         };
@@ -1395,7 +1464,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                                             await DisplayAlert("Error", "Introduce series y tiempo de ejecución.", "OK");
                                                             return;
                                                         }
-
+                                                        if(repsLabel.Text.Equals("0") || timeLabel.Text.Equals("0"))
+                                                        {
+                                                            await DisplayAlert("Error", "El tiempo y las repeticiones deben ser mayores que 0.", "OK");
+                                                            return;
+                                                        }
                                                         // Crear una copia del ejercicio seleccionado
                                                         var newExercise = selectedExercise.Clone();
 

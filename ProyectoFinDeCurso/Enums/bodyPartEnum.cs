@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProyectoFinDeCurso.Enums
 {
-    public enum bodyPartEnum
+    public enum bodyPartEnum // Enum para las partes del cuerpo
     {
         nothing,
         chest,

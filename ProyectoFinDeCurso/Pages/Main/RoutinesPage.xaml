@@ -145,7 +145,7 @@
                                                        BindableLayout.ItemsSource="{Binding Exercises}">
                                                         <BindableLayout.ItemTemplate>
                                                             <DataTemplate>
-                                                                <Grid ColumnDefinitions="*,30,30,35">
+                                                                <Grid ColumnDefinitions="*,Auto,Auto,Auto" Padding="5">
                                                                     <Label Text="{Binding name}" FontSize="16"
                                                                      TextColor="#E0CFC2" Grid.Column="0"
                                                                      Margin="10,0" Padding="3"/>

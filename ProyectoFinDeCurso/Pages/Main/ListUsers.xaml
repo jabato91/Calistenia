@@ -16,72 +16,72 @@
        BackgroundColor="#2B2B2B"
        TextColor="#E0CFC2"
        PlaceholderColor="#A59D95"/> <!--Barra de busqueda el usuario por correo, obteniendo el usuario a tiempo real-->
-        <CollectionView ItemsSource="{Binding FilteredExercisesByMail}"><!--Filtra los usuarios dependiendo del usuario buscado desde el metodo FilteredExercisesByMail-->
+        <CollectionView ItemsSource="{Binding FilteredUsers}">
             <CollectionView.ItemTemplate>
-                <DataTemplate><!---Crea los usuarios de la lista-->
-                    <Border
-                    Padding="1"
-                    Margin="20"
-                    Stroke="LightGray"
-                    StrokeThickness="1"
-                    BackgroundColor="#3B2523">
+                <DataTemplate>
+                    <Frame
+                Padding="15"
+                Margin="15,10"
+                BackgroundColor="#2E1E1B"
+                CornerRadius="20"
+                HasShadow="True">
 
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="10"/>
-                        </Border.StrokeShape>
-                        <!--Fondo de cada usuario-->
-                        <!-- Usamos un Grid para alinear texto e íconos -->
                         <Grid ColumnDefinitions="*,Auto"
-                          VerticalOptions="Center"
-                          Margin="20,0,20,0">
+                      RowDefinitions="Auto,Auto,Auto,Auto"
+                      Padding="5">
 
-                            <!-- Columna izquierda: contenido -->
-                            <VerticalStackLayout Grid.Column="0"
-                                 Spacing="3"
-                                 VerticalOptions="Center">
-                                <Label Text="{Binding Id}" />
-                                <!--Id del usuario-->
-                                <Label Text="{Binding FullName}"
-                                    FontSize="18"
-                                    FontAttributes="Bold"
-                                    TextColor="Orange"
-                                       FontFamily="EatMeAlive"/>
-                                <!--Nombre completo del usuario-->
-                                <Label Text="{Binding Email, StringFormat='Correo: {0}'}" 
-                       FontSize="14"
-                       TextColor="Gray" />
-                                <!--Correo del usuario-->
-                                <Label Text="{Binding Phone, StringFormat='Teléfono: {0}'}"
-                       FontSize="14"
-                       TextColor="Gray" />
-                                <!--Telefono del usuario-->
-                                <Label Text="{Binding listUserType, StringFormat='Tipo de Usuario: {0}'}" 
-                       FontSize="14"
-                       TextColor="Gray" />
-                            </VerticalStackLayout>
+                            <!-- Nombre -->
+                            <Label Grid.Row="0" Grid.Column="0"
+                           Text="{Binding FullName}"
+                           FontSize="20"
+                           FontFamily="EatMeAlive"
+                           TextColor="#C49362"
+                           Margin="0,0,0,8"/>
 
-                            <!-- Columna derecha: íconos centrados verticalmente -->
-                            <HorizontalStackLayout Grid.Column="1"
-                                 VerticalOptions="Center"
-                                 Spacing="10"
-                                 HorizontalOptions="End">
+                            <!-- Botones -->
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="1"
+                                           Spacing="12"
+                                           VerticalOptions="Center">
 
                                 <ImageButton Source="editar.png"
-                             WidthRequest="24"
-                             HeightRequest="24"
-                             BackgroundColor="Transparent"
-                             Clicked="modifyUser" />
-                                <!--Boton en el que hazcedes al metodo modifyUser para modificar el usuario-->
+                                     WidthRequest="26"
+                                     HeightRequest="26"
+                                     BackgroundColor="Transparent"
+                                     Clicked="modifyUser"/>
 
                                 <ImageButton Source="papelera.png"
-                             WidthRequest="24"
-                             HeightRequest="24"
-                             BackgroundColor="Transparent"
-                             Clicked="EliminateUser" />
-                                <!--Boton en el que hazcedes al metodo EliminateUser para eliminar el usuario-->
+                                     WidthRequest="26"
+                                     HeightRequest="26"
+                                     BackgroundColor="Transparent"
+                                     Clicked="EliminateUser"/>
+
                             </HorizontalStackLayout>
+
+                            <!-- Email -->
+                            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                           Text="{Binding Email, StringFormat='📧 {0}'}"
+                           FontSize="15"
+                           TextColor="#C49362"
+                           FontFamily="ComfortaaBold"/>
+
+                            <!-- Teléfono -->
+                            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                           Text="{Binding Phone, StringFormat='📱 {0}'}"
+                           FontSize="15"
+                           TextColor="#C49362"
+                           Margin="0,3,0,0"
+                           FontFamily="ComfortaaBold"/>
+
+                            <!-- Tipo de usuario -->
+                            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                           Text="{Binding listUserType, StringFormat='👤 {0}'}"
+                           FontSize="15"
+                           TextColor="#856D54"
+                           Margin="0,3,0,0"
+                           FontFamily="ComfortaaBold"/>
+
                         </Grid>
-                    </Border>
+                    </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

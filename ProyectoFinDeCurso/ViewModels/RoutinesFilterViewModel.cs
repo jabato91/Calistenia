@@ -130,7 +130,7 @@ namespace ProyectoFinDeCurso.ViewModels
                     copy.seconds = item.seconds;
                     copy.exerciseFinished = false;
                     copy.expaded = false;
-
+                   
                     routine.Exercises.Add(copy);
                 }
 
