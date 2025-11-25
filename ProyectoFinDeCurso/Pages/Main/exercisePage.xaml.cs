@@ -1,13 +1,9 @@
 ﻿
-
-using CommunityToolkit.Maui.Views;
-using Microsoft.Maui.Controls.Shapes;
 using ProyectoFinDeCurso.Enums;
 using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Pages.Detail;
 using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.ViewModels;
-using IOPath = System.IO.Path;
 
 namespace ProyectoFinDeCurso.Pages.Main{
 
@@ -17,7 +13,7 @@ namespace ProyectoFinDeCurso.Pages.Main{
         private readonly ExerciseFilterViewModel _filter;
         private readonly userTypeEnum _userType;
         public bool IsAdminMode => _userType == userTypeEnum.admin;
-        public exercisePage(DbService dbService, userTypeEnum userType, ExerciseFilterViewModel filter)
+        public exercisePage(DbService dbService, userTypeEnum userType)
         {
             try
             {
@@ -31,21 +27,19 @@ namespace ProyectoFinDeCurso.Pages.Main{
 
             _dbService = dbService;
             _userType = userType;
-            _filter = filter;
+            _filter = new ExerciseFilterViewModel(_dbService,_userType);
 
             BindingContext = _filter;
-            if (DeviceInfo.Platform != DevicePlatform.Android)
-            {
-                _filter.LoadExercisesAsync(forceReload: true);
-            }
+
+            NavigationPage.SetTitleView(this, BuildTitleView());
+            
+        }
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            await _filter.LoadExercisesAsync();
         }
         public bool ShouldReload { get; set; }
-
-        // Método para cargar desde fuera
-        public async Task LoadAtStartup()
-        {
-            await _filter.LoadExercisesAsync(forceReload: true);
-        }
         private async void OnExerciseTapped(object sender, EventArgs e)
         {
             try
@@ -79,10 +73,7 @@ namespace ProyectoFinDeCurso.Pages.Main{
 
             await _dbService.DeleteExerciseById(exercise.execiseID);
 
-            _filter.CachedExercises.Remove(exercise);
-            _filter.Exercises.Remove(exercise);
-
-            _filter.UpdateFilteredExercises();
+            await _filter.LoadExercisesAsync();
         }
         private async void modifyExercise(object sender, EventArgs e)
         {
@@ -108,15 +99,60 @@ namespace ProyectoFinDeCurso.Pages.Main{
             );
         }
 
-        public async Task PreloadAsync()
-        {
-            await _filter.LoadExercisesAsync(forceReload: true);
-        }
         private async void profile(object sender, EventArgs e)
         {
             await Navigation.PushModalAsync(
                new UserDetailPage(null,_dbService, _userType, ModeEnum.View)
            );
+        }
+        private View BuildTitleView()
+        {
+            var grid = new Grid
+            {
+                Padding = new Thickness(10, 5),
+                VerticalOptions = LayoutOptions.Center,
+                ColumnDefinitions =
+        {
+            new ColumnDefinition { Width = GridLength.Auto },    // (0) Izquierda
+            new ColumnDefinition { Width = GridLength.Star },    // (1) Centro
+            new ColumnDefinition { Width = GridLength.Auto }     // (2) Derecha
+        }
+            };
+
+            // ----- TÍTULO -----
+            var titleLabel = new Label
+            {
+                Text = "Ejercicios",
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center,
+                FontSize = 22,
+                FontAttributes = FontAttributes.Bold,
+                TextColor = Color.FromArgb("#C77B30"),
+                FontFamily = "Forresten",
+                Margin = new Thickness(0, 0, 0, 0)
+            };
+            Grid.SetColumn(titleLabel, 1);
+            grid.Children.Add(titleLabel);
+
+            // ----- BOTÓN DE PERFIL -----
+            var profileButton = new ImageButton
+            {
+                Source = "icono_predeterminado.png",
+                WidthRequest = 35,
+                HeightRequest = 35,
+                BackgroundColor = Colors.Transparent,
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.End,
+                Margin = new Thickness(0, 0, 5, 0)
+            };
+            Grid.SetColumn(profileButton, 2);
+
+            // Evento de perfil
+            profileButton.Clicked += profile;
+
+            grid.Children.Add(profileButton);
+
+            return grid;
         }
     }
 }

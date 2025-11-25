@@ -24,11 +24,9 @@ namespace ProyectoFinDeCurso.ViewModels
         {
             _dbService = dbService;
             _userType = userType;
-
-            _ = LoadRoutinesAsync(); // Mejor que async void
         }
 
-
+        
         public string NameRoutineFilter
         {
             get => _nameRoutineFilter;
@@ -81,12 +79,19 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
+        public async Task InitializeAsync()
+        {
+            if (Initialized) return;
+
+            Initialized = true;
+            await LoadRoutinesAsync();
+        }
+
         public async Task LoadRoutinesAsync()
         {
-
-            var routines = await _dbService.GetRoutinesCached();
-            var routinesExercises = await _dbService.GetRoutinesExercisesCached();
-            var exercises = await _dbService.GetExercisesCached();
+            var routines = await _dbService.GetRoutinesAsync();
+            var routinesExercises = await _dbService.GetRoutinesExercisesAsync();
+            var exercises = await _dbService.GetExercisesAsync();
 
             var userIdString = await SecureStorage.GetAsync("user_id");
             int userId = int.Parse(userIdString);
@@ -105,13 +110,14 @@ namespace ProyectoFinDeCurso.ViewModels
             {
                 routine.IsAdmin = adminFlag;
 
+                routine.Exercises = new ObservableCollection<Exercise>();
+
                 var routineJoins = routinesExercises
                     .Where(re => re.RoutineID == routine.routineID)
                     .Join(
                         exercises,
                         re => re.ExerciseID,
                         ex => ex.execiseID,
-                        
                         (re, ex) => new
                         {
                             Base = ex,
@@ -130,7 +136,7 @@ namespace ProyectoFinDeCurso.ViewModels
                     copy.seconds = item.seconds;
                     copy.exerciseFinished = false;
                     copy.expaded = false;
-                   
+
                     routine.Exercises.Add(copy);
                 }
 

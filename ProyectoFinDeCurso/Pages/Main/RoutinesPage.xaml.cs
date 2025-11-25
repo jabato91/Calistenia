@@ -22,32 +22,19 @@ public partial class RoutinesPage : ContentPage
 
     public RoutinesPage(DbService dbService, userTypeEnum userType)
     {
-
-        _exerciseFilterViewModel = new ExerciseFilterViewModel(dbService, userType);
         _dbService = dbService;
         _userType = userType;
         _filter = new RoutinesFilterViewModel(_dbService, _userType);
-        try
-        {
-            InitializeComponent();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Routines ERROR: " + ex.Message);
-            throw;
-        }
+
+        InitializeComponent();
         BindingContext = _filter;
-        
+
+        NavigationPage.SetTitleView(this, BuildTitleView());
     }
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-
-        if (!_filter.Initialized)
-        {
-            await Task.Delay(50); // Deja renderizar la UI
-            await _filter.LoadRoutinesAsync();
-        }
+        await _filter.LoadRoutinesAsync(); // 🔥 refresco real
     }
     private async void OnExerciseTapped(object sender, EventArgs e)
     {
@@ -130,5 +117,55 @@ public partial class RoutinesPage : ContentPage
         await Navigation.PushModalAsync(
            new UserDetailPage(null, _dbService, _userType, ModeEnum.View)
        );
+    }
+    private View BuildTitleView()
+    {
+        // Grid principal del TitleView
+        var grid = new Grid
+        {
+            Padding = new Thickness(10, 5),
+            VerticalOptions = LayoutOptions.Center,
+            ColumnDefinitions =
+        {
+            new ColumnDefinition { Width = GridLength.Auto },   // (0) margen izquierda / decoración opcional
+            new ColumnDefinition { Width = GridLength.Star },   // (1) título centrado
+            new ColumnDefinition { Width = GridLength.Auto }    // (2) botón perfil
+        }
+        };
+
+        // ***** TÍTULO *****
+        var titleLabel = new Label
+        {
+            Text = "Inicio",
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            FontSize = 22,
+            FontAttributes = FontAttributes.Bold,
+            TextColor = Color.FromArgb("#C77B30"),
+            FontFamily = "Forresten",
+            Margin = new Thickness(0, 0, 0, 0)
+        };
+        Grid.SetColumn(titleLabel, 1);
+        grid.Children.Add(titleLabel);
+
+        // ***** BOTÓN PERFIL (derecha) *****
+        var profileButton = new ImageButton
+        {
+            Source = "icono_predeterminado.png",
+            WidthRequest = 35,
+            HeightRequest = 35,
+            BackgroundColor = Colors.Transparent,
+            HorizontalOptions = LayoutOptions.End,
+            VerticalOptions = LayoutOptions.Center,
+            Margin = new Thickness(0, 0, 5, 0)
+        };
+        Grid.SetColumn(profileButton, 2);
+
+        // Conecta correctamente al evento: profile(object, EventArgs)
+        profileButton.Clicked += profile;
+
+        grid.Children.Add(profileButton);
+
+        return grid;
     }
 }

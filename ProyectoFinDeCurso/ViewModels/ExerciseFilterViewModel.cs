@@ -10,8 +10,7 @@ namespace ProyectoFinDeCurso.ViewModels
 {
     public class ExerciseFilterViewModel : INotifyPropertyChanged
     {
-        private bool _isLoaded;
-        public bool IsLoaded => _isLoaded;
+       
         private readonly DbService _dbService;
         private readonly userTypeEnum _userType;
         private List<Exercise> _cachedExercises = new();
@@ -35,7 +34,7 @@ namespace ProyectoFinDeCurso.ViewModels
                 if (_cachedExercises != value)
                 {
                     _cachedExercises = value;
-                    OnPropertyChanged(nameof(AuraColor));
+                    OnPropertyChanged(nameof(CachedExercises));
                 }
             }
         }
@@ -114,18 +113,15 @@ namespace ProyectoFinDeCurso.ViewModels
             Exercises = new ObservableCollection<Exercise>();
         }
 
-        public async Task LoadExercisesAsync(bool forceReload = false)
+        public async Task LoadExercisesAsync()
         {
 
-            if (_isLoaded && !forceReload)
-                return;
 
-            CachedExercises = await _dbService.GetExercisesCached();
+            CachedExercises = await _dbService.GetExercisesAsync();
 
             if (_userType == userTypeEnum.admin)
                 CachedExercises.ForEach(e => e.IsAdmin = true);
 
-            _isLoaded = true;
 
             UpdateFilteredExercises();
         }

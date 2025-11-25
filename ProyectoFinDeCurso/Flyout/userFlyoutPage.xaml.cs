@@ -13,79 +13,60 @@ public partial class userFlyoutPage : FlyoutPage
     private readonly DbService _dbService;
     private readonly userTypeEnum _userType;
 
-    private readonly exercisePage _exercisePage;
-    private readonly RoutinesPage _routinesPage;
+    private NavigationPage _navPage;
 
-    private readonly HomePage _homePage;
-    private readonly ListUsers _usersPage;
-
-    private readonly NavigationPage _navPage;
-
-    public userFlyoutPage(DbService dbService, userTypeEnum userType,exercisePage? exercisePage = null, RoutinesPage? routinesPage = null)
+    public userFlyoutPage(DbService dbService, userTypeEnum userType)
     {
         InitializeComponent();
 
         _dbService = dbService;
         _userType = userType;
 
-        // Páginas permanentes
-        _exercisePage = exercisePage;//asigación de la página de ejercicios
-        _routinesPage = routinesPage;//asigación de la página de rutinas
-        _homePage = new HomePage(_dbService,_userType); //asigación de la página de inicio
-        _usersPage = new ListUsers(dbService); //asigación de la página de usuarios
+        verificationUserType(userType);
 
-        verificationUserType(userType);//verificación del tipo de usuario para mostrar u ocultar opciones
-
-        _navPage = new NavigationPage(_homePage); // Página de navegación inicial
-        Detail = _navPage; // Establece la página principal de arranque
+        // NavigationPage única y estable
+        _navPage = new NavigationPage(BuildHomePage());
+        Detail = _navPage;
     }
 
-    private void NavigateTo(Page targetPage) // Método para navegar a una página específica
+    private void NavigateTo(Page page)
     {
-        if (Detail is NavigationPage nav && nav.RootPage == targetPage) // Evita recargar la misma página
+        // Evitar recargar la misma página
+        if (Detail is NavigationPage nav &&
+            nav.RootPage.GetType() == page.GetType())
         {
             IsPresented = false;
             return;
         }
 
-        Detail = new NavigationPage(targetPage); // Navega a la página objetivo si no es la misma
+        // Reemplazar completamente la página de navegación
+        Detail = new NavigationPage(page);
+
+        IsPresented = false;
+    }
+    private void HomePage(object sender, EventArgs e)
+    {
+        Detail = new NavigationPage(new HomePage(_dbService, _userType));
         IsPresented = false;
     }
 
-    private void ExercisePage(object sender, EventArgs e) // Manejador de evento para la página de ejercicios
+    private void ExercisePage(object sender, EventArgs e)
     {
-        if(DeviceInfo.Platform == DevicePlatform.Android) // Verifica si es Android
-        {
-            NavigateTo(_exercisePage); // Navega a la página de ejercicios existente
-        }
-        else
-        {
-            var exerciseVm = new ExerciseFilterViewModel(_dbService, _userType); // Crea una nueva instancia del ViewModel de ejercicios
-            NavigateTo(new exercisePage(_dbService, _userType, exerciseVm)); // Navega a una nueva página de ejercicios
-        }
-        
-    }
-    
-
-    private void RoutinesPage(object sender, EventArgs e) // Manejador de evento para la página de rutinas
-    {
-        if (DeviceInfo.Platform == DevicePlatform.Android)// Verifica si es Android
-        {
-            NavigateTo(_routinesPage); // Navega a la página de rutinas existente
-        }
-        else
-        {
-            var routineVm = new RoutinesFilterViewModel(_dbService, _userType); // Crea una nueva instancia del ViewModel de rutinas
-            NavigateTo(new RoutinesPage(_dbService, _userType)); // Navega a una nueva página de rutinas
-        }
-
+        Detail = new NavigationPage(new exercisePage(_dbService, _userType));
+        IsPresented = false;
     }
 
-    private void HomePage(object sender, EventArgs e) // Manejador de evento para la página de inicio
-        => NavigateTo(_homePage); // Navega a la página de inicio existente
+    private void RoutinesPage(object sender, EventArgs e)
+    {
+        Detail = new NavigationPage(new RoutinesPage(_dbService, _userType));
+        IsPresented = false;
+    }
 
-    private void UsersBottonAdmin(object sender, EventArgs e) // Manejador de evento para la página de usuarios
-        => NavigateTo(_usersPage); // Navega a la página de usuarios existente
+    private void UsersBottonAdmin(object sender, EventArgs e)
+    {
+        Detail = new NavigationPage(new ListUsers(_dbService));
+        IsPresented = false;
+    }
     public void verificationUserType(userTypeEnum userType) // Verifica el tipo de usuario para mostrar u ocultar opciones
     {
         if (!userType.Equals(userTypeEnum.admin)) // Si el usuario no es admin
@@ -97,5 +78,9 @@ public partial class userFlyoutPage : FlyoutPage
     {
         SecureStorage.RemoveAll(); // Elimina todos los datos almacenados de forma segura
         Application.Current.MainPage = new NavigationPage(new LoginPage(_dbService)); // Navega a la página de inicio de sesión
+    }
+    private HomePage BuildHomePage()
+    {
+        return new HomePage(_dbService, _userType);
     }
 }

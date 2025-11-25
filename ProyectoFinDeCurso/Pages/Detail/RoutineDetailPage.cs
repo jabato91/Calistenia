@@ -639,8 +639,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     await _dbService.Delete(_routine);
 
                     _filterViewModel.Routines.Clear();
-                    var routines = await _dbService.GetRoutinesCached();
-                    var routinesExercises = await _dbService.GetRoutinesExercisesCached();
+                    var routines = await _dbService.GetRoutinesAsync();
+                    var routinesExercises = await _dbService.GetRoutinesExercisesAsync();
                     foreach (RoutinesExercises routineExercise in routinesExercises)
                     {
                         if (routineExercise.RoutineID.Equals(_routine.routineID))
@@ -1125,7 +1125,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 }
                 else
                 {
-                    List<Exercise> exercises = await _dbService.GetExercisesCached();
+                    List<Exercise> exercises = await _dbService.GetExercisesAsync();
                     List<Exercise> ExercisesSelecter;
 
                     if (selectedEnum.Equals(bodyPartEnum.torsoAndArms))
@@ -1802,7 +1802,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                             await _dbService.Create(routineExercises);
                                         }
                                     }else{
-                                        var existingRelations = await _dbService.GetRoutinesExercisesCached();
+                                        var existingRelations = await _dbService.GetRoutinesExercisesAsync();
 
 
                                         var selectedTranslation = bodyPartEnumPicker.SelectedItem.ToString();

@@ -4,31 +4,7 @@
              x:Name="ExercisePage" 
              Title="Ejercicios">
     
-    <NavigationPage.TitleView> <!--Es la parte de arriba de la página-->
-        <Grid Padding="10"
-          ColumnDefinitions="Auto,*,Auto"
-          VerticalOptions="Center">
-        <!--Grid permite ordenar los Campos internos, definiendo las columnas como Auto: Se ajusta al contenido, y *: Ocupa el espacio restante-->
-            
-            <!-- Título centrado donde Grid.Column lo define como la primera fila -->
-            <Label Grid.Column="1"
-               Text="Ejercicios"
-               HorizontalOptions="Center"
-               VerticalOptions="Center"
-               FontSize="22"
-               FontAttributes="Bold"
-               TextColor="#C77B30"
-               FontFamily="Forresten"/>
-
-            <!-- Botón derecha donde Grid.Column lo define como la segunda fila -->
-            <ImageButton Grid.Column="2"
-                     Source="icono_predeterminado.png"
-                     WidthRequest="35"
-                     HeightRequest="35"
-                     BackgroundColor="Transparent"
-                         Clicked="profile"/>
-        </Grid>
-    </NavigationPage.TitleView>
+    
     <!--Fondo con degradado sutil, que define los colores de la página actual-->
     <ContentPage.Background> 
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">

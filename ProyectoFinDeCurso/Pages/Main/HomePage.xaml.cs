@@ -17,6 +17,7 @@ public partial class HomePage : ContentPage
         InitializeComponent();
         // Inicializa los ejercicios solo si no existen
         var initializer = new CreateExercises(_dbService);
+        NavigationPage.SetTitleView(this, BuildTitleView());
     }
 
     
@@ -31,5 +32,54 @@ public partial class HomePage : ContentPage
         await Navigation.PushModalAsync(
            new UserDetailPage(null,_dbService, _userType, ModeEnum.View)
        );
+    }
+    private View BuildTitleView()
+    {
+        var grid = new Grid
+        {
+            Padding = new Thickness(10, 5),
+            VerticalOptions = LayoutOptions.Center,
+            ColumnDefinitions =
+        {
+            new ColumnDefinition { Width = GridLength.Auto },   // Columna izquierda (vacía)
+            new ColumnDefinition { Width = GridLength.Star },   // Título centrado
+            new ColumnDefinition { Width = GridLength.Auto }    // Botón perfil
+        }
+        };
+
+        // ---- TÍTULO ----
+        var titleLabel = new Label
+        {
+            Text = "Inicio",
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            FontSize = 22,
+            FontAttributes = FontAttributes.Bold,
+            TextColor = Color.FromArgb("#C77B30"),
+            FontFamily = "Forresten",
+            Margin = new Thickness(0)
+        };
+        Grid.SetColumn(titleLabel, 1);
+        grid.Children.Add(titleLabel);
+
+        // ---- BOTÓN PERFIL ----
+        var profileButton = new ImageButton
+        {
+            Source = "icono_predeterminado.png",
+            WidthRequest = 35,
+            HeightRequest = 35,
+            BackgroundColor = Colors.Transparent,
+            HorizontalOptions = LayoutOptions.End,
+            VerticalOptions = LayoutOptions.Center,
+            Margin = new Thickness(0, 0, 5, 0)
+        };
+        Grid.SetColumn(profileButton, 2);
+
+        // Conecta al handler existente
+        profileButton.Clicked += profile;
+
+        grid.Children.Add(profileButton);
+
+        return grid;
     }
 }

@@ -74,7 +74,7 @@ namespace ProyectoFinDeCurso.ViewModels
         }
         public async Task CreateExercise()
         {
-            List<Exercise> existing = await _dbService.GetExercisesCached();
+            List<Exercise> existing = await _dbService.GetExercisesAsync();
             var newExercises = createExerciseList();
             var existingNames = existing.Select(e => e.name).ToList();
             if (existing.Count.Equals(0)) {
@@ -90,8 +90,8 @@ namespace ProyectoFinDeCurso.ViewModels
         public async Task CreateRoutine()
         {
             List<Routines> routineNames = createRoutineList(); // Rutinas que quieres crear
-            List<Exercise> exercises = await _dbService.GetExercisesCached(); // Ejercicios que se pueden asociar
-            List<Routines> existing = await _dbService.GetRoutinesCached(); // Rutinas ya en la DB
+            List<Exercise> exercises = await _dbService.GetExercisesAsync(); // Ejercicios que se pueden asociar
+            List<Routines> existing = await _dbService.GetRoutinesAsync(); // Rutinas ya en la DB
             if(existing.Count == 0) {
 
 

@@ -42,7 +42,7 @@ public partial class RegisterPage : ContentPage
             await DisplayAlert("Error", "El teléfono debe tener 9 dígitos", "OK");
             return;
         }
-        List<User> listUsers = await _dbService.GetUsersCached();//obtiene la lista de usuarios
+        List<User> listUsers = await _dbService.GetUsersAsync();//obtiene la lista de usuarios
         foreach (User getUser in listUsers)//bucle sobre la cantidad de usuarios que tiene listUsers
         {
             if (getUser.Email.Equals(email.Text)) { //verifica si existe ya el correo con el que pretende registrarse

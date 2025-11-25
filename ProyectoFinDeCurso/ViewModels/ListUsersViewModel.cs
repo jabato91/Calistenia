@@ -50,7 +50,7 @@ namespace ProyectoFinDeCurso.ViewModels
 
         private async Task LoadUsersAsync()
         {
-            var allUsers = await _dbService.GetUsersCached(); 
+            var allUsers = await _dbService.GetUsersAsync(); 
 
             Users.Clear();
             foreach (var user in allUsers)

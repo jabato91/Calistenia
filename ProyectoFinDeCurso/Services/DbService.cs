@@ -9,11 +9,6 @@ namespace ProyectoFinDeCurso.Services
         private const string DB_NAME = "DbService.db3";
         private readonly SQLiteAsyncConnection _connection;
 
-        private List<User>? _cachedUsers;
-        private List<Exercise>? _cachedExercises;
-        private List<Routines>? _cachedRoutines;
-        private List<RoutinesExercises>? _cachedRoutinesExercises;
-
         public DbService()
         {
             string path = Path.Combine(FileSystem.AppDataDirectory, DB_NAME);
@@ -28,110 +23,75 @@ namespace ProyectoFinDeCurso.Services
             await _connection.CreateTableAsync<RoutinesExercises>();
         }
 
-        public void ClearAllCache()
-        {
-            _cachedUsers = null;
-            _cachedExercises = null;
-            _cachedRoutines = null;
-            _cachedRoutinesExercises = null;
-        }
+        // -----------------------------
+        //     GETTERS SIN CACHÉ
+        // -----------------------------
+
+        public Task<List<User>> GetUsersAsync() =>
+            _connection.Table<User>().ToListAsync();
+
+        public Task<List<Exercise>> GetExercisesAsync() =>
+            _connection.Table<Exercise>().ToListAsync();
+
+        public Task<List<Routines>> GetRoutinesAsync() =>
+            _connection.Table<Routines>().ToListAsync();
+
+        public Task<List<RoutinesExercises>> GetRoutinesExercisesAsync() =>
+            _connection.Table<RoutinesExercises>().ToListAsync();
 
 
-        public async Task<List<User>> GetUsersCached()
-        {
-            #if WINDOWS
-                return await _connection.Table<User>().ToListAsync();
-            #endif
-            if (_cachedUsers != null) return _cachedUsers;
-            _cachedUsers = await _connection.Table<User>().ToListAsync();
-            return _cachedUsers;
-        }
+        // -----------------------------
+        //      GETTERS INDIVIDUALES
+        // -----------------------------
 
-        public async Task<List<Exercise>> GetExercisesCached()
-        {
-            #if WINDOWS
-                return await _connection.Table<Exercise>().ToListAsync();
-            #endif
-            if (_cachedExercises != null) return _cachedExercises;
-            _cachedExercises = await _connection.Table<Exercise>().ToListAsync();
-            return _cachedExercises;
-        }
+        public Task<User> GetUserById(int id) =>
+            _connection.Table<User>().Where(x => x.UserID == id).FirstOrDefaultAsync();
 
-        public async Task<List<Routines>> GetRoutinesCached()
-        {
-            #if WINDOWS
-                return await _connection.Table<Routines>().ToListAsync();
-            #endif
-            if (_cachedRoutines != null) return _cachedRoutines;
-            _cachedRoutines = await _connection.Table<Routines>().ToListAsync();
-            return _cachedRoutines;
-        }
+        public Task<User> GetUserByEmail(string email) =>
+            _connection.Table<User>().Where(x => x.Email == email).FirstOrDefaultAsync();
 
-        public async Task<List<RoutinesExercises>> GetRoutinesExercisesCached()
-        {
-            #if WINDOWS
-                return await _connection.Table<RoutinesExercises>().ToListAsync();
-            #endif
-            if (_cachedRoutinesExercises != null) return _cachedRoutinesExercises;
-            _cachedRoutinesExercises = await _connection.Table<RoutinesExercises>().ToListAsync();
-            return _cachedRoutinesExercises;
-        }
+        public Task<Exercise> GetExerciseById(int id) =>
+            _connection.Table<Exercise>().Where(x => x.execiseID == id).FirstOrDefaultAsync();
+
+        public Task<Routines> GetRoutineById(int id) =>
+            _connection.Table<Routines>().Where(x => x.routineID == id).FirstOrDefaultAsync();
+
+        public Task<RoutinesExercises> GetRoutinesExercisesByIdRoutine(int id) =>
+            _connection.Table<RoutinesExercises>().Where(x => x.Id == id).FirstOrDefaultAsync();
 
 
-        public async Task<User> GetUserById(int id) =>
-            await _connection.Table<User>().Where(x => x.UserID == id).FirstOrDefaultAsync();
+        // -----------------------------
+        //      CRUD
+        // -----------------------------
 
-        public async Task<User> GetUserByEmail(string email) =>
-            await _connection.Table<User>().Where(x => x.Email == email).FirstOrDefaultAsync();
+        public Task Create(object obj) =>
+            _connection.InsertAsync(obj);
 
-        public async Task<Exercise> GetExerciseById(int id) =>
-            await _connection.Table<Exercise>().Where(x => x.execiseID == id).FirstOrDefaultAsync();
+        public Task Update(object obj) =>
+            _connection.UpdateAsync(obj);
 
-        public async Task<Routines> GetRoutineById(int id) =>
-            await _connection.Table<Routines>().Where(x => x.routineID == id).FirstOrDefaultAsync();
+        public Task Delete(object obj) =>
+            _connection.DeleteAsync(obj);
 
-        public async Task<RoutinesExercises> GetRoutinesExercisesByIdRoutine(int idRoutines) =>
-            await _connection.Table<RoutinesExercises>().Where(x => x.Id == idRoutines).FirstOrDefaultAsync();
-
-
-
-        public async Task Create(object create)
-        {
-            await _connection.InsertAsync(create);
-            ClearAllCache(); // refrescar datos
-        }
-
-        public async Task Update(object update)
-        {
-            await _connection.UpdateAsync(update);
-            ClearAllCache();
-        }
-
-        public async Task Delete(object delete)
-        {
-            await _connection.DeleteAsync(delete);
-            ClearAllCache();
-        }
 
         public async Task DeleteExerciseById(int id)
         {
             var exercise = await GetExerciseById(id);
             if (exercise != null)
-            {
                 await _connection.DeleteAsync(exercise);
-                ClearAllCache();
-            }
         }
 
         public async Task DeleteUserById(int id)
         {
             var user = await GetUserById(id);
             if (user != null)
-            {
                 await _connection.DeleteAsync(user);
-                ClearAllCache();
-            }
         }
+
+
+        // -----------------------------
+        //  Crear admin si no existe
+        // -----------------------------
 
         public async Task CreateUserAdmin()
         {
@@ -146,7 +106,7 @@ namespace ProyectoFinDeCurso.Services
                 userType = userTypeEnum.admin
             };
 
-            var users = await GetUsersCached();
+            var users = await GetUsersAsync();
 
             if (!users.Any(u => u.Email == admin.Email))
                 await Create(admin);
