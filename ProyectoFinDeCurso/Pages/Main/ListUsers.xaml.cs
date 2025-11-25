@@ -14,25 +14,25 @@ public partial class ListUsers : ContentPage
 	{
         _dbService = dbService;
         InitializeComponent();
-        _viewModel = new ListUsersViewModel(_dbService);
-        BindingContext = _viewModel;
+        _viewModel = new ListUsersViewModel(_dbService); //crea el viewmodel asociado a la página
+        BindingContext = _viewModel; //asocia el viewmodel al bindingcontext de la página
     }
-    private async void EliminateUser(object sender, EventArgs e)
+    private async void EliminateUser(object sender, EventArgs e) //elimina un usuario
     {
         var eliminate = sender as ImageButton;
 
         var user = eliminate?.BindingContext as User; //recoge el ejercicio al que está asociado
 
-        if (user != null)
+        if (user != null) // verifica que el usuario no sea nulo
         {
-            await _dbService.DeleteUserById(user.UserID);
-            
-            var viewModel = BindingContext as ListUsersViewModel;
+            await _dbService.DeleteUserById(user.UserID); //elimina el usuario de la base de datos
+
+            var viewModel = BindingContext as ListUsersViewModel; //obtiene el viewmodel asociado a la página
             viewModel?.Users.Remove(user); //elimina el usuario de la lista visible
 
         }
     }
-    private async void modifyUser(object sender, EventArgs e)
+    private async void modifyUser(object sender, EventArgs e) //modifica un usuario
     {
         if ((sender as ImageButton)?.BindingContext is not User selectedExercise)//recoge el ejercicio al que está asociado
         {
@@ -42,7 +42,7 @@ public partial class ListUsers : ContentPage
 
         await Navigation.PushModalAsync(
                 new UserDetailPage(selectedExercise, _dbService, userTypeEnum.nothing, ModeEnum.Edit, _viewModel)
-            );
+            ); // Navega a la página de detalles del ejercicio en modo de edición
 
     }
 }

@@ -10,39 +10,37 @@ namespace ProyectoFinDeCurso.Pages.Detail
 {
     public class ExerciseDetailPage : ContentPage
     {
-        private readonly DbService? _dbService;
-        private readonly ExerciseFilterViewModel? _filter;
-        private readonly Exercise? _selectedExercise;
+        private readonly DbService? _dbService; //acceso a la base de datos
+        private readonly ExerciseFilterViewModel? _filter; //filtro de ejercicios
+        private readonly Exercise? _selectedExercise; //ejercicio seleccionado
 
-        private readonly ModeEnum _mode;
+        private readonly ModeEnum _mode; //modo de la página (ver, editar, crear, filtrar)
 
 
-       
 
-        private async void editImage(object sender, EventArgs e)
+
+        private async void editImage(object sender, EventArgs e) //método para editar la imagen del ejercicio
         {
             try
             {
-                var result = await FilePicker.Default.PickAsync(new PickOptions
+                var result = await FilePicker.Default.PickAsync(new PickOptions //abre el explorador de archivos para seleccionar una imagen
                 {
                     PickerTitle = "Selecciona una imagen",
                     FileTypes = FilePickerFileType.Images
                 });
 
-                if (result != null && sender is ImageButton btn)
+                if (result != null && sender is ImageButton btn) //verifica que se haya seleccionado una imagen y que el remitente sea un ImageButton
                 {
-                    // ✅ Copiamos la imagen a la carpeta local segura
-                    string nombreArchivo = IOPath.GetFileName(result.FullPath);
-                    string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images");
+                    string nombreArchivo = IOPath.GetFileName(result.FullPath); //obtiene el nombre del archivo seleccionado
+                    string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images"); //ruta de la carpeta donde se guardarán las imágenes
 
-                    if (!Directory.Exists(carpetaImagenes))
-                        Directory.CreateDirectory(carpetaImagenes);
+                    if (!Directory.Exists(carpetaImagenes)) //verifica si la carpeta no existe
+                        Directory.CreateDirectory(carpetaImagenes); //crea la carpeta
 
-                    string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo);
-                    File.Copy(result.FullPath, rutaDestino, true);
+                    string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo); //ruta completa del archivo destino
+                    File.Copy(result.FullPath, rutaDestino, true); //copia el archivo seleccionado a la carpeta destino
 
-                    // ✅ Mostramos la imagen desde la carpeta interna
-                    btn.Source = ImageSource.FromFile(rutaDestino);
+                    btn.Source = ImageSource.FromFile(rutaDestino); //actualiza la fuente de la imagen del botón
                     btn.BindingContext = rutaDestino; // guardamos la ruta
                 }
             }
@@ -50,7 +48,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
             {
                 await DisplayAlert("Error", $"No se pudo abrir el archivo: {ex.Message}", "OK");
             }
-        }
+        } 
 
 
 
@@ -63,7 +61,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             BuildUI();
         }
-        private void BuildUI()
+        private void BuildUI() // Construye la interfaz de ejercicios según el modo
         {
             switch (_mode)
             {
@@ -85,11 +83,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
             }
         }
         
-        private void BuildViewUI()
+        private void BuildViewUI() //construye la interfaz de visualización del ejercicio
         {
             BackgroundColor = Color.FromArgb("#80000000");
 
-            var titleLabel = new Label
+            var titleLabel = new Label //título del ejercicio
             {
                 Text = _selectedExercise.name,
                 FontSize = 26,
@@ -98,7 +96,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 FontFamily = "EatMeAlive"
             };
 
-            var descriptionLabel = new Label
+            var descriptionLabel = new Label //descripción del ejercicio
             {
                 Text = _selectedExercise.description,
                 FontSize = 16,
@@ -108,7 +106,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 Margin = new Thickness(10, 0)
             };
 
-            var materialsLabel = new Label
+            var materialsLabel = new Label//materiales necesarios para el ejercicio
             {
                 Text = _selectedExercise.materials,
                 FontSize = 16,
@@ -120,7 +118,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
            
 
-            var videoElement = new MediaElement
+            var videoElement = new MediaElement //elemento de video para mostrar el video del ejercicio
             {
                 Source = GetVideoSource(_selectedExercise.video),
                 Aspect = Aspect.AspectFit,
@@ -183,10 +181,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
     }
             };
         }
-        private void BuildFilterExerciseUI()
+        private void BuildFilterExerciseUI() //filtra los ejercicios según los criterios seleccionados
         {
-            // PICKER: BODY PART
-            var filterBodyPartEntry = new Picker
+            
+            var filterBodyPartEntry = new Picker //filtra por tipo de cuerpo
             {
                 Title = "Tipo Cuerpo",
                 TitleColor = Color.FromArgb("#C49362"),
@@ -199,8 +197,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 FontFamily = "ComfortaaBold"
             };
 
-            // PICKER: DIFFICULTY
-            var filterDificultyEntry = new Picker
+            var filterDificultyEntry = new Picker //filtra por dificultad
             {
                 Title = "Tipo de dificultad",
                 TitleColor = Color.FromArgb("#C49362"),
@@ -214,7 +211,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
             };
 
             // ENTRY: NAME
-            var filterNameEntry = new Entry
+            var filterNameEntry = new Entry //filtra por nombre de rutina
             {
                 Placeholder = "Nombre de la rutina",
                 PlaceholderColor = Color.FromArgb("#C49362"),
@@ -225,32 +222,29 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 BackgroundColor = Color.FromArgb("#3B2523"),
             };
 
-            // BOTÓN FILTRAR — ACTUALIZA EL VIEWMODEL
-            var filterButton = new Button
+            var filterButton = new Button //botón para aplicar los filtros seleccionados
             {
                 Text = "Filtrar",
                 BackgroundColor = Color.FromArgb("ffd700"),
                 TextColor = Colors.White,
                 CornerRadius = 3,
-                Command = new Command(async () =>
+                Command = new Command(async () => //cuando se presiona el botón
                 {
-                    // 🔥 1. Actualizar filtro de nombre
+                    
                     _filter!.NameRoutineFilter =
                     string.IsNullOrWhiteSpace(filterNameEntry.Text)
                     ? null
-                    : filterNameEntry.Text;
-
-                    // 🔥 2. Actualizar filtro de dificultad
-                    var selectedDiff = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == (string)filterDificultyEntry.SelectedItem).Key;
-                    _filter.DificultyFilter = selectedDiff;
-
-                    // 🔥 3. Actualizar filtro de parte del cuerpo
-                    var selectedBody = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == (string)filterBodyPartEntry.SelectedItem).Key;
-                    _filter.BodyPartFilter = selectedBody;
+                    : filterNameEntry.Text; // actualiza los datos del nombre de la rutina
 
 
-                    // 🔥 5. Cerrar modal
-                    await Navigation.PopModalAsync();
+                    var selectedDiff = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == (string)filterDificultyEntry.SelectedItem).Key; // obtiene la dificultad seleccionada
+                    _filter.DificultyFilter = selectedDiff; //actualiza el filtro de dificultad
+
+                    var selectedBody = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == (string)filterBodyPartEntry.SelectedItem).Key; // obtiene la parte del cuerpo seleccionada
+                    _filter.BodyPartFilter = selectedBody; //actualiza el filtro de parte del cuerpo
+
+
+                    await Navigation.PopModalAsync(); //cierra la página modal
                 })
             };
 
@@ -260,11 +254,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 BackgroundColor = Color.FromArgb("ffd700"),
                 TextColor = Colors.White,
                 CornerRadius = 3,
-                Command = new Command(async () => await Navigation.PopModalAsync())
-            };
+                Command = new Command(async () => await Navigation.PopModalAsync()) //comando que cierra la página modal
+            }; //botón para cancelar y cerrar la página modal
 
             // UI FINAL
-            var modalPage = new ContentPage
+            var modalPage = new ContentPage //crea la página modal para filtrar ejercicios
             {
                 BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
                 Content = new Border
@@ -281,7 +275,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         Spacing = 5,
                         Children =
                 {
-                    new Label
+                    new Label //titulo de la página modal
                     {
                         Text = "Buscar Ejercicio",
                         FontSize = 24,
@@ -310,16 +304,16 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 }
             };
 
-            Content = modalPage.Content;
-            BackgroundColor = modalPage.BackgroundColor;
+            Content = modalPage.Content; //muestra la página modal
+            BackgroundColor = modalPage.BackgroundColor; //muestra el fondo de la página modal
         }
-        private void ModifyOrCreateExercise(Exercise exercise = null)
+        private void ModifyOrCreateExercise(Exercise exercise = null) //modifica o crea un ejercicio
         {
             bool newExercise = false;
-            if (exercise == null)
+            if (exercise == null) //verifica si el ejercicio es nulo
             {
-                newExercise = true;
-                exercise = new Exercise
+                newExercise = true; //indica que es un nuevo ejercicio
+                exercise = new Exercise //crea un nuevo ejercicio con valores predeterminados
                 {
                     name = "",
                     description = "",
@@ -328,8 +322,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 };
             }
 
-            // ENTRADAS
-            var nameEntry = new Entry
+            var nameEntry = new Entry//entrada para el nombre del ejercicio
             {
                 Text = exercise.name,
                 Placeholder = "Nombre",
@@ -338,7 +331,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            var descEntry = new Entry
+            var descEntry = new Entry //entrada para la descripción del ejercicio
             {
                 Text = exercise.description,
                 Placeholder = "Descripción",
@@ -347,7 +340,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            var imageButton = new ImageButton
+            var imageButton = new ImageButton //botón para seleccionar la imagen del ejercicio
             {
 
                 WidthRequest = 75,
@@ -355,30 +348,30 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 BackgroundColor = Color.FromArgb("#3B2523")
             };
 
-            imageButton.Clicked += async (s, e) =>
+            imageButton.Clicked += async (s, e) => //evento al hacer clic en el botón de imagen
             {
                 try
                 {
-                    var result = await FilePicker.Default.PickAsync(new PickOptions
+                    var result = await FilePicker.Default.PickAsync(new PickOptions//abre el explorador de archivos para seleccionar una imagen
                     {
                         PickerTitle = "Selecciona una imagen",
                         FileTypes = FilePickerFileType.Images
                     });
 
-                    if (result != null)
+                    if (result != null) //verifica que se haya seleccionado una imagen
                     {
-                        string nombreArchivo = IOPath.GetFileName(result.FullPath);
-                        string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images");
-                        Directory.CreateDirectory(carpetaImagenes);
+                        string nombreArchivo = IOPath.GetFileName(result.FullPath); //obtiene el nombre del archivo seleccionado
+                        string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images"); //ruta de la carpeta donde se guardarán las imágenes
+                        Directory.CreateDirectory(carpetaImagenes); //crea la carpeta si no existe
 
-                        string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo);
+                        string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo); //ruta completa del archivo destino
 
-                        using var origen = await result.OpenReadAsync();
-                        using var destino = File.Create(rutaDestino);
-                        await origen.CopyToAsync(destino);
+                        using var origen = await result.OpenReadAsync(); //abre el archivo seleccionado para lectura
+                        using var destino = File.Create(rutaDestino); //crea el archivo destino
+                        await origen.CopyToAsync(destino); //copia el contenido del archivo seleccionado al archivo destino
 
-                        imageButton.BindingContext = rutaDestino;
-                        imageButton.Source = ImageSource.FromFile(rutaDestino);
+                        imageButton.BindingContext = rutaDestino; // guardamos la ruta
+                        imageButton.Source = ImageSource.FromFile(rutaDestino); //actualiza la fuente de la imagen del botón
                     }
                 }
                 catch (Exception ex)
@@ -386,7 +379,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     await DisplayAlert("Error", ex.Message, "OK");
                 }
             };
-            Label videoLabel = new Label
+            Label videoLabel = new Label //etiqueta para el botón de video
             {
                 Text = "Añadir video",
                 TextColor = Color.FromArgb("#C49362"),
@@ -395,7 +388,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 FontFamily = "ComfortaaBold"
             };
 
-            var videoFrame = new Frame
+            var videoFrame = new Frame //marco para el botón de video
             {
                 CornerRadius = 10,
                 BackgroundColor = Color.FromArgb("#3B2523"),
@@ -406,39 +399,38 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 Content = videoLabel
             };
 
-            string selectedVideoName = null;
+            string selectedVideoName = null; //variable para almacenar el nombre del video seleccionado
 
-            var videoTap = new TapGestureRecognizer();
-            videoTap.Tapped += async (s, e) =>
+            var videoTap = new TapGestureRecognizer();//gesto para detectar el toque en el marco de video
+            videoTap.Tapped += async (s, e) => //evento al tocar el marco de video
             {
-                var result = await FilePicker.PickAsync(new PickOptions
+                var result = await FilePicker.PickAsync(new PickOptions //abre el explorador de archivos para seleccionar un video
                 {
                     PickerTitle = "Seleccionar video",
                     FileTypes = FilePickerFileType.Videos
                 });
 
-                if (result != null)
+                if (result != null) //verifica que se haya seleccionado un video
                 {
-                    string folder = IOPath.Combine(FileSystem.AppDataDirectory, "Videos");
-                    Directory.CreateDirectory(folder);
+                    string folder = IOPath.Combine(FileSystem.AppDataDirectory, "Videos"); //ruta de la carpeta donde se guardarán los videos
+                    Directory.CreateDirectory(folder); //crea la carpeta si no existe
 
-                    string destPath = IOPath.Combine(folder, result.FileName);
+                    string destPath = IOPath.Combine(folder, result.FileName); //ruta completa del archivo destino
 
-                    using var src = await result.OpenReadAsync();
-                    using var dest = File.Create(destPath);
-                    await src.CopyToAsync(dest);
+                    using var src = await result.OpenReadAsync(); //abre el archivo seleccionado para lectura
+                    using var dest = File.Create(destPath); //crea el archivo destino
+                    await src.CopyToAsync(dest); //copia el contenido del archivo seleccionado al archivo destino
 
-                    selectedVideoName = result.FileName;
-                    videoLabel.Text = "Cambiar video";
+                    selectedVideoName = result.FileName; //almacena el nombre del video seleccionado
+                    videoLabel.Text = "Cambiar video"; //actualiza el texto de la etiqueta del botón de video
 
-                    await DisplayAlert("Video añadido", "El video se ha guardado correctamente.", "OK");
+                    await DisplayAlert("Video añadido", "El video se ha guardado correctamente.", "OK"); //muestra una alerta indicando que el video se ha guardado correctamente
                 }
             };
 
-            videoFrame.GestureRecognizers.Add(videoTap);
+            videoFrame.GestureRecognizers.Add(videoTap); //agrega el gesto de toque al marco de video
 
-            // PICKERS DE ENUMS
-            var bodyPartEnumPicker = new Picker
+            var bodyPartEnumPicker = new Picker //selector para el tipo de cuerpo
             {
                 Title = "Tipo Cuerpo",
                 TitleColor = Color.FromArgb("#C49362"),
@@ -449,7 +441,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            var dificultyEnumPicker = new Picker
+            var dificultyEnumPicker = new Picker //selector para el tipo de dificultad
             {
                 Title = "Tipo de dificultad",
                 TitleColor = Color.FromArgb("#C49362"),
@@ -460,7 +452,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            var modalPage = new ContentPage
+            var modalPage = new ContentPage //crea la página modal para modificar o crear un ejercicio
             {
                 BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
                 Content = new Frame
@@ -498,7 +490,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         Spacing = 10,
                         Children =
                         {
-                            new Button
+                            new Button //botón para crear o modificar el ejercicio
                             {
                                 Text = "Crear",
                                 BackgroundColor = Color.FromArgb("ffd700"),
@@ -509,52 +501,52 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     try
                                     {
 
-                                        if (string.IsNullOrWhiteSpace(nameEntry.Text))
+                                        if (string.IsNullOrWhiteSpace(nameEntry.Text)) //verifica que se haya ingresado un nombre
                                         {
                                             await DisplayAlert("Aviso", "Debes ingresar un nombre.", "OK");
                                             return;
                                         }
-                                        if(newExercise){
-                                            var createExercise = new Exercise
+                                        if(newExercise){ //si es un nuevo ejercicio
+                                            var createExercise = new Exercise //crea un nuevo ejercicio con los datos ingresados
                                             {
                                                 name = nameEntry.Text,
                                                 description = descEntry.Text,
                                                 muscleGroupId = enumExtension.BodyTranslations.First(x => x.Value == bodyPartEnumPicker.SelectedItem.ToString()).Key,
                                                 dificulty = enumExtension.DifficultyTranslations.First(x => x.Value == dificultyEnumPicker.SelectedItem.ToString()).Key,
                                                 typeUser = userTypeEnum.admin,
-                                                video = selectedVideoName // <--- Guardamos solo el nombre del archivo
+                                                video = selectedVideoName //guarda el nombre del video seleccionado
                                             };
 
                                             // Guardar imagen
-                                            if (imageButton.BindingContext is string rutaImg && File.Exists(rutaImg))
+                                            if (imageButton.BindingContext is string rutaImg && File.Exists(rutaImg)) //verifica que se haya seleccionado una imagen
                                             {
-                                                string fileName = IOPath.GetFileName(rutaImg);
+                                                string fileName = IOPath.GetFileName(rutaImg); //obtiene el nombre del archivo de la imagen
                                                 createExercise.image = fileName;
                                             }
 
-                                            await _dbService.Create(createExercise);
-                                            _filter.Exercises.Add(createExercise);
+                                            await _dbService.Create(createExercise); //crea el ejercicio en la base de datos
+                                            _filter.Exercises.Add(createExercise); //agrega el nuevo ejercicio a la lista de ejercicios filtrados
                                             await DisplayAlert("Éxito", "Ejercicio creado correctamente", "OK");
                                         }
-                                        else
+                                        else //si es una modificación de un ejercicio existente
                                         {
-                                            exercise.name = nameEntry.Text ?? "";
-                                            exercise.description = descEntry.Text ?? "";
+                                            exercise.name = nameEntry.Text ?? ""; //actualiza los datos del ejercicio con los datos ingresados
+                                            exercise.description = descEntry.Text ?? ""; 
                                             exercise.dificulty = enumExtension.DifficultyTranslations.First(x => x.Value == dificultyEnumPicker.SelectedItem.ToString()).Key;
                                             exercise.muscleGroupId = enumExtension.BodyTranslations.First(x => x.Value == bodyPartEnumPicker.SelectedItem.ToString()).Key;
                                             
-                                            if (imageButton.BindingContext is string rutaNueva && File.Exists(rutaNueva))
+                                            if (imageButton.BindingContext is string rutaNueva && File.Exists(rutaNueva)) //verifica que se haya seleccionado una nueva imagen
                                             {
                                                 string nombreArchivo = IOPath.GetFileName(rutaNueva);
                                                 exercise.image = nombreArchivo;
                                             }
 
-                                            await _dbService.Update(exercise);
+                                            await _dbService.Update(exercise); //actualiza el ejercicio en la base de datos
 
-                                            var index = _filter.Exercises.IndexOf(_selectedExercise);
-                                            if (index >= 0)
+                                            var index = _filter.Exercises.IndexOf(_selectedExercise); //busca el índice del ejercicio modificado en la lista de ejercicios filtrados
+                                            if (index >= 0) //si se encuentra el ejercicio
                                             {
-                                                var ex = _filter.Exercises[index];
+                                                var ex = _filter.Exercises[index]; //obtiene el ejercicio de la lista y actualiza sus datos
 
                                                 ex.name = exercise.name;
                                                 ex.description = exercise.description;
@@ -595,26 +587,24 @@ namespace ProyectoFinDeCurso.Pages.Detail
             Content = modalPage.Content;
             BackgroundColor = modalPage.BackgroundColor;
         }
-        private MediaSource GetVideoSource(string videoName)
+        private MediaSource GetVideoSource(string videoName) //método para obtener la fuente del video
         {
-            if (string.IsNullOrWhiteSpace(videoName))
-                return null;
+            if (string.IsNullOrWhiteSpace(videoName)) //verifica si el nombre del video es nulo o vacío
+                return null; //devuelve nulo si no hay video
 
-            // 1️⃣ APPDATA → prioridad absoluta
-            string path = IOPath.Combine(FileSystem.AppDataDirectory, "Videos", videoName);
+            
+            string path = IOPath.Combine(FileSystem.AppDataDirectory, "Videos", videoName); //optiene la ruta completa del video en la carpeta de videos
 
-            if (File.Exists(path))
+            if (File.Exists(path)) //verifica si el archivo de video existe en la ruta especificada
             {
-                Console.WriteLine("[VIDEO] Cargando desde APPDATA → " + path);
-                return MediaSource.FromFile(path);
+                return MediaSource.FromFile(path); //devuelve la fuente del video desde el archivo
             }
 
-            // 2️⃣ RAW → si no está en AppData
+            
             try
             {
-                var rawSource = MediaSource.FromResource(videoName);
-                Console.WriteLine("[VIDEO] Cargando desde RAW → " + videoName);
-                return rawSource;
+                var rawSource = MediaSource.FromResource(videoName); //intenta obtener la fuente del video desde los recursos incrustados
+                return rawSource; //devuelve la fuente del video desde los recursos
             }
             catch
             {
@@ -622,7 +612,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
             }
 
             Console.WriteLine("[VIDEO ERROR] No existe el video → " + videoName);
-            return null;
+            return null; //si no se encuentra el video, devuelve nulo
         }
         
     }

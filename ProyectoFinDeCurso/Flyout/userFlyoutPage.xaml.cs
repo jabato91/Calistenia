@@ -13,7 +13,14 @@ public partial class userFlyoutPage : FlyoutPage
     private readonly DbService _dbService;
     private readonly userTypeEnum _userType;
 
-    private NavigationPage _navPage;
+    // Navigation principal que no se destruye
+    private readonly NavigationPage _navigation;
+
+    // Cache de páginas para Android (mejora rendimiento brutal)
+    private readonly Dictionary<string, Page> _pageCache = new();
+
+    private bool IsAndroid => DeviceInfo.Platform == DevicePlatform.Android;
+    private bool IsWindows => DeviceInfo.Platform == DevicePlatform.WinUI;
 
     public userFlyoutPage(DbService dbService, userTypeEnum userType)
     {
@@ -24,63 +31,112 @@ public partial class userFlyoutPage : FlyoutPage
 
         verificationUserType(userType);
 
-        // NavigationPage única y estable
-        _navPage = new NavigationPage(BuildHomePage());
-        Detail = _navPage;
+        // Crear página inicial
+        var home = BuildHomePage();
+
+        // Navigation central estable
+        _navigation = new NavigationPage(home);
+
+        Detail = _navigation;   // nunca se reemplaza
+
+        // Cache inicial (solo Android)
+        if (IsAndroid)
+            _pageCache["Home"] = home;
+
+        IsPresented = false;
     }
 
-    private void NavigateTo(Page page)
+    // -------------------------------
+    // NAVEGACIÓN INTELIGENTE
+    // -------------------------------
+
+    private async Task NavigateToAsync(string key, Func<Page> createPage)
     {
-        // Evitar recargar la misma página
-        if (Detail is NavigationPage nav &&
-            nav.RootPage.GetType() == page.GetType())
+        Page targetPage;
+
+        if (IsAndroid)
+        {
+            // ANDROID: usar caché al 100%
+            if (!_pageCache.TryGetValue(key, out targetPage))
+            {
+                targetPage = createPage();
+                _pageCache[key] = targetPage; // guardar en caché
+            }
+        }
+        else
+        {
+            // WINDOWS: siempre crear una nueva página
+            targetPage = createPage();
+        }
+
+        // Si ya estamos en esa página → no hacer nada
+        if (_navigation.CurrentPage?.GetType() == targetPage.GetType())
         {
             IsPresented = false;
             return;
         }
 
-        // Reemplazar completamente la página de navegación
-        Detail = new NavigationPage(page);
+        // Reemplazar RootPage sin destruir NavigationPage
+        _navigation.Navigation.InsertPageBefore(targetPage, _navigation.RootPage);
+        await _navigation.PopToRootAsync(false);
 
         IsPresented = false;
     }
-    private void HomePage(object sender, EventArgs e)
+
+    // -------------------------------
+    // MANEJADORES DE BOTONES
+    // -------------------------------
+
+    private async void HomePage(object sender, EventArgs e)
     {
-        Detail = new NavigationPage(new HomePage(_dbService, _userType));
-        IsPresented = false;
+        await NavigateToAsync(
+            "Home",
+            () => new HomePage(_dbService, _userType)
+        );
     }
 
-    private void ExercisePage(object sender, EventArgs e)
+    private async void ExercisePage(object sender, EventArgs e)
     {
-        Detail = new NavigationPage(new exercisePage(_dbService, _userType));
-        IsPresented = false;
+        await NavigateToAsync(
+            "Exercises",
+            () => new exercisePage(_dbService, _userType)
+        );
     }
 
-    private void RoutinesPage(object sender, EventArgs e)
+    private async void RoutinesPage(object sender, EventArgs e)
     {
-        Detail = new NavigationPage(new RoutinesPage(_dbService, _userType));
-        IsPresented = false;
+        await NavigateToAsync(
+            "Routines",
+            () => new RoutinesPage(_dbService, _userType)
+        );
     }
 
-    private void UsersBottonAdmin(object sender, EventArgs e)
+    private async void UsersBottonAdmin(object sender, EventArgs e)
     {
-        Detail = new NavigationPage(new ListUsers(_dbService));
-        IsPresented = false;
+        await NavigateToAsync(
+            "Users",
+            () => new ListUsers(_dbService)
+        );
     }
-    public void verificationUserType(userTypeEnum userType) // Verifica el tipo de usuario para mostrar u ocultar opciones
-    {
-        if (!userType.Equals(userTypeEnum.admin)) // Si el usuario no es admin
-        {
-            listUsers.IsVisible = false; // Oculta la opción de lista de usuarios
-        }
-    }
-    private void LogoutButton(object sender, EventArgs e) // Manejador de evento para cerrar sesión
-    {
-        SecureStorage.RemoveAll(); // Elimina todos los datos almacenados de forma segura
-        Application.Current.MainPage = new NavigationPage(new LoginPage(_dbService)); // Navega a la página de inicio de sesión
-    }
+
     private HomePage BuildHomePage()
     {
         return new HomePage(_dbService, _userType);
+    }
+
+    // -------------------------------
+    // UTILIDADES
+    // -------------------------------
+
+    public void verificationUserType(userTypeEnum userType)
+    {
+        if (userType != userTypeEnum.admin)
+            listUsers.IsVisible = false;
+    }
+
+    private void LogoutButton(object sender, EventArgs e)
+    {
+        SecureStorage.RemoveAll();
+        Application.Current.MainPage = new NavigationPage(new LoginPage(_dbService));
     }
 }

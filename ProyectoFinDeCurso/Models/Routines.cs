@@ -32,21 +32,21 @@ namespace ProyectoFinDeCurso.Models
         [Ignore]
         public int IsAdmin { get; set; } = -1; // Indica si el ejercicio está siendo visto en modo administrador
 
-        public bool IsAdminMode
+        public bool IsAdminMode //tipos de acceso para cada tipo de usuario
         {
             get
             {
                 return IsAdmin switch
                 {
-                    0 => false,
-                    1 => true,
-                    2 => true,
+                    0 => false, // usuario normal
+                    1 => true, // administrador
+                    2 => true,//todos
                     _ => throw new NotImplementedException(),
                 };
             }
         }
         [Ignore]
-        public Brush AuraColor
+        public Brush AuraColor // propiedad calculada para obtener el pincel de degradado según la dificultad
         {
             get
             {
@@ -62,7 +62,7 @@ namespace ProyectoFinDeCurso.Models
         }
 
         // Método privado para crear gradientes verticales
-        private Brush CreateBrush(Color start, Color end)
+        private Brush CreateBrush(Color start, Color end) // crea los colores del degradado
         {
             return new LinearGradientBrush
             {

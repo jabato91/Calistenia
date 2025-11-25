@@ -15,27 +15,26 @@ public partial class HomePage : ContentPage
         _dbService = dbService;
         _userType = userType;
         InitializeComponent();
-        // Inicializa los ejercicios solo si no existen
-        var initializer = new CreateExercises(_dbService);
-        NavigationPage.SetTitleView(this, BuildTitleView());
+        
+        NavigationPage.SetTitleView(this, BuildTitleView()); // Establece la vista personalizada del título
     }
 
     
-    private async void LogoutButton(object sender, EventArgs e)
+    private async void LogoutButton(object sender, EventArgs e) // Maneja el evento de cierre de sesión
     {
         SecureStorage.Remove("user_email");
         SecureStorage.Remove("user_id");
         await Navigation.PushModalAsync(new LoginPage(new DbService()));
     }
-    private async void profile(object sender, EventArgs e)
+    private async void profile(object sender, EventArgs e) // Maneja el evento del botón de perfil
     {
         await Navigation.PushModalAsync(
            new UserDetailPage(null,_dbService, _userType, ModeEnum.View)
-       );
+       ); // Navega a la página de detalles del usuario en modo de vista
     }
-    private View BuildTitleView()
+    private View BuildTitleView() // Construye la vista personalizada del título
     {
-        var grid = new Grid
+        var grid = new Grid // Grid principal del TitleView
         {
             Padding = new Thickness(10, 5),
             VerticalOptions = LayoutOptions.Center,
@@ -47,8 +46,7 @@ public partial class HomePage : ContentPage
         }
         };
 
-        // ---- TÍTULO ----
-        var titleLabel = new Label
+        var titleLabel = new Label // titulo centrado
         {
             Text = "Inicio",
             HorizontalOptions = LayoutOptions.Center,
@@ -62,8 +60,7 @@ public partial class HomePage : ContentPage
         Grid.SetColumn(titleLabel, 1);
         grid.Children.Add(titleLabel);
 
-        // ---- BOTÓN PERFIL ----
-        var profileButton = new ImageButton
+        var profileButton = new ImageButton // botón de perfil a la derecha
         {
             Source = "icono_predeterminado.png",
             WidthRequest = 35,
@@ -80,6 +77,6 @@ public partial class HomePage : ContentPage
 
         grid.Children.Add(profileButton);
 
-        return grid;
+        return grid; // Devuelve el grid completo como la vista del título
     }
 }

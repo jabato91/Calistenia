@@ -30,18 +30,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             BuildUI();
         }
-        private void BuildUI()
+        private void BuildUI()// Construye la interfaz de usuario según el modo
         {
             switch (_mode)
             {
                 case ModeEnum.create:
                     BuildCreateUI();
                     break;
-
-                case ModeEnum.Edit:
-                    BuildEditUI();
-                    break;
-
                 case ModeEnum.View:
                     BuildViewUI();
                     break;
@@ -52,10 +47,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
             }
         }
 
-        private async void BuildViewUI()
+        private async void BuildViewUI() // Construye la interfaz de usuario para ver los detalles de la rutina
         {
-            ObservableCollection<Exercise> exercisesInRoutine = new ObservableCollection<Exercise>();
-            var nameRoutine = new Label
+            ObservableCollection<Exercise> exercisesInRoutine = new ObservableCollection<Exercise>(); // Lista de ejercicios en la rutina
+            var nameRoutine = new Label //nombre de la rutina
             {
                 Text = _routine.nameRoutine,
                 FontSize = 22,
@@ -68,8 +63,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 Margin = new Thickness(0, 10, 0, 0)
             };
 
-            // === Botón tres puntos ===
-            var menuButton = new ImageButton
+            var menuButton = new ImageButton // boton para mostrar el menu de opciones
             {
                 Source = "puntos.png",
                 BackgroundColor = Colors.Transparent,
@@ -78,20 +72,20 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.End,
                 VerticalOptions = LayoutOptions.Start
             };
-            List<Exercise> exercises = _routine.Exercises.ToList();
+            List<Exercise> exercises = _routine.Exercises.ToList(); //obtiene los ejercicios de la rutina
 
-            foreach (Exercise exercise in exercises)
+            foreach (Exercise exercise in exercises) //añade los ejercicios a la lista de ejercicios en la rutina
             {
                 exercisesInRoutine.Add(exercise);
             }
-            var collectionExercises = new CollectionView
+            var collectionExercises = new CollectionView //muestra los ejercicios en la rutina
             {
-                ItemsSource = exercisesInRoutine,
-                IsGrouped = true,
+                ItemsSource = exercisesInRoutine, //fuente de datos que recoge de los ejercicios de la rutina
+                IsGrouped = true, //indica que los elementos están agrupados
 
-                GroupHeaderTemplate = new DataTemplate(() =>
+                GroupHeaderTemplate = new DataTemplate(() => //plantilla para el encabezado del grupo
                 {
-                    var headerLabel = new Label
+                    var headerLabel = new Label //nombre de la rutina
                     {
                         FontAttributes = FontAttributes.Bold,
                         FontSize = 18,
@@ -99,15 +93,15 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         TextColor = Colors.Orange,
                         Margin = new Thickness(10, 5)
                     };
-                    headerLabel.SetBinding(Label.TextProperty, "Name");
-                    return headerLabel;
+                    headerLabel.SetBinding(Label.TextProperty, "Name"); //recoge el nombre de la rutina
+                    return headerLabel; //devuelve el encabezado del grupo
                 }),
 
             };
-            var eliminateRoutine = new Label { Text = "Eliminar" };
-            var editRoutine = new Label { Text = "Modificar" };
-            // === Menú flotante ===
-            var menuFrame = new Border
+            var eliminateRoutine = new Label { Text = "Eliminar", TextColor = Colors.Black }; //opción del desplazable para eliminar la rutina
+            var editRoutine = new Label { Text = "Modificar", TextColor = Colors.Black };//opción del desplazable para modificar la rutina
+           
+            var menuFrame = new Border //menu desplegable para eliminar o modificar la rutina
             {
                 BackgroundColor = Colors.White,
                 StrokeShape = new RoundRectangle { CornerRadius = 10 },
@@ -119,68 +113,67 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     Children =
                     {
                        eliminateRoutine,
-                       editRoutine
+                       editRoutine //agrega las opciones al menu desplegable
                     }
                 }
             };
             var userId = await SecureStorage.GetAsync("user_id");
             var user = await _dbService.GetUserById(int.Parse(userId));
-            if (!_userType.Equals(userTypeEnum.admin) && !_routine.userID.Equals(user.UserID))
+            if (!_userType.Equals(userTypeEnum.admin) && !_routine.userID.Equals(user.UserID)) //verifica si el usuario es admin o el creador de la rutina
             {
-                menuFrame.IsVisible = false;
+                menuFrame.IsVisible = false; //oculta el menu desplegable si no es admin o creador
                 menuButton.IsVisible = false;
             }
-            var eleccionExercise = exercisesInRoutine.FirstOrDefault(x => !x.exerciseFinished && !x.expaded);
-            if (eleccionExercise != null)
+            var eleccionExercise = exercisesInRoutine.FirstOrDefault(x => !x.exerciseFinished && !x.expaded); //selecciona el primer ejercicio que no ha sido terminado ni expandido
+            if (eleccionExercise != null) //si existe un ejercicio seleccionado
             {
-                eleccionExercise.expaded = true;
+                eleccionExercise.expaded = true; //expande el ejercicio seleccionado
             }
-            CollectionView listExercise = new CollectionView
+            CollectionView listExercise = new CollectionView //muestra la lista de ejercicios en la rutina
             {
-                ItemsSource = exercisesInRoutine,
-                HorizontalScrollBarVisibility = ScrollBarVisibility.Default,
-                VerticalScrollBarVisibility = ScrollBarVisibility.Default,
-                ItemsUpdatingScrollMode = ItemsUpdatingScrollMode.KeepScrollOffset,
-                ItemTemplate = new DataTemplate(() =>
+                ItemsSource = exercisesInRoutine, //recoge los ejercicios de la rutina
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Default, //barra de desplazamiento horizontal
+                VerticalScrollBarVisibility = ScrollBarVisibility.Default, //barra de desplazamiento vertical
+                ItemsUpdatingScrollMode = ItemsUpdatingScrollMode.KeepScrollOffset, //mantiene la posición de desplazamiento al actualizar los elementos
+                ItemTemplate = new DataTemplate(() => // muestra cada ejercicio en la rutina
                 {
                     
-                    var headerLabel = new Label
+                    var headerLabel = new Label //nombre del ejercicio
                     {
                         FontAttributes = FontAttributes.Bold,
                         TextColor = Colors.White,
                         FontSize = 18
                     };
-                    headerLabel.SetBinding(Label.TextProperty, "name");
-                    var expanderExercise = new Expander
+                    headerLabel.SetBinding(Label.TextProperty, "name"); //asigna el nombre del ejercicio
+                    var expanderExercise = new Expander //expansor para mostrar los detalles del ejercicio
                     {
-                        Header = headerLabel,
-                         
+                        Header = headerLabel, //agrega el nombre del ejercicio al encabezado del expansor
+
                     };
                     
-                    // Enlazamos las propiedades del modelo
-                    expanderExercise.SetBinding(Expander.IsExpandedProperty, "expaded", BindingMode.TwoWay);
-                    expanderExercise.SetBinding(Expander.IsEnabledProperty, "expaded", BindingMode.TwoWay);
-                    expanderExercise.BindingContextChanged += (s, e) =>
+                    expanderExercise.SetBinding(Expander.IsExpandedProperty, "expaded", BindingMode.TwoWay); //vincula la propiedad IsExpanded del expansor a la propiedad expaded del ejercicio
+                    expanderExercise.SetBinding(Expander.IsEnabledProperty, "expaded", BindingMode.TwoWay); //vincula la propiedad IsEnabled del expansor a la propiedad expaded del ejercicio
+                    expanderExercise.BindingContextChanged += (s, e) => //evento para manejar el cambio de contexto de enlace
                     {
                         
-                        var exercise = (Exercise)((Expander)s).BindingContext;
-                        if(exercise.expaded && !((Expander)s).IsExpanded)
+                        var exercise = (Exercise)((Expander)s).BindingContext; //obtiene el ejercicio actual del contexto de enlace
+                        if (exercise.expaded && !((Expander)s).IsExpanded) //si el ejercicio está expandido y el expansor no está expandido
                         {
-                            ((Expander)s).IsExpanded = true;
+                            ((Expander)s).IsExpanded = true; //expande el expansor
                         }
-                        if (exercise != null)
+                        if (exercise != null) //si el ejercicio no es nulo
                         {
-                            if(eleccionExercise.Equals(exercise))
+                            if(eleccionExercise.Equals(exercise)) //si el ejercicio es el ejercicio seleccionado
                             {
-                                firstExercise = true;
+                                firstExercise = true;//marca que es el primer ejercicio
                             }
-                            // Ejemplo: si el ejercicio está terminado, no permitir expandir
-                            if (!exercise.expaded)
+
+                            if (!exercise.expaded) //si el ejercicio no está expandido
                             {
-                                ((Expander)s).IsExpanded = false;
+                                ((Expander)s).IsExpanded = false; //colapsa el expansor
                                 ((Expander)s).IsEnabled = false;
                             }
-                            else
+                            else//si no
                             {
                                 ((Expander)s).IsExpanded = true;
                                 ((Expander)s).IsEnabled = true;
@@ -188,7 +181,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             }
                         }
                     };
-                    var startButton = new Button
+                    var startButton = new Button //botón para empezar el ejercicio
                     {
                         BackgroundColor = Color.FromArgb("#3B2523"),
                         TextColor = Color.FromArgb("#CFC86D"),
@@ -200,21 +193,20 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         CommandParameter = new Binding(".") // El objeto Exercise actual
                     };
                     
-                    // Evento Clicked para manejar el botón
-                    startButton.Clicked += async (s, e) =>
+                    
+                    startButton.Clicked += async (s, e) =>// Evento Clicked para manejar el botón
                     {
                         
                         
                         var btn = (Button)s;
-                        var exercise = (Exercise)btn.BindingContext; // también puedes usar btn.CommandParameter
-                        
-                        if (exercise == null)
-                            return;
-                        
-                        if (eleccionExercise.Equals(exercise))
+                        var exercise = (Exercise)btn.BindingContext; // recoge el ejercicio actual del contexto de enlace
+                        if (exercise == null) //si el ejercicio es nulo
+                            return; //sale del evento
+
+                        if (eleccionExercise.Equals(exercise)) //si el ejercicio es el ejercicio seleccionado
                         {
-                            var tcs = new TaskCompletionSource<bool>();
-                            var pickerMinutosSets = new Picker
+                            var tcs = new TaskCompletionSource<bool>(); //crea una tarea para esperar a que el usuario configure los descansos
+                            var pickerMinutosSets = new Picker //picker para seleccionar los minutos de descanso entre repeticiones
                             {
                                 Title = "Minutos",
                                 TextColor = Colors.White,
@@ -222,22 +214,22 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 WidthRequest = 100
                             };
                             for (int i = 0; i <= 59; i++)
-                                pickerMinutosSets.Items.Add(i.ToString("00"));
+                                pickerMinutosSets.Items.Add(i.ToString("00")); //asigna los minutos al picker
 
-                            var pickerSegundosSets = new Picker
+                            var pickerSegundosSets = new Picker //picker para seleccionar los segundos de descanso entre repeticiones
                             {
                                 Title = "Segundos",
                                 TextColor = Colors.White,
                                 BackgroundColor = Color.FromArgb("#3B2523"),
                                 WidthRequest = 100
                             };
-                            for (int i = 0; i <= 59; i++)
-                                pickerSegundosSets.Items.Add(i.ToString("00"));
+                            for (int i = 0; i <= 59; i++) 
+                                pickerSegundosSets.Items.Add(i.ToString("00"));//añade los segundos al picker
 
-                            pickerMinutosSets.SelectedIndex = 0;
-                            pickerSegundosSets.SelectedIndex = 30;
+                            pickerMinutosSets.SelectedIndex = 0; //selecciona el primer índice del picker
+                            pickerSegundosSets.SelectedIndex = 30; //selecciona el segundo índice del picker
 
-                            var pickerMinutosReps = new Picker
+                            var pickerMinutosReps = new Picker //picker para seleccionar los minutos de descanso entre ejercicios
                             {
                                 Title = "Minutos",
                                 TextColor = Colors.White,
@@ -247,14 +239,14 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             for (int i = 0; i <= 59; i++)
                                 pickerMinutosReps.Items.Add(i.ToString("00"));
 
-                            var pickerSegundosReps = new Picker
+                            var pickerSegundosReps = new Picker //picker para seleccionar los segundos de descanso entre ejercicios
                             {
                                 Title = "Segundos",
                                 TextColor = Colors.White,
                                 BackgroundColor = Color.FromArgb("#3B2523"),
                                 WidthRequest = 100
                             };
-                            var cancelButton = new Button
+                            var cancelButton = new Button //botón para salir del modal
                             {
                                 Text = "Salir",
                                 BackgroundColor = Colors.Orange,
@@ -263,15 +255,15 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 FontFamily = "ComfortaaBold",
                                 Padding = new Thickness(10, 6),
                                 HorizontalOptions = LayoutOptions.Fill,
-                                Command = new Command(async () => await Navigation.PopModalAsync())
+                                Command = new Command(async () => await Navigation.PopModalAsync()) //comando para cerrar el modal
                             };
                             for (int i = 0; i <= 59; i++)
-                                pickerSegundosReps.Items.Add(i.ToString("00"));
+                                pickerSegundosReps.Items.Add(i.ToString("00")); //añade los segundos al picker
 
-                            pickerMinutosReps.SelectedIndex = 0;
-                            pickerSegundosReps.SelectedIndex = 30;
-                            
-                                var modalDuracion = new ContentPage
+                            pickerMinutosReps.SelectedIndex = 0; //selecciona el primer índice del picker
+                            pickerSegundosReps.SelectedIndex = 30; //selecciona el segundo índice del picker
+
+                            var modalDuracion = new ContentPage //modal para configurar los descansos
                             {
                                 BackgroundColor = Color.FromRgba(0, 0, 0, 0.45),
 
@@ -294,103 +286,103 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     {
                                         Spacing = 25,
 
-                                        Children =
-            {
-                new Label
-                {
-                    Text = "Configurar descansos",
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    FontSize = 26,
-                    TextColor = Colors.Orange,
-                    FontFamily = "EatMeAlive"
-                },
+                                    Children =
+                                    {
+                                        new Label //titulo del modal
+                                        {
+                                            Text = "Configurar descansos",
+                                            HorizontalTextAlignment = TextAlignment.Center,
+                                            FontSize = 26,
+                                            TextColor = Colors.Orange,
+                                            FontFamily = "EatMeAlive"
+                                        },
 
-                new Label
-                {
-                    Text = "Tiempo entre repeticiones",
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    FontSize = 18,
-                    TextColor = Colors.White,
-                    Margin = new Thickness(0, 5)
-                },
+                                        new Label //titulo tiempo entre repeticiones
+                                        {
+                                            Text = "Tiempo entre repeticiones",
+                                            HorizontalTextAlignment = TextAlignment.Center,
+                                            FontSize = 18,
+                                            TextColor = Colors.White,
+                                            Margin = new Thickness(0, 5)
+                                        },
 
-                new HorizontalStackLayout
-                {
-                    HorizontalOptions = LayoutOptions.Center,
-                    Spacing = 15,
-                    Children =
-                    {
-                        pickerMinutosSets,
-                        pickerSegundosSets
-                    }
-                },
+                                        new HorizontalStackLayout //muestra los pickers de minutos y segundos para el tiempo entre repeticiones
+                                        {
+                                            HorizontalOptions = LayoutOptions.Center,
+                                            Spacing = 15,
+                                            Children =
+                                            {
+                                                pickerMinutosSets,
+                                                pickerSegundosSets
+                                            }
+                                        },
 
-                new Label
-                {
-                    Text = "Tiempo entre ejercicios",
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    FontSize = 18,
-                    TextColor = Colors.White,
-                    Margin = new Thickness(0, 15, 0, 0)
-                },
+                                        new Label //titulo tiempo entre ejercicios
+                                        {
+                                            Text = "Tiempo entre ejercicios",
+                                            HorizontalTextAlignment = TextAlignment.Center,
+                                            FontSize = 18,
+                                            TextColor = Colors.White,
+                                            Margin = new Thickness(0, 15, 0, 0)
+                                        },
 
-                new HorizontalStackLayout
-                {
-                    HorizontalOptions = LayoutOptions.Center,
-                    Spacing = 15,
-                    Children =
-                    {
-                        pickerMinutosReps,
-                        pickerSegundosReps
-                    }
-                },
+                                        new HorizontalStackLayout //muestra los pickers de minutos y segundos para el tiempo entre ejercicios
+                                        {
+                                            HorizontalOptions = LayoutOptions.Center,
+                                            Spacing = 15,
+                                            Children =
+                                            {
+                                                pickerMinutosReps,
+                                                pickerSegundosReps
+                                            }
+                                        },
 
-                new Button
-                {
-                    Text = "Aceptar",
-                    BackgroundColor = Colors.Orange,
-                    TextColor = Colors.White,
-                    CornerRadius = 15,
-                    FontAttributes = FontAttributes.Bold,
-                    Padding = new Thickness(12, 10),
-                    FontFamily = "ComfortaaBold",
-                    Command = new Command(async () =>
-                    {
-                        int minSets = pickerMinutosSets.SelectedIndex;
-                        int segSets = pickerSegundosSets.SelectedIndex;
+                                        new Button //botón para aceptar la configuración de descansos
+                                        {
+                                            Text = "Aceptar",
+                                            BackgroundColor = Colors.Orange,
+                                            TextColor = Colors.White,
+                                            CornerRadius = 15,
+                                            FontAttributes = FontAttributes.Bold,
+                                            Padding = new Thickness(12, 10),
+                                            FontFamily = "ComfortaaBold",
+                                            Command = new Command(async () => //comando para aceptar la configuración
+                                            {
+                                                int minSets = pickerMinutosSets.SelectedIndex; //recoge los minutos seleccionados
+                                                int segSets = pickerSegundosSets.SelectedIndex;//recoge los segundos seleccionados
 
-                        timeBetweenReps = new TimeSpan(0, minSets, segSets);
+                                                timeBetweenReps = new TimeSpan(0, minSets, segSets); //asigna el tiempo entre repeticiones
 
-                        int minReps = pickerMinutosReps.SelectedIndex;
-                        int segReps = pickerSegundosReps.SelectedIndex;
+                                                int minReps = pickerMinutosReps.SelectedIndex; //recoge los minutos seleccionados
+                                                int segReps = pickerSegundosReps.SelectedIndex;//recoge los segundos seleccionados
 
-                        timeBetweenExercises = new TimeSpan(0, minReps, segReps);
+                                                timeBetweenExercises = new TimeSpan(0, minReps, segReps); //asigna el tiempo entre ejercicios
 
-                        await Navigation.PopModalAsync();
-                        tcs.TrySetResult(true);
-                    })
-                },
+                                                await Navigation.PopModalAsync(); //sale del modal
+                                                tcs.TrySetResult(true); //establece el resultado de la tarea como verdadero
+                                            })
+                                        },
 
-                new Button
-                {
-                    Text = "Cancelar",
-                    BackgroundColor = Color.FromArgb("#4A2E2A"),
-                    TextColor = Colors.White,
-                    CornerRadius = 15,
-                    FontFamily = "ComfortaaBold",
-                    Padding = new Thickness(12, 10),
-                    Command = new Command(async () => await Navigation.PopModalAsync())
-                }
-            }
+                                        new Button //botón para cancelar y salir del modal
+                                        {
+                                            Text = "Cancelar",
+                                            BackgroundColor = Color.FromArgb("#4A2E2A"),
+                                            TextColor = Colors.White,
+                                            CornerRadius = 15,
+                                            FontFamily = "ComfortaaBold",
+                                            Padding = new Thickness(12, 10),
+                                            Command = new Command(async () => await Navigation.PopModalAsync())
+                                        }
+                                    }
                                     }
                                 }
                             };
 
-                            await Navigation.PushModalAsync(modalDuracion);
-                            await tcs.Task;
+                            await Navigation.PushModalAsync(modalDuracion); //muestra el modal para configurar los descansos
+                            await tcs.Task; //espera a que el usuario configure los descansos
                         }
-                        int count = exercise.reps;
-                        var nameExercise = new Label
+                        int count = exercise.reps; //recoge el número de repeticiones del ejercicio
+                        var nameExercise = new Label //nombre del ejercicio
                         {
                             FontAttributes = FontAttributes.Bold,
                             FontSize = 18,
@@ -400,17 +392,17 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             Text = exercise.name
                         };
                         
-                        var repetitionExercise = new Label
+                        var repetitionExercise = new Label //número de repeticiones del ejercicio
                         {
                             Text = $"Repeticion numero: {count}",
                             TextColor = Colors.White,
                             Margin = new Thickness(10, 5)
                         };
-                        bool isIsometric = false;
-                        var setsOrTimeExercise = new Label();
-                        if (!exercise.muscleGroupId.Equals(bodyPartEnum.isometric))
+                        bool isIsometric = false; //indica si el ejercicio es isométrico
+                        var setsOrTimeExercise = new Label(); //muestra las series o el tiempo del ejercicio
+                        if (!exercise.muscleGroupId.Equals(bodyPartEnum.isometric)) //verifica si el ejercicio no es isométrico
                         {
-                            setsOrTimeExercise = new Label
+                            setsOrTimeExercise = new Label //muestra las series del ejercicio
                             {
                                 Text = $"Series: {exercise.sets}",
                                 TextColor = Colors.White,
@@ -420,7 +412,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         }
                         else
                         {
-                            setsOrTimeExercise = new Label
+                            setsOrTimeExercise = new Label //muestra el tiempo del ejercicio
                             {
                                 Text = $"Tiempo: {exercise.seconds} segundos",
                                 TextColor = Colors.White,
@@ -428,37 +420,37 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             };
                             isIsometric = true;
                         }
-                        var timeButton = new Button
+                        var timeButton = new Button //botón para empezar el ejercicio isométrico
                         {
                             Text = "Empezar Ejercicio",
                             BackgroundColor = Colors.Orange,
                             TextColor = Colors.White,
                             HeightRequest = 40,
-                            WidthRequest = 150,  // usa el tamaño que quieras
+                            WidthRequest = 150,  
                             CornerRadius = 15,
                             FontFamily = "ComfortaaBold",
                             FontSize = 13,
                             IsVisible = isIsometric,
                             HorizontalOptions = LayoutOptions.Center
                         };
-                        bool exerciseCompleted = false;
-                        timeButton.Command = new Command(async () =>
+                        bool exerciseCompleted = false; //indica si el ejercicio ha sido completado
+                        timeButton.Command = new Command(async () => //comando para manejar el botón de tiempo
                         {
-                            if (timeBetweenReps.TotalSeconds > 0)
-                                await ShowCountdown(TimeSpan.FromMinutes(exercise.seconds));
+                            if (timeBetweenReps.TotalSeconds > 0) //verifica si hay tiempo entre repeticiones
+                                await ShowCountdown(TimeSpan.FromMinutes(exercise.seconds)); //muestra la cuenta regresiva del tiempo del ejercicio isométrico
 
-                            timeButton.IsVisible = false;
-                            exerciseCompleted = true;
+                            timeButton.IsVisible = false; //oculta el botón de tiempo
+                            exerciseCompleted = true; //marca el ejercicio como completado
                         });
-                        var imageExercise = new Image
-                            {
+                        var imageExercise = new Image //imagen del ejercicio
+                        {
                                 Source = exercise.image,
                                 HeightRequest = 200,
                                 WidthRequest = 200,
                                 Aspect = Aspect.AspectFill,
                                 HorizontalOptions = LayoutOptions.Center
                             };
-                        var pauseButton = new Button
+                        var pauseButton = new Button //botón para pausar o terminar el ejercicio
                         {
                             Text = "Descansar",
                             BackgroundColor = Colors.Orange,
@@ -470,9 +462,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             Margin = new Thickness(0, 10, 0, 0),
                         };
                         
-                        pauseButton.Command = new Command(async () =>
+                        pauseButton.Command = new Command(async () => //boton para descansar o terminar el ejercicio
                         {
-                            if (exercise.muscleGroupId.Equals(bodyPartEnum.isometric) && !exerciseCompleted)
+                            if (exercise.muscleGroupId.Equals(bodyPartEnum.isometric) && !exerciseCompleted) //verifica si el ejercicio es isométrico y no ha sido completado
                             {
                                 await DisplayAlert(
                                      "Ejercicio isométrico",
@@ -482,45 +474,47 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 return;
                             }
                             
-                            if (count == 0)
+                            if (count == 0) //verifica si ha terminado las rutinas
                             {
-                                timeButton.IsVisible = false;
-                                exercise.exerciseFinished = true;
-                                exercise.expaded = false;
+                                timeButton.IsVisible = false; //oculta el botón de tiempo
+                                exercise.exerciseFinished = true; //marca el ejercicio como terminado
+                                exercise.expaded = false; //colapsa el ejercicio
 
-                                if (timeBetweenExercises.TotalSeconds > 0)
-                                    await ShowCountdown(timeBetweenExercises);
+                                if (timeBetweenExercises.TotalSeconds > 0) //verifica si hay tiempo entre ejercicios
+                                    await ShowCountdown(timeBetweenExercises); //muestra la cuenta regresiva del tiempo entre ejercicios
 
-                                await Navigation.PopModalAsync();
+                                await Navigation.PopModalAsync(); //cierra el modal del ejercicio
 
-                                var siguiente = exercisesInRoutine.FirstOrDefault(x => !x.exerciseFinished);
-                                if (siguiente != null)
-                                    siguiente.expaded = true;
+                                var siguiente = exercisesInRoutine.FirstOrDefault(x => !x.exerciseFinished); //selecciona el siguiente ejercicio que no ha sido terminado
+                                if (siguiente != null) //si existe un siguiente ejercicio
+                                    siguiente.expaded = true; //expande el siguiente ejercicio
                             }
                             else
                             {
-                                count--;
-                                repetitionExercise.Text = $"Repetición número: {count}";
-                                if (count == 0)
+                                count--; //decrementa el contador de repeticiones
+                                repetitionExercise.Text = $"Repetición número: {count}"; //actualiza el texto del número de repeticiones
+                                if (count == 0) //verifica si ha terminado las repeticiones
                                 {
-                                    pauseButton.Text = "Terminar Ejercicio";
-                                    if (exercise.muscleGroupId.Equals(bodyPartEnum.isometric)){
-                                        timeButton.IsVisible = true;
+                                    pauseButton.Text = "Terminar Ejercicio"; //cambia el texto del botón a terminar ejercicio
+                                    if (exercise.muscleGroupId.Equals(bodyPartEnum.isometric))//si el ejercicio es isométrico
+                                    { 
+                                        timeButton.IsVisible = true; //muestra el botón de tiempo
                                     }
                                     
                                 }
                                 else
                                 {
-                                    pauseButton.Text = "Descansar";
-                                    if (exercise.muscleGroupId.Equals(bodyPartEnum.isometric)){
-                                        timeButton.IsVisible = true;
+                                    pauseButton.Text = "Descansar"; //cambia el texto del botón a descansar
+                                    if (exercise.muscleGroupId.Equals(bodyPartEnum.isometric))//si el ejercicio es isométrico
+                                    { 
+                                        timeButton.IsVisible = true; //muestra el botón de tiempo
                                     }
                                 }
-                                if (timeBetweenReps.TotalSeconds > 0)
-                                    await ShowCountdown(timeBetweenReps);
+                                if (timeBetweenReps.TotalSeconds > 0) //verifica si hay tiempo entre repeticiones
+                                    await ShowCountdown(timeBetweenReps); //muestra la cuenta regresiva del tiempo entre repeticiones
                             }
                         });
-                        var modalPage = new ContentPage
+                        var modalPage = new ContentPage //modal para mostrar los detalles del ejercicio
                         {
                             BackgroundColor = Color.FromRgba(0, 0, 0, 0.5),
 
@@ -571,7 +565,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                                             pauseButton,
 
-                                            new Button
+                                            new Button //botón para cancelar el ejercicio y volver al inicio de la rutina
                                             {
                                                 Text = "Cancelar",
                                                 BackgroundColor = Color.FromArgb("#4A2E2A"),
@@ -584,15 +578,15 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                                                 Command = new Command(async () =>
                                                 {
-                                                    bool primer = true;
-                                                    foreach (var ex in exercisesInRoutine)
+                                                    bool primer = true; //variable para reiniciar los ejercicios
+                                                    foreach (var ex in exercisesInRoutine) //reinicia los ejercicios de la rutina
                                                     {
                                                         ex.expaded = primer;
                                                         ex.exerciseFinished = false;
                                                         primer = false;
                                                     }
 
-                                                    await Navigation.PopModalAsync();
+                                                    await Navigation.PopModalAsync(); //cierra el modal del ejercicio
                                                 })
                                             }
                                         }
@@ -600,12 +594,12 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 }
                             }
                         };
-                        await Navigation.PushModalAsync(modalPage);
+                        await Navigation.PushModalAsync(modalPage); //muestra el modal del ejercicio
                     };
-                    expanderExercise.Content = new HorizontalStackLayout
+                    expanderExercise.Content = new HorizontalStackLayout //contenido del expansor del ejercicio
                     {
                         Padding = new Thickness(10),
-                        HorizontalOptions = LayoutOptions.Center, // <-- Este es el correcto en MAUI
+                        HorizontalOptions = LayoutOptions.Center,
                         VerticalOptions = LayoutOptions.Center,
                         Children =
                         {
@@ -622,46 +616,45 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             CornerRadius = 8
                         },
                     };
-                    frame.Content = new VerticalStackLayout
+                    frame.Content = new VerticalStackLayout //contenido del marco del ejercicio
                     {
-                        Children = { expanderExercise }
+                        Children = { expanderExercise } //agrega el expansor al marco
                     };
-                    return frame;
+                    return frame; //devuelve el marco del ejercicio
                 })
             };
 
 
 
-            eliminateRoutine.GestureRecognizers.Add(new TapGestureRecognizer
+            eliminateRoutine.GestureRecognizers.Add(new TapGestureRecognizer //opción del desplegable para eliminar la rutina
             {
-                Command = new Command(async () =>
+                Command = new Command(async () => //ejecuta la eliminación de la rutina
                 {
-                    await _dbService.Delete(_routine);
+                    await _dbService.Delete(_routine); //elimina la rutina de la base de datos
 
-                    _filterViewModel.Routines.Clear();
-                    var routines = await _dbService.GetRoutinesAsync();
-                    var routinesExercises = await _dbService.GetRoutinesExercisesAsync();
-                    foreach (RoutinesExercises routineExercise in routinesExercises)
+                    _filterViewModel.Routines.Clear();//limpia la lista de rutinas del filtro
+                    var routines = await _dbService.GetRoutinesAsync(); //recoge las rutinas de la base de datos
+                    var routinesExercises = await _dbService.GetRoutinesExercisesAsync(); //recoge los ejercicios de las rutinas de la base de datos
+                    foreach (RoutinesExercises routineExercise in routinesExercises) //elimina los ejercicios asociados a la rutina
                     {
-                        if (routineExercise.RoutineID.Equals(_routine.routineID))
+                        if (routineExercise.RoutineID.Equals(_routine.routineID)) //verifica si el ejercicio pertenece a la rutina
                         {
-                            await _dbService.Delete(routineExercise);
+                            await _dbService.Delete(routineExercise); //elimina el ejercicio asociado a la rutina
                         }
                     }
 
-                    _filterViewModel.UpdateFilteredRoutines();
-                    await Navigation.PopModalAsync();
+                    _filterViewModel.UpdateFilteredRoutines(); //actualiza la lista de rutinas del filtro
+                    await Navigation.PopModalAsync(); //cierra la rutina actual
                 })
             });
-            editRoutine.GestureRecognizers.Add(new TapGestureRecognizer
+            editRoutine.GestureRecognizers.Add(new TapGestureRecognizer //opción del desplegable para editar la rutina
             {
                 Command = new Command(async () =>
                 {
-                    ModifyOrCreateRoutine(_routine);
+                    ModifyOrCreateRoutine(_routine); //llama al método para modificar o crear la rutina
                 })
             });
-            // === Botón cancelar ===
-            var cancelButton = new Button
+            var cancelButton = new Button //botón para cancelar y cerrar la rutina
             {
                 Text = "Cancelar",
                 BackgroundColor = Colors.Purple,
@@ -670,11 +663,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Start,
                 VerticalOptions = LayoutOptions.End,
                 Margin = new Thickness(10, 0, 0, 10),
-                Command = new Command(async () =>
+                Command = new Command(async () => //comando para cerrar la rutina
                 {
                     await Navigation.PopModalAsync();
 
-                    foreach (Exercise exercise in exercisesInRoutine)
+                    foreach (Exercise exercise in exercisesInRoutine) //reinicia los ejercicios de la rutina
                     {
 
                         exercise.expaded = false;
@@ -684,8 +677,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 })
             };
 
-            // === Fila superior: título + botón tres puntos ===
-            var headerGrid = new Grid
+            var headerGrid = new Grid //grid para el encabezado de la rutina
             {
                 ColumnDefinitions =
             {
@@ -694,16 +686,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
             }
             };
 
-            // Texto centrado en la izquierda
-            Grid.SetColumn(nameRoutine, 0);
-            headerGrid.Children.Add(nameRoutine);
+            Grid.SetColumn(nameRoutine, 0); //asigna la columna 0 al nombre de la rutina
+            headerGrid.Children.Add(nameRoutine); // Añade el nombre de la rutina al encabezado
 
-            // Botón tres puntos a la derecha
-            Grid.SetColumn(menuButton, 1);
-            headerGrid.Children.Add(menuButton);
+            Grid.SetColumn(menuButton, 1); //asigna la columna 1 al botón de menú
+            headerGrid.Children.Add(menuButton); // Añade el botón de menú al encabezado
 
-            // === BASE GRID ===
-            var baseGrid = new Grid
+            var baseGrid = new Grid //grid base de la rutina
             {
                 RowDefinitions =
     {
@@ -716,19 +705,16 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 VerticalOptions = LayoutOptions.Fill
             };
 
-            // Fila 0 → header (texto + menú)
-            Grid.SetRow(headerGrid, 0);
-            baseGrid.Children.Add(headerGrid);
+            Grid.SetRow(headerGrid, 0); // asigna la fila 0 al encabezado
+            baseGrid.Children.Add(headerGrid); // Añade el encabezado al grid base
 
-            Grid.SetRow(listExercise, 1);
-            baseGrid.Children.Add(listExercise);
+            Grid.SetRow(listExercise, 1); // asigna la fila 1 a la lista de ejercicios
+            baseGrid.Children.Add(listExercise); // Añade la lista de ejercicios al grid base
 
-            // Fila 2 → botón cancelar
-            Grid.SetRow(cancelButton, 2);
-            baseGrid.Children.Add(cancelButton);
+            Grid.SetRow(cancelButton, 2); //asigna la fila 2 al botón cancelar
+            baseGrid.Children.Add(cancelButton); // Añade el botón cancelar al grid base
 
-            // === OVERLAY flotante ===
-            var overlay = new AbsoluteLayout
+            var overlay = new AbsoluteLayout //overlay para el menú desplegable
             {
                 IsVisible = false,
                 InputTransparent = true,
@@ -737,50 +723,47 @@ namespace ProyectoFinDeCurso.Pages.Detail
             };
 
             
-            menuFrame.Opacity = 0;
-            AbsoluteLayout.SetLayoutBounds(menuFrame, new Rect(1, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize));
-            AbsoluteLayout.SetLayoutFlags(menuFrame, AbsoluteLayoutFlags.PositionProportional);
-            overlay.Children.Add(menuFrame);
+            menuFrame.Opacity = 0; //  oculto al inicio
+            AbsoluteLayout.SetLayoutBounds(menuFrame, new Rect(1, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize)); // posición superior derecha
+            AbsoluteLayout.SetLayoutFlags(menuFrame, AbsoluteLayoutFlags.PositionProportional); // usa proporciones para la posición
+            overlay.Children.Add(menuFrame); // Añade el menú al overlay
 
-            // Fondo clickable para cerrar
-            var closeTap = new ContentView { BackgroundColor = Colors.Transparent };
-            closeTap.GestureRecognizers.Add(new TapGestureRecognizer
+            var closeTap = new ContentView { BackgroundColor = Colors.Transparent }; // área transparente para cerrar el menú al tocar fuera de él
+            closeTap.GestureRecognizers.Add(new TapGestureRecognizer //gesto para cerrar el menú
             {
-                Command = new Command(async () =>
+                Command = new Command(async () => //comando para cerrar el menú
                 {
                     await menuFrame.FadeTo(0, 150);
                     overlay.IsVisible = false;
                     overlay.InputTransparent = true;
                 })
             });
-            AbsoluteLayout.SetLayoutBounds(closeTap, new Rect(0, 0, 1, 1));
-            AbsoluteLayout.SetLayoutFlags(closeTap, AbsoluteLayoutFlags.All);
-            overlay.Children.Insert(0, closeTap);
+            AbsoluteLayout.SetLayoutBounds(closeTap, new Rect(0, 0, 1, 1)); // ocupa toda el área
+            AbsoluteLayout.SetLayoutFlags(closeTap, AbsoluteLayoutFlags.All); // usa todas las proporciones
+            overlay.Children.Insert(0, closeTap); // Añade el área de cierre al overlay (detrás del menú)
 
-            // === ROOT (base + overlay) ===
-            var root = new Grid();
-            root.Children.Add(baseGrid);
-            root.Children.Add(overlay);
+            var root = new Grid(); //grid raíz de la rutina
+            root.Children.Add(baseGrid); // Añade el grid base al grid raíz
+            root.Children.Add(overlay); // Añade el overlay al grid raíz
 
-            // === Evento del botón ⋮ ===
-            menuButton.Clicked += async (s, e) =>
+            menuButton.Clicked += async (s, e) => //evento al hacer clic en el botón de menú
             {
-                if (!overlay.IsVisible)
+                if (!overlay.IsVisible) //si el overlay no es visible
                 {
-                    overlay.IsVisible = true;
-                    overlay.InputTransparent = false;
-                    await menuFrame.FadeTo(1, 200);
+                    overlay.IsVisible = true; //muestra el overlay
+                    overlay.InputTransparent = false; //habilita la interacción con el overlay
+                    await menuFrame.FadeTo(1, 200); //muestra el menú con una animación de desvanecimiento
                 }
                 else
                 {
-                    await menuFrame.FadeTo(0, 150);
-                    overlay.IsVisible = false;
-                    overlay.InputTransparent = true;
+                    await menuFrame.FadeTo(0, 150); //oculta el menú con una animación de desvanecimiento
+                    overlay.IsVisible = false; //oculta el overlay
+                    overlay.InputTransparent = true; //deshabilita la interacción con el overlay
                 }
             };
 
             // === PÁGINA ===
-            var routine = new ContentPage
+            var routine = new ContentPage //página de la rutina
             {
                 BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
                 Content = new Border
@@ -792,27 +775,22 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     Padding = 10,
                     HorizontalOptions = LayoutOptions.Center,
                     VerticalOptions = LayoutOptions.Center,
-                    Content = root
+                    Content = root //asigna el grid raíz como contenido de la página
                 }
             };
-            Content = routine.Content;
-            BackgroundColor = routine.BackgroundColor;
+            Content = routine.Content; //muestra el contenido de la rutina
+            BackgroundColor = routine.BackgroundColor; //asigna el color de fondo de la rutina
 
         }
 
-        private void BuildEditUI()
-        {
-            throw new NotImplementedException();
-        }
 
-        private void BuildCreateUI()
+        private void BuildCreateUI() //crea una nueva rutina
         {
-            ModifyOrCreateRoutine();
+            ModifyOrCreateRoutine();  //llama al método para modificar o crear la rutina
         }
-        private void BuildFilterRoutineUI()
+        private void BuildFilterRoutineUI() //filtro de rutinas
         {
-            // PICKER: BODY PART
-            var filterBodyPartEntry = new Picker
+            var filterBodyPartEntry = new Picker //crea el picker para seleccionar la parte del cuerpo
             {
                 Title = "Tipo Cuerpo",
                 TextColor = Color.FromArgb("#C49362"),
@@ -823,8 +801,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            // PICKER: DIFFICULTY
-            var filterDificultyEntry = new Picker
+            var filterDificultyEntry = new Picker //crea el picker para seleccionar la dificultad
             {
                 Title = "Tipo de dificultad",
                 TextColor = Color.FromArgb("#C49362"),
@@ -835,8 +812,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Fill
             };
             
-            // ENTRY: NAME
-            var filterNameEntry = new Entry
+            var filterNameEntry = new Entry //crea la entrada para el nombre de la rutina
             {
                 Placeholder = "Nombre de la rutina",
                 Keyboard = Keyboard.Text,
@@ -844,46 +820,42 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 BackgroundColor = Color.FromArgb("#3B2523"),
             };
 
-            // BOTÓN FILTRAR — ACTUALIZA EL VIEWMODEL
-            var filterButton = new Button
+            var filterButton = new Button //botón para aplicar el filtro
             {
                 Text = "Filtrar",
                 BackgroundColor = Color.FromArgb("ffd700"),
                 TextColor = Colors.White,
                 CornerRadius = 3,
-                Command = new Command(async () =>
+                Command = new Command(async () => //comando para aplicar el filtro
                 {
-                    _filterViewModel ??= new RoutinesFilterViewModel(_dbService, userTypeEnum.nothing);
-                    // 🔥 1. Actualizar filtro de nombre
+                    _filterViewModel ??= new RoutinesFilterViewModel(_dbService, userTypeEnum.nothing); // Asegurarse de que el ViewModel no sea nulo
+
                     _filterViewModel!.NameRoutineFilter =
                     string.IsNullOrWhiteSpace(filterNameEntry.Text)
                     ? null
-                    : filterNameEntry.Text;
+                    : filterNameEntry.Text; //actualiza datos del filtro de nombre
 
-                    // 🔥 2. Actualizar filtro de dificultad
-                    var selectedDiff = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == (string)filterDificultyEntry.SelectedItem).Key;
-                    _filterViewModel.DificultyFilter = selectedDiff;
+                    var selectedDiff = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == (string)filterDificultyEntry.SelectedItem).Key; //recoge la dificultad seleccionada
+                    _filterViewModel.DificultyFilter = selectedDiff; //actualiza datos del filtro de dificultad
 
-                    // 🔥 3. Actualizar filtro de parte del cuerpo
-                    var selectedBody = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == (string)filterBodyPartEntry.SelectedItem).Key;
-                    _filterViewModel.BodyPartFilter = selectedBody;
+                    var selectedBody = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == (string)filterBodyPartEntry.SelectedItem).Key; //regoce la parte del cuerpo seleccionada
+                    _filterViewModel.BodyPartFilter = selectedBody; //actualiza datos del filtro de parte del cuerpo
 
-                    // 🔥 5. Cerrar modal
-                    await Navigation.PopModalAsync();
+                    await Navigation.PopModalAsync();//cierra el modal de filtro
                 })
             };
 
-            var cancelButton = new Button
+            var cancelButton = new Button //botón para cancelar el filtro
             {
                 Text = "Cancelar",
                 BackgroundColor = Color.FromArgb("ffd700"),
                 TextColor = Colors.White,
                 CornerRadius = 3,
-                Command = new Command(async () => await Navigation.PopModalAsync())
+                Command = new Command(async () => await Navigation.PopModalAsync()) //comando para cerrar el modal de filtro
             };
 
             // UI FINAL
-            var modalPage = new ContentPage
+            var modalPage = new ContentPage //creación de la página modal para el filtro
             {
                 BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
                 Content = new Border
@@ -919,7 +891,6 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         FontFamily = "ComfortaaBold"
                     },
                         filterNameEntry,
-                        filterDificultyEntry,
                         filterBodyPartEntry,
 
                    new HorizontalStackLayout
@@ -938,17 +909,17 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 }
             };
 
-            Content = modalPage.Content;
-            BackgroundColor = modalPage.BackgroundColor;
+            Content = modalPage.Content; //muestra el contenido del modal
+            BackgroundColor = modalPage.BackgroundColor; //muestra el color de fondo del modal
         }
 
-        private async Task ShowCountdown(TimeSpan time)
+        private async Task ShowCountdown(TimeSpan time) //crea una cuenta regresiva
         {
-            var tcs = new TaskCompletionSource<bool>();
-            int segundosRestantes = (int)time.TotalSeconds;
-            bool cerrado = false; // 🔒 para evitar cierres dobles
+            var tcs = new TaskCompletionSource<bool>(); // para esperar hasta que se complete la cuenta regresiva
+            int segundosRestantes = (int)time.TotalSeconds; // segundos totales de la cuenta regresiva
+            bool cerrado = false; // para evitar cierres múltiples
 
-            var labelTiempo = new Label
+            var labelTiempo = new Label //etiqueta para mostrar el tiempo restante
             {
                 Text = time.ToString(@"mm\:ss"),
                 FontSize = 72,
@@ -958,7 +929,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 FontAttributes = FontAttributes.Bold
             };
 
-            var btnCancelar = new Button
+            var btnCancelar = new Button //botón para cancelar la cuenta regresiva
             {
                 Text = "Cancelar",
                 BackgroundColor = Colors.Gray,
@@ -968,7 +939,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Center
             };
 
-            var modalCuentaAtras = new ContentPage
+            var modalCuentaAtras = new ContentPage //página modal para la cuenta regresiva
             {
                 BackgroundColor = Color.FromArgb("#1A1A1A"),
                 Content = new VerticalStackLayout
@@ -976,59 +947,61 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     VerticalOptions = LayoutOptions.Center,
                     HorizontalOptions = LayoutOptions.Center,
                     Spacing = 20,
-                    Children = { labelTiempo, btnCancelar }
+                    Children = { labelTiempo, btnCancelar } //añade la etiqueta y el botón al contenido
                 }
             };
 
-            await Navigation.PushModalAsync(modalCuentaAtras);
+            await Navigation.PushModalAsync(modalCuentaAtras); //muestra el modal de la cuenta regresiva
 
-            var timer = Application.Current.Dispatcher.CreateTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
+            var timer = Application.Current.Dispatcher.CreateTimer(); // crea un temporizador para actualizar la cuenta regresiva
+            timer.Interval = TimeSpan.FromSeconds(1); // intervalo de 1 segundo
 
-            // Acción común para cerrar el modal
-            async Task CerrarModalAsync()
+            async Task CerrarModalAsync() //método para cerrar el modal de la cuenta regresiva
             {
                 if (cerrado) return;
                 cerrado = true;
 
                 timer.Stop();
-                try { await Navigation.PopModalAsync(); } catch { /* ignorar si ya se cerró */ }
-                tcs.TrySetResult(true);
+                try { 
+                    await Navigation.PopModalAsync(); 
+                } catch { 
+                    /* ignorar si ya se cerró */ 
+                }
+                tcs.TrySetResult(true); // señala que la cuenta regresiva ha terminado o se ha cancelado
             }
 
-            // Evento de cancelar
-            btnCancelar.Clicked += async (s, e) => await CerrarModalAsync();
+            btnCancelar.Clicked += async (s, e) => await CerrarModalAsync(); //evento al hacer clic en el botón cancelar
 
-            // Evento del temporizador
-            timer.Tick += async (s, e) =>
+            timer.Tick += async (s, e) => //evento del temporizador para actualizar la cuenta regresiva
             {
-                segundosRestantes--;
+                segundosRestantes--; // decrementa los segundos restantes
 
-                if (segundosRestantes <= 0)
+                if (segundosRestantes <= 0) // si el tiempo se ha agotado
                 {
-                    labelTiempo.Text = "¡Tiempo!";
-                    labelTiempo.TextColor = Colors.OrangeRed;
-                    timer.Stop();
+                    labelTiempo.Text = "¡Tiempo!"; // muestra el mensaje de tiempo agotado
+                    labelTiempo.TextColor = Colors.OrangeRed; // cambia el color del texto
+                    timer.Stop(); // detiene el temporizador
 
                     await Task.Delay(2000); // espera antes de cerrar
-                    await CerrarModalAsync();
+                    await CerrarModalAsync(); // cierra el modal
                 }
                 else
                 {
-                    labelTiempo.Text = TimeSpan.FromSeconds(segundosRestantes).ToString(@"mm\:ss");
+                    labelTiempo.Text = TimeSpan.FromSeconds(segundosRestantes).ToString(@"mm\:ss"); //muestra el tiempo restante en formato mm:ss
                 }
             };
 
-            timer.Start();
-            await tcs.Task;
+            timer.Start(); // inicia el temporizador
+            await tcs.Task; // espera hasta que la cuenta regresiva termine o se cancele
         }
        
-        private void ModifyOrCreateRoutine(Routines routine = null)
+        private void ModifyOrCreateRoutine(Routines routine = null) //método para modificar o crear una rutina
         {
-            bool newRoutine = false;
-            if (routine == null) { 
-                newRoutine = true;
-                routine = new Routines
+            bool newRoutine = false; // indica si es una nueva rutina
+            if (routine == null)// si no se proporciona una rutina, se crea una nueva
+            {  
+                newRoutine = true; // marca como nueva rutina
+                routine = new Routines // crea una nueva rutina con valores predeterminados
                 {
                     nameRoutine = "",
                     description = "",
@@ -1036,7 +1009,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     difficulty = dificultyEnum.nothing
                 };
             }
-            var nameRoutineEntry = new Entry
+            var nameRoutineEntry = new Entry // entrada para el nombre de la rutina
             {
                 Placeholder = "Nombre de la rutina",
                 TextColor = Color.FromArgb("#C49362"),
@@ -1044,7 +1017,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 Text = routine.nameRoutine,
                 HorizontalOptions = LayoutOptions.Fill
             };
-            var DescriptionRoutineEntry = new Entry
+            var DescriptionRoutineEntry = new Entry // entrada para la descripción de la rutina
             {
                 Text = routine.description,
                 Placeholder = "Descripción de la rutina",
@@ -1053,7 +1026,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                 HorizontalOptions = LayoutOptions.Fill
             };
-            var bodyPartEnumPicker = new Picker
+            var bodyPartEnumPicker = new Picker // picker para seleccionar la parte del cuerpo
             {
                 Title = "Tipo Cuerpo",
                 ItemsSource = enumExtension.BodyTranslations.Values.ToList(),
@@ -1062,7 +1035,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 BackgroundColor = Color.FromArgb("#3B2523"),
                 HorizontalOptions = LayoutOptions.Fill
             };
-            var dificultyPicker = new Picker
+            var dificultyPicker = new Picker // picker para seleccionar la dificultad
             {
                 Title = "Tipo de dificultad",
                 ItemsSource = enumExtension.DifficultyTranslations.Values.ToList(),
@@ -1071,26 +1044,27 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 BackgroundColor = Color.FromArgb("#3B2523"),
                 HorizontalOptions = LayoutOptions.Fill
             };
-            var addExercises = new Button
+            var addExercises = new Button // botón para agregar ejercicios a la rutina
             {
                 Text = "Agregar Ejercicios",
                 TextColor = Color.FromArgb("#C49362"),
                 BackgroundColor = Color.FromArgb("#3B2523"),
                 HorizontalOptions = LayoutOptions.Fill
             };
-            ObservableCollection<Exercise> exercisesInRoutine = new ObservableCollection<Exercise>();
-            if(routine.Exercises != null) { 
-                foreach (Exercise exercise in routine.Exercises)
+            ObservableCollection<Exercise> exercisesInRoutine = new ObservableCollection<Exercise>(); // colección de ejercicios en la rutina
+            if (routine.Exercises != null)// si la rutina tiene ejercicios
+            { 
+                foreach (Exercise exercise in routine.Exercises) // agrega los ejercicios existentes a la colección
                 {
                     exercisesInRoutine.Add(exercise);
                 }
             }
-            bodyPartEnumPicker.SelectedIndexChanged += async (s, e) =>
+            bodyPartEnumPicker.SelectedIndexChanged += async (s, e) => //evento al cambiar la selección en el picker de parte del cuerpo
             {
                 // Verificamos si hay un elemento seleccionado
-                if (bodyPartEnumPicker.SelectedItem is string selectedText)
+                if (bodyPartEnumPicker.SelectedItem is string selectedText) // si hay un elemento seleccionado
                 {
-                    if (exercisesInRoutine != null && exercisesInRoutine.Any())
+                    if (exercisesInRoutine != null && exercisesInRoutine.Any()) // si hay ejercicios en la rutina
                     {
                         // Mostrar advertencia al usuario
                         bool answer = await DisplayAlert(
@@ -1098,11 +1072,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             "Si cambias la parte del cuerpo, se borrarán todos los jercicios seleccionados.\n ¿Deseas cambiar la rutina?",
                             "Sí, vaciar",
                             "No"
-                        );
+                        ); // avisa al usuario sobre la pérdida de ejercicios
 
-                        if (answer)
+                        if (answer) // si el usuario confirma
                         {
-                            exercisesInRoutine.Clear();
+                            exercisesInRoutine.Clear(); // vacía la lista de ejercicios
                             Console.WriteLine("Lista de ejercicios vaciada.");
                         }
                         else
@@ -1112,23 +1086,23 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     }
                 }
             };
-            addExercises.Clicked += async (s, e) =>
+            addExercises.Clicked += async (s, e) => //evento al hacer clic en el botón de agregar ejercicios
             {
 
-                string selectedText = bodyPartEnumPicker.SelectedItem as string;
-                bodyPartEnum selectedEnum = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == selectedText).Key;
+                string selectedText = bodyPartEnumPicker.SelectedItem as string; // obtiene el texto seleccionado en el picker de parte del cuerpo
+                bodyPartEnum selectedEnum = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == selectedText).Key; // obtiene el enum correspondiente al texto seleccionado
 
-                if (selectedEnum.Equals(bodyPartEnum.nothing))
+                if (selectedEnum.Equals(bodyPartEnum.nothing)) // si no se ha seleccionado una parte del cuerpo
                 {
                     await DisplayAlert("Error", "Seleccione un grupo muscular", "OK");
-                    return;
+                    return; // muestra un error y sale del método
                 }
                 else
                 {
-                    List<Exercise> exercises = await _dbService.GetExercisesAsync();
-                    List<Exercise> ExercisesSelecter;
+                    List<Exercise> exercises = await _dbService.GetExercisesAsync(); // obtiene la lista de ejercicios desde la base de datos
+                    List<Exercise> ExercisesSelecter; // lista para almacenar los ejercicios filtrados
 
-                    if (selectedEnum.Equals(bodyPartEnum.torsoAndArms))
+                    if (selectedEnum.Equals(bodyPartEnum.torsoAndArms)) //filtra ejercicios para torso y brazos
                     {
                         ExercisesSelecter = exercises.Where(ex =>
                             ex.muscleGroupId.Equals(bodyPartEnum.triceps)
@@ -1136,13 +1110,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             || ex.muscleGroupId.Equals(bodyPartEnum.chest)
                             || ex.muscleGroupId.Equals(bodyPartEnum.back)).ToList();
                     }
-                    else if (selectedEnum.Equals(bodyPartEnum.arms))
+                    else if (selectedEnum.Equals(bodyPartEnum.arms)) //filtra ejercicios para brazos
                     {
                         ExercisesSelecter = exercises.Where(ex =>
                             ex.muscleGroupId.Equals(bodyPartEnum.triceps)
                             || ex.muscleGroupId.Equals(bodyPartEnum.biceps)).ToList();
                     }
-                    else if (selectedEnum.Equals(bodyPartEnum.torso))
+                    else if (selectedEnum.Equals(bodyPartEnum.torso)) //filtra ejercicios para torso
                     {
                         ExercisesSelecter = exercises.Where(ex =>
                             ex.muscleGroupId.Equals(bodyPartEnum.chest)
@@ -1150,7 +1124,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     }
                     else
                     {
-                        ExercisesSelecter = exercises.Where(ex => ex.muscleGroupId.Equals(selectedEnum)).ToList();
+                        ExercisesSelecter = exercises.Where(ex => ex.muscleGroupId.Equals(selectedEnum)).ToList(); //filtra ejercicios para la parte del cuerpo seleccionada
                     }
 
                     var grouped = ExercisesSelecter
@@ -1166,33 +1140,31 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     diffGroup.ToList()
                                 ))
                         )
-                        .ToList();
+                        .ToList(); // agrupa los ejercicios por parte del cuerpo y dificultad
 
-                    // 🟩 Cambiar List por ObservableCollection
-                    ObservableCollection<Exercise> exerciseSelection = new ObservableCollection<Exercise>();
+                    ObservableCollection<Exercise> exerciseSelection = new ObservableCollection<Exercise>(); // colección para almacenar los ejercicios seleccionados
 
-                    var lookForExercise = new SearchBar
+                    var lookForExercise = new SearchBar // barra de búsqueda para filtrar ejercicios
                     {
                         Placeholder = "Buscar ejercicio..."
                     };
 
-                    // 🔹 CollectionView principal (selección de ejercicios)
-                    var collectionExercises = new CollectionView
+                    var collectionExercises = new CollectionView // vista de colección para mostrar los ejercicios
                     {
                         ItemsSource = grouped,
                         IsGrouped = true,
-                        GroupHeaderTemplate = new DataTemplate(() =>
+                        GroupHeaderTemplate = new DataTemplate(() => // plantilla para el encabezado del grupo
                         {
-                            var difficultyBar = new BoxView
+                            var difficultyBar = new BoxView // barra de dificultad
                             {
                                 WidthRequest = 6,
                                 CornerRadius = 3,
                                 HorizontalOptions = LayoutOptions.Start,
                                 VerticalOptions = LayoutOptions.Fill
                             };
-                            difficultyBar.SetBinding(BoxView.ColorProperty, "HeaderColor");
+                            difficultyBar.SetBinding(BoxView.ColorProperty, "HeaderColor"); //asigna el color según la dificultad
 
-                            var headerLabel = new Label
+                            var headerLabel = new Label // etiqueta para el encabezado del grupo
                             {
                                 FontAttributes = FontAttributes.Bold,
                                 FontSize = 18,
@@ -1200,9 +1172,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 TextColor = Colors.Orange,
                                 Margin = new Thickness(10, 5)
                             };
-                            headerLabel.SetBinding(Label.TextProperty, "HeaderText");
+                            headerLabel.SetBinding(Label.TextProperty, "HeaderText"); //asigna el texto del encabezado
 
-                            var grid = new Grid
+                            var grid = new Grid // grid para el encabezado del grupo
                             {
                                 ColumnDefinitions =
                     {
@@ -1212,21 +1184,21 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 BackgroundColor = Color.FromArgb("#2B1A19")
                             };
 
-                            grid.Add(difficultyBar, 0, 0);
-                            grid.Add(headerLabel, 1, 0);
+                            grid.Add(difficultyBar, 0, 0); //añade la barra de dificultad al grid
+                            grid.Add(headerLabel, 1, 0); //añade la etiqueta al grid
 
                             return grid;
                         }),
-                        ItemTemplate = new DataTemplate(() =>
+                        ItemTemplate = new DataTemplate(() => // plantilla para los elementos de la colección
                         {
-                            var nameExercise = new Label
+                            var nameExercise = new Label // etiqueta para el nombre del ejercicio
                             {
                                 FontAttributes = FontAttributes.Bold,
                                 TextColor = Colors.White
                             };
-                            nameExercise.SetBinding(Label.TextProperty, "name");
+                            nameExercise.SetBinding(Label.TextProperty, "name"); //asigna el nombre del ejercicio
 
-                            var frame = new Border
+                            var frame = new Border // marco para el ejercicio
                             {
                                 Margin = 5,
                                 Padding = 10,
@@ -1237,23 +1209,21 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 },
                             };
 
-                            frame.Content = new VerticalStackLayout
+                            frame.Content = new VerticalStackLayout //contenido del marco del ejercicio
                             {
                                 Children = { nameExercise }
                             };
-                            var tapGesture = new TapGestureRecognizer();
-                            if (bodyPartEnumPicker.SelectedItem is string selectedText)
+                            var tapGesture = new TapGestureRecognizer(); // gesto para detectar toques en el ejercicio
+                            if (bodyPartEnumPicker.SelectedItem is string selectedText) // verifica si hay un elemento seleccionado en el picker de parte del cuerpo
                             {
-                                
-                                    // 🔹 Tap: abrir modal para añadir
 
-                                    tapGesture.Tapped += async (s, e) =>
+                                    tapGesture.Tapped += async (s, e) => //evento al tocar el ejercicio
                                     {
-                                        if (frame.BindingContext is Exercise selectedExercise)
+                                        if (frame.BindingContext is Exercise selectedExercise) // verifica y recoge el contexto de enlace es un ejercicio
                                         {
-                                            if (!selectedExercise.muscleGroupId.Equals(bodyPartEnum.isometric))
+                                            if (!selectedExercise.muscleGroupId.Equals(bodyPartEnum.isometric)) // si el ejercicio no es isométrico
                                             {
-                                                var getExerciseLabel = new Label
+                                                var getExerciseLabel = new Label // etiqueta para el nombre del ejercicio
                                                 {
                                                     FontAttributes = FontAttributes.Bold,
                                                     FontSize = 18,
@@ -1263,39 +1233,39 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                                     Text = selectedExercise.name
                                                 };
 
-                                                var repsLabel = new Entry
+                                                var repsLabel = new Entry // entrada para el número de repeticiones
                                                 {
                                                     Placeholder = "Número de repeticiones",
                                                     Keyboard = Keyboard.Numeric
                                                 };
-                                                repsLabel.TextChanged += (s, e) =>
+                                                repsLabel.TextChanged += (s, e) => //evento al cambiar el texto en la entrada de repeticiones
                                                 {
-                                                    if (!string.IsNullOrEmpty(repsLabel.Text))
+                                                    if (!string.IsNullOrEmpty(repsLabel.Text)) // si la entrada no está vacía
                                                     {
-                                                        string onlyDigits = new string(repsLabel.Text.Where(char.IsDigit).ToArray());
-                                                        if (repsLabel.Text != onlyDigits)
+                                                        string onlyDigits = new string(repsLabel.Text.Where(char.IsDigit).ToArray()); // filtra solo los dígitos
+                                                        if (repsLabel.Text != onlyDigits) // si el texto contiene caracteres no numéricos
                                                         {
                                                             repsLabel.Text = onlyDigits; // limpia si es texto
                                                         }
                                                     }
                                                 };
-                                                var setsLabel = new Entry
+                                                var setsLabel = new Entry // entrada para el número de series
                                                 {
                                                     Placeholder = "Número de series",
                                                     Keyboard = Keyboard.Numeric
                                                 };
-                                                setsLabel.TextChanged += (s, e) =>
+                                                setsLabel.TextChanged += (s, e) => //evento al cambiar el texto en la entrada de series
                                                 {
-                                                    if (!string.IsNullOrEmpty(setsLabel.Text))
+                                                    if (!string.IsNullOrEmpty(setsLabel.Text)) // si la entrada no está vacía
                                                     {
-                                                        string onlyDigits = new string(setsLabel.Text.Where(char.IsDigit).ToArray());
-                                                        if (setsLabel.Text != onlyDigits)
+                                                        string onlyDigits = new string(setsLabel.Text.Where(char.IsDigit).ToArray()); // filtra solo los dígitos
+                                                        if (setsLabel.Text != onlyDigits) // si el texto contiene caracteres no numéricos
                                                         {
                                                             setsLabel.Text = onlyDigits; // limpia si es texto
                                                         }
                                                     }
                                                 };
-                                                var modalPage = new ContentPage
+                                                var modalPage = new ContentPage // página modal para agregar el ejercicio
                                                 {
                                                     BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
                                                     Content = new Border
@@ -1313,70 +1283,70 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                                             Padding = 1,
                                                             Spacing = 5,
                                                             Children =
-                                    {
-                                        new Label
-                                        {
-                                            Text = "Añadir ejercicio",
-                                            FontSize = 24,
-                                            TextColor = Colors.Orange,
-                                            HorizontalOptions = LayoutOptions.Fill,
-                                            HorizontalTextAlignment = TextAlignment.Center,
-                                            FontFamily="EatMeAlive"
-                                        },
-                                        getExerciseLabel,
-                                        repsLabel,
-                                        setsLabel,
-                                        new HorizontalStackLayout
-                                        {
-                                            Spacing = 10,
-                                            Children =
-                                            {
-                                                new Button
-                                                {
-                                                    Text = "Crear",
-                                                    Command = new Command(async () =>
-                                                    {
-                                                        if (string.IsNullOrEmpty(repsLabel.Text) || string.IsNullOrEmpty(setsLabel.Text))
-                                                        {
-                                                            await DisplayAlert("Error", "Introduce series y repeticiones.", "OK");
-                                                            return;
-                                                        }
-                                                        // Crear una copia independiente del ejercicio base
-                                                        var newExercise = selectedExercise.Clone();
+                                                            {
+                                                                new Label
+                                                                {
+                                                                    Text = "Añadir ejercicio",
+                                                                    FontSize = 24,
+                                                                    TextColor = Colors.Orange,
+                                                                    HorizontalOptions = LayoutOptions.Fill,
+                                                                    HorizontalTextAlignment = TextAlignment.Center,
+                                                                    FontFamily="EatMeAlive"
+                                                                },
+                                                                getExerciseLabel,
+                                                                repsLabel,
+                                                                setsLabel,
+                                                                new HorizontalStackLayout
+                                                                {
+                                                                    Spacing = 10,
+                                                                    Children =
+                                                                    {
+                                                                        new Button // botón para crear el ejercicio
+                                                                        {
+                                                                            Text = "Crear",
+                                                                            Command = new Command(async () =>
+                                                                            {
+                                                                                if (string.IsNullOrEmpty(repsLabel.Text) || string.IsNullOrEmpty(setsLabel.Text))
+                                                                                {
+                                                                                    await DisplayAlert("Error", "Introduce series y repeticiones.", "OK");
+                                                                                    return;
+                                                                                }
+                                                                                // Crear una copia independiente del ejercicio base
+                                                                                var newExercise = selectedExercise.Clone();
 
-                                                        // Asignar los valores específicos
-                                                        newExercise.reps = int.TryParse(repsLabel.Text, out int reps) ? reps : 0;
-                                                        newExercise.sets = int.TryParse(setsLabel.Text, out int sets) ? sets : 0;
-                                                        newExercise.name = getExerciseLabel.Text;
+                                                                                // Asignar los valores específicos
+                                                                                newExercise.reps = int.TryParse(repsLabel.Text, out int reps) ? reps : 0; // asigna repeticiones
+                                                                                newExercise.sets = int.TryParse(setsLabel.Text, out int sets) ? sets : 0; // asigna series
+                                                                                newExercise.name = getExerciseLabel.Text; // asigna el nombre del ejercicio
 
-                                                        // Inicializar propiedades de control
-                                                        newExercise.exerciseFinished = false;
-                                                        newExercise.expaded = false;
+                                                                                // Inicializar propiedades de control
+                                                                                newExercise.exerciseFinished = false;
+                                                                                newExercise.expaded = false;
 
-                                                        // Agregar la copia a la selección
-                                                        exerciseSelection.Add(newExercise);
+                                                                                // Agregar la copia a la selección
+                                                                                exerciseSelection.Add(newExercise);
 
-                                                        await Navigation.PopModalAsync();
-                                                    })
-                                                },
-                                                new Button
-                                                {
-                                                    Text = "Cancelar",
-                                                    Command = new Command(async () => await Navigation.PopModalAsync())
-                                                }
-                                            }
-                                        }
-                                    }
+                                                                                await Navigation.PopModalAsync();
+                                                                            })
+                                                                        },
+                                                                        new Button
+                                                                        {
+                                                                            Text = "Cancelar",
+                                                                            Command = new Command(async () => await Navigation.PopModalAsync()) //comando para cerrar el modal
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 };
 
-                                                await Navigation.PushModalAsync(modalPage);
+                                                await Navigation.PushModalAsync(modalPage); //muestra el modal para agregar el ejercicio
                                             }
-                                            else
+                                            else // si el ejercicio es isométrico
                                             {
                                                
-                                                    var getExerciseLabel = new Label
+                                                    var getExerciseLabel = new Label // etiqueta para el nombre del ejercicio
                                                     {
                                                         FontAttributes = FontAttributes.Bold,
                                                         FontSize = 18,
@@ -1386,39 +1356,39 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                                         Text = selectedExercise.name
                                                     };
 
-                                                    var repsLabel = new Entry
+                                                    var repsLabel = new Entry // entrada para el número de repeticiones
                                                     {
                                                         Placeholder = "Número de repeticiones",
                                                         Keyboard = Keyboard.Numeric
                                                     };
-                                                    repsLabel.TextChanged += (s, e) =>
+                                                    repsLabel.TextChanged += (s, e) => // evento al cambiar el texto en la entrada de repeticiones
                                                     {
-                                                        if (!string.IsNullOrEmpty(repsLabel.Text))
+                                                        if (!string.IsNullOrEmpty(repsLabel.Text)) // si la entrada no está vacía
                                                         {
-                                                            string onlyDigits = new string(repsLabel.Text.Where(char.IsDigit).ToArray());
-                                                            if (repsLabel.Text != onlyDigits)
+                                                            string onlyDigits = new string(repsLabel.Text.Where(char.IsDigit).ToArray()); // filtra solo los dígitos
+                                                            if (repsLabel.Text != onlyDigits) // si el texto contiene caracteres no numéricos
                                                             {
                                                                 repsLabel.Text = onlyDigits; // limpia si es texto
                                                             }
                                                         }
                                                     };
-                                                    var timeLabel = new Entry
+                                                    var timeLabel = new Entry // entrada para el tiempo de ejecución
                                                     {
                                                         Placeholder = "Tiempo de ejecución",
                                                         Keyboard = Keyboard.Numeric
                                                     };
-                                                    timeLabel.TextChanged += (s, e) =>
+                                                    timeLabel.TextChanged += (s, e) => // evento al cambiar el texto en la entrada de tiempo
                                                     {
-                                                        if (!string.IsNullOrEmpty(timeLabel.Text))
+                                                        if (!string.IsNullOrEmpty(timeLabel.Text)) // si la entrada no está vacía
                                                         {
-                                                            string onlyDigits = new string(timeLabel.Text.Where(char.IsDigit).ToArray());
-                                                            if (timeLabel.Text != onlyDigits)
+                                                            string onlyDigits = new string(timeLabel.Text.Where(char.IsDigit).ToArray()); // filtra solo los dígitos
+                                                            if (timeLabel.Text != onlyDigits) // si el texto contiene caracteres no numéricos
                                                             {
                                                                 timeLabel.Text = onlyDigits; // limpia si es texto
                                                             }
                                                         }
                                                     };
-                                                    var modalPage = new ContentPage
+                                                    var modalPage = new ContentPage // página modal para agregar el ejercicio isométrico
                                                     {
                                                         BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
                                                         Content = new Border
@@ -1436,90 +1406,86 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                                                 Padding = 1,
                                                                 Spacing = 5,
                                                                 Children =
-                                        {
-                                        new Label
-                                        {
-                                            Text = "Añadir ejercicio",
-                                            FontSize = 24,
-                                            TextColor = Colors.Orange,
-                                            HorizontalOptions = LayoutOptions.Fill,
-                                            HorizontalTextAlignment = TextAlignment.Center,
-                                            FontFamily="EatMeAlive"
-                                        },
-                                        getExerciseLabel,
-                                        repsLabel,
-                                        timeLabel,
-                                        new HorizontalStackLayout
-                                        {
-                                            Spacing = 10,
-                                            Children =
-                                            {
-                                                new Button
-{
-                                                    Text = "Crear",
-                                                    Command = new Command(async () =>
-                                                    {
-                                                        if (string.IsNullOrEmpty(repsLabel.Text) || string.IsNullOrEmpty(timeLabel.Text))
-                                                        {
-                                                            await DisplayAlert("Error", "Introduce series y tiempo de ejecución.", "OK");
-                                                            return;
-                                                        }
-                                                        if(repsLabel.Text.Equals("0") || timeLabel.Text.Equals("0"))
-                                                        {
-                                                            await DisplayAlert("Error", "El tiempo y las repeticiones deben ser mayores que 0.", "OK");
-                                                            return;
-                                                        }
-                                                        // Crear una copia del ejercicio seleccionado
-                                                        var newExercise = selectedExercise.Clone();
+                                                                {
+                                                                new Label
+                                                                {
+                                                                    Text = "Añadir ejercicio",
+                                                                    FontSize = 24,
+                                                                    TextColor = Colors.Orange,
+                                                                    HorizontalOptions = LayoutOptions.Fill,
+                                                                    HorizontalTextAlignment = TextAlignment.Center,
+                                                                    FontFamily="EatMeAlive"
+                                                                },
+                                                                getExerciseLabel,
+                                                                repsLabel,
+                                                                timeLabel,
+                                                                new HorizontalStackLayout
+                                                                {
+                                                                    Spacing = 10,
+                                                                    Children =
+                                                                    {
+                                                                        new Button // botón para crear el ejercicio
+                        {
+                                                                            Text = "Crear",
+                                                                            Command = new Command(async () =>
+                                                                            {
+                                                                                if (string.IsNullOrEmpty(repsLabel.Text) || string.IsNullOrEmpty(timeLabel.Text)) // si las entradas están vacías
+                                                                                {
+                                                                                    await DisplayAlert("Error", "Introduce series y tiempo de ejecución.", "OK");
+                                                                                    return; // muestra un error y sale del método
+                                                                                }
+                                                                                if(repsLabel.Text.Equals("0") || timeLabel.Text.Equals("0")) // si las entradas son 0
+                                                                                {
+                                                                                    await DisplayAlert("Error", "El tiempo y las repeticiones deben ser mayores que 0.", "OK");
+                                                                                    return; // muestra un error y sale del método
+                                                                                }
+                                                                                // Crear una copia del ejercicio seleccionado
+                                                                                var newExercise = selectedExercise.Clone();
 
-                                                        // Asignar los valores específicos de este nuevo ejercicio
-                                                        newExercise.reps = int.TryParse(repsLabel.Text, out int s) ? s : 0;
-                                                        newExercise.seconds = int.TryParse(timeLabel.Text, out int r) ? r : 0;
-                                                        newExercise.name = getExerciseLabel.Text;
+                                                                                // Asignar los valores específicos de este nuevo ejercicio
+                                                                                newExercise.reps = int.TryParse(repsLabel.Text, out int s) ? s : 0;
+                                                                                newExercise.seconds = int.TryParse(timeLabel.Text, out int r) ? r : 0;
+                                                                                newExercise.name = getExerciseLabel.Text;
 
-                                                        // Inicializar propiedades dinámicas
-                                                        newExercise.exerciseFinished = false;
-                                                        newExercise.expaded = false;
+                                                                                // Inicializar propiedades dinámicas
+                                                                                newExercise.exerciseFinished = false;
+                                                                                newExercise.expaded = false;
 
-                                                        // Agregar la copia (no el original)
-                                                        exerciseSelection.Add(newExercise);
+                                                                                // Agregar la copia (no el original)
+                                                                                exerciseSelection.Add(newExercise);
 
-                                                        await Navigation.PopModalAsync();
-                                                    })
-                                                },
-                                                new Button
-                                                {
-                                                    Text = "Cancelar",
-                                                    Command = new Command(async () => await Navigation.PopModalAsync())
-                                                }
-                                            }
-                                        }
-                                        }
+                                                                                await Navigation.PopModalAsync();
+                                                                            })
+                                                                        },
+                                                                        new Button
+                                                                        {
+                                                                            Text = "Cancelar",
+                                                                            Command = new Command(async () => await Navigation.PopModalAsync()) // sale del modal
+                                                                        }
+                                                                    }
+                                                                }
+                                                                }
                                                             }
                                                         }
                                                     };
 
-                                                    await Navigation.PushModalAsync(modalPage);
-                                                }
+                                                    await Navigation.PushModalAsync(modalPage); // muestra el modal para agregar el ejercicio
+                                            }
                                             }
                                         
                                     };
                                         
-                                    tapGesture.Tapped += async (s, e) =>
-                                    {
-                                        
-                                    };
                                 
-                                frame.GestureRecognizers.Add(tapGesture);
-                                return frame;
+                                frame.GestureRecognizers.Add(tapGesture); // añade el gesto al marco del ejercicio
+                                return frame; // devuelve el marco del ejercicio
                             }
-                            frame.GestureRecognizers.Add(tapGesture);
-                            return frame;
+                            frame.GestureRecognizers.Add(tapGesture); // añade el gesto al marco del ejercicio
+                            return frame; // devuelve el marco del ejercicio
                         })
                     };
-                    if (exercisesInRoutine != null)
+                    if (exercisesInRoutine != null) // si hay ejercicios en la rutina
                     {
-                        foreach (var exercise in exercisesInRoutine)
+                        foreach (var exercise in exercisesInRoutine) // recorre los ejercicios en la rutina
                         {
                             exerciseSelection.Add(exercise);
                         }
@@ -1528,42 +1494,42 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     var selectedExercisesView = new CollectionView //lista para ver los ejercicios seleccionados
                     {
 
-                        ItemsSource = exerciseSelection,
-                        EmptyView = new Label
+                        ItemsSource = exerciseSelection, // fuente de datos es la selección de ejercicios
+                        EmptyView = new Label // vista vacía si no hay ejercicios seleccionados
                         {
                             Text = "No hay ejercicios seleccionados.",
                             TextColor = Colors.Gray,
                             HorizontalOptions = LayoutOptions.Center
                         },
-                        ItemTemplate = new DataTemplate(() =>
+                        ItemTemplate = new DataTemplate(() => // plantilla para los elementos de la colección
                         {
-                            var nameLabel = new Label
+                            var nameLabel = new Label // etiqueta para el nombre del ejercicio
                             {
                                 FontAttributes = FontAttributes.Bold,
                                 TextColor = Colors.White
                             };
-                            nameLabel.SetBinding(Label.TextProperty, "name");
+                            nameLabel.SetBinding(Label.TextProperty, "name"); // asigna el nombre del ejercicio
 
-                            var setsAndRepsLabel = new Label
+                            var setsAndRepsLabel = new Label // etiqueta para series y repeticiones
                             {
                                 FontSize = 12,
                                 TextColor = Colors.LightGray
                             };
-                            MultiBinding multiBinding = new MultiBinding { };
-                            if (bodyPartEnumPicker.SelectedItem is string selectedText)
+                            MultiBinding multiBinding = new MultiBinding { }; // vinculación múltiple para series y repeticiones
+                            if (bodyPartEnumPicker.SelectedItem is string selectedText) // verifica y recoge un elemento seleccionado en el picker de parte del cuerpo
                             {
-                                if (!selectedText.Equals(enumExtension.BodyTranslations[bodyPartEnum.isometric]))
+                                if (!selectedText.Equals(enumExtension.BodyTranslations[bodyPartEnum.isometric])) // si no es isométrico
                                 {
-                                    multiBinding = new MultiBinding
+                                    multiBinding = new MultiBinding //muestra series y repeticiones
                                     {
                                         StringFormat = "Repeticiones: {0}\nSeries: {1}"
                                     };
                                     multiBinding.Bindings.Add(new Binding("reps"));
                                     multiBinding.Bindings.Add(new Binding("sets"));
                                 }
-                                else
+                                else // si es isométrico
                                 {
-                                    multiBinding = new MultiBinding
+                                    multiBinding = new MultiBinding // muestra repeticiones y tiempo
                                     {
                                         StringFormat = "Repeticiones: {0}\nTiempo: {1} segundos"
                                     };
@@ -1571,8 +1537,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     multiBinding.Bindings.Add(new Binding("seconds"));
                                 }
                             }
-                            setsAndRepsLabel.SetBinding(Label.TextProperty, multiBinding);
-                            var removeButton = new Button
+                            setsAndRepsLabel.SetBinding(Label.TextProperty, multiBinding); // asigna el texto de series y repeticiones
+                            var removeButton = new Button // etiqueta para el botón de eliminar ejercicio
                             {
                                 Text = "❌",
                                 BackgroundColor = Colors.Transparent,
@@ -1580,13 +1546,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 FontSize = 18,
                                 Padding = new Thickness(5)
                             };
-                            removeButton.Clicked += (s, e) =>
+                            removeButton.Clicked += (s, e) => // evento al hacer clic en el botón de eliminar
                             {
-                                if (removeButton.BindingContext is Exercise exToRemove)
-                                    exerciseSelection.Remove(exToRemove);
+                                if (removeButton.BindingContext is Exercise exToRemove) // verifica y recoge el contexto de enlace como ejercicio
+                                    exerciseSelection.Remove(exToRemove); //elimina el ejercicio de la selección
                             };
 
-                            return new Border
+                            return new Border // crea el marco para cada ejercicio seleccionado
                             {
                                 Margin = 5,
                                 Padding = 8,
@@ -1602,125 +1568,124 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         })
                     };
 
-                    // 🟩 Agregamos todo en un layout vertical
-                    var mainLayout = new VerticalStackLayout
+                    var mainLayout = new VerticalStackLayout // diseño principal de la página
                     {
                         Spacing = 10,
                         Padding = 10,
                         Children =
-            {
-                lookForExercise,
-                new Label
-                {
-                    Text = "Ejercicios seleccionados:",
-                    FontAttributes = FontAttributes.Bold,
-                    FontSize = 20,
-                    TextColor = Colors.Orange
-                },
-                selectedExercisesView,
-                collectionExercises,
-                new HorizontalStackLayout
-                    {
-                        Spacing = 10,
-                        Children =
                         {
-                             new Button
-                    {
-                                Text = "Agregar",
-                                Command = new Command(async () =>
-                                {
-                                    exercisesInRoutine.Clear();
-
-                                    foreach (var exercise in exerciseSelection)
-                                    {
-                                        var copy = exercise.Clone();
-
-                                        // Mantener las mismas series y repeticiones
-                                        copy.sets = exercise.sets;
-                                        copy.reps = exercise.reps;
-                                        copy.seconds = exercise.seconds;
-
-                                        // Resetear estados visuales si hace falta
-                                        copy.exerciseFinished = false;
-                                        copy.expaded = false;
-
-                                        // Agregar la copia, no la referencia original
-                                        exercisesInRoutine.Add(copy);
-                                    }
-
-                                    await Navigation.PopModalAsync();
-                                })
+                            lookForExercise,
+                            new Label
+                            {
+                                Text = "Ejercicios seleccionados:",
+                                FontAttributes = FontAttributes.Bold,
+                                FontSize = 20,
+                                TextColor = Colors.Orange
                             },
-                        new Button
-                        {
-                            Text = "Cancelar",
-                            Command = new Command(async () => await Navigation.PopModalAsync())
+                            selectedExercisesView,
+                            collectionExercises,
+                            new HorizontalStackLayout
+                                {
+                                    Spacing = 10,
+                                    Children =
+                                    {
+                                         new Button //botón para agregar los ejercicios seleccionados a la rutina
+                                {
+                                            Text = "Agregar",
+                                            Command = new Command(async () =>
+                                            {
+                                                exercisesInRoutine.Clear(); // limpia la lista de ejercicios en la rutina
+
+                                                foreach (var exercise in exerciseSelection)
+                                                {
+                                                    var copy = exercise.Clone();
+
+                                                    // Mantener las mismas series y repeticiones
+                                                    copy.sets = exercise.sets;
+                                                    copy.reps = exercise.reps;
+                                                    copy.seconds = exercise.seconds;
+
+                                                    // Resetear estados visuales si hace falta
+                                                    copy.exerciseFinished = false;
+                                                    copy.expaded = false;
+
+                                                    // Agregar la copia, no la referencia original
+                                                    exercisesInRoutine.Add(copy);
+                                                }
+
+                                                await Navigation.PopModalAsync();
+                                            })
+                                        },
+                                    new Button // botón para cancelar y cerrar el modal
+                                    {
+                                        Text = "Cancelar",
+                                        Command = new Command(async () => await Navigation.PopModalAsync())
+                                    }
+                                    }
+                                }
                         }
-                        }
-                    }
-            }
                     };
 
-                    var selectedExercisesPage = new ContentPage
+                    var selectedExercisesPage = new ContentPage // página para mostrar los ejercicios seleccionados
                     {
                         BackgroundColor = Color.FromArgb("#2E1E1B"),
                         Content = new ScrollView { Content = mainLayout }
                     };
 
-                    await Navigation.PushModalAsync(selectedExercisesPage);
+                    await Navigation.PushModalAsync(selectedExercisesPage); // muestra la página modal de ejercicios seleccionados
                 }
             };
-            var collectionExercises = new CollectionView
+            var collectionExercises = new CollectionView // lista para ver los ejercicios añadidos a la rutina
             {
                 ItemsSource = exercisesInRoutine,
                 WidthRequest = 300,
-                EmptyView = new Label
+                EmptyView = new Label // vista vacía si no hay ejercicios añadidos
                 {
                     Text = "No hay ejercicios añadidos.",
                     TextColor = Colors.Gray,
                     HorizontalOptions = LayoutOptions.Center
                 },
-                ItemTemplate = new DataTemplate(() =>
+                ItemTemplate = new DataTemplate(() => // plantilla para los elementos de la colección
                 {
-                    var nameLabel = new Label
+                    var nameLabel = new Label // nombre del ejercicio
                     {
                         FontAttributes = FontAttributes.Bold,
                         TextColor = Colors.White
                     };
-                    nameLabel.SetBinding(Label.TextProperty, "name");
+                    nameLabel.SetBinding(Label.TextProperty, "name"); // asigna el nombre del ejercicio
 
-                    var repsLabel = new Label
+                    var repsLabel = new Label // etiqueta para repeticiones, series o tiempo
                     {
                         TextColor = Colors.LightGray,
                         FontSize = 12
                     };
 
-                    MultiBinding multiBinding = new MultiBinding { };
-                    if (bodyPartEnumPicker.SelectedItem is string selectedText)
+                    MultiBinding multiBinding = new MultiBinding { }; // vinculación múltiple para repeticiones, series o tiempo
+                    if (bodyPartEnumPicker.SelectedItem is string selectedText) // verifica y recoge un elemento seleccionado en el picker de parte del cuerpo
                     {
-                        if (!selectedText.Equals(enumExtension.BodyTranslations[bodyPartEnum.isometric]))
+                        if (!selectedText.Equals(enumExtension.BodyTranslations[bodyPartEnum.isometric])) // si no es isométrico
                         {
                             multiBinding = new MultiBinding { StringFormat = "Repeticiones: {0} | Series: {1}" };
-                            multiBinding.Bindings.Add(new Binding("reps"));
-                            multiBinding.Bindings.Add(new Binding("sets"));
+                            multiBinding.Bindings.Add(new Binding("reps")); // recoge repeticiones
+                            multiBinding.Bindings.Add(new Binding("sets"));// recoge series
                         }
-                        else
+                        else // si es isométrico
                         {
                             multiBinding = new MultiBinding { StringFormat = "Repeticiones: {0} | Tiempo: {1} segundos" };
-                            multiBinding.Bindings.Add(new Binding("reps"));
-                            multiBinding.Bindings.Add(new Binding("seconds"));
+                            multiBinding.Bindings.Add(new Binding("reps")); // recoge repeticiones
+                            multiBinding.Bindings.Add(new Binding("seconds")); // recoge tiempo
                         }
                     }
-                    repsLabel.SetBinding(Label.TextProperty, multiBinding);
+                    repsLabel.SetBinding(Label.TextProperty, multiBinding); // asigna el texto de repeticiones, series o tiempo
 
-                    return new HorizontalStackLayout
+                    return new HorizontalStackLayout // diseño horizontal para cada ejercicio añadido
                     {
                         Spacing = 10,
                         Children = { nameLabel, repsLabel }
                     };
                 })
             };
-            var modalPage = new ContentPage
+            var modalPage = new ContentPage // contenido de la página modal para crear/modificar la rutina
             {
                 BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
                 Content = new Border
@@ -1755,6 +1720,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     },
                     nameRoutineEntry,
                     DescriptionRoutineEntry,
+                    dificultyPicker,
                     bodyPartEnumPicker,
                     addExercises,
                     collectionExercises,
@@ -1763,84 +1729,90 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         Spacing = 10,
                         Children =
                         {
-                             new Button
+                             new Button // botón para guardar o modificar la rutina
                         {
                             Text = "Modificar",
                             Command = new Command(async () =>
                             {
 
-                                if(nameRoutineEntry.Text == null || string.IsNullOrWhiteSpace(nameRoutineEntry.Text) ||
+                                if(nameRoutineEntry.Text == null || string.IsNullOrWhiteSpace(nameRoutineEntry.Text) || 
                                 DescriptionRoutineEntry.Text == null || string.IsNullOrWhiteSpace(DescriptionRoutineEntry.Text) ||
-                                !exercisesInRoutine.Any())
+                                !exercisesInRoutine.Any()) //verifica que los campos no estén vacíos y que haya al menos un ejercicio
                                 {
                                     await DisplayAlert("Error", "Rellena todos lo campos, y añade por lo menos un ejercicio", "OK");
-                                    return;
+                                    return; // muestra un error y sale del método
                                 }
-                                else
+                                else // si los campos están completos
                                 {
-                                    if(newRoutine)
+                                    if(newRoutine) // si es una nueva rutina
                                     {
-                                        var selectedTranslation = bodyPartEnumPicker.SelectedItem.ToString();
-                                        var selectedEnum = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == selectedTranslation).Key;
+                                        //rellena los campos de la rutina
+                                        var selectedBodyTranslation = bodyPartEnumPicker.SelectedItem.ToString();
+                                        var selectedDificultyTranslation = dificultyPicker.SelectedItem.ToString();
+                                        var selectedBodyEnum = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == selectedBodyTranslation).Key;
+                                        var selectedDificultyEnum = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == selectedDificultyTranslation).Key;
                                         var userId = await SecureStorage.GetAsync("user_id");
                                         var user = await _dbService.GetUserById(int.Parse(userId));
                                         Routines createRoutine;
-                                        if (user.userType.Equals(userTypeEnum.admin))
+                                        if (user.userType.Equals(userTypeEnum.admin)) // crea la rutina según el tipo de usuario
                                         {
-                                            createRoutine = new Routines{nameRoutine = nameRoutineEntry.Text,description = DescriptionRoutineEntry.Text,muscleGroup = selectedEnum,typeUser = userTypeEnum.all,userID = 0};
+                                            createRoutine = new Routines{nameRoutine = nameRoutineEntry.Text,description = DescriptionRoutineEntry.Text,muscleGroup = selectedBodyEnum,typeUser = userTypeEnum.all,userID = 0,difficulty = selectedDificultyEnum};
                                         }
                                         else
                                         {
-                                            createRoutine = new Routines{nameRoutine = nameRoutineEntry.Text,description = DescriptionRoutineEntry.Text,muscleGroup = selectedEnum,typeUser = userTypeEnum.all,userID = user.UserID};
+                                            createRoutine = new Routines{nameRoutine = nameRoutineEntry.Text,description = DescriptionRoutineEntry.Text,muscleGroup = selectedBodyEnum,difficulty = selectedDificultyEnum,typeUser = userTypeEnum.all,userID = user.UserID};
                                         }
 
-                                        await _dbService.Create(createRoutine);
+                                        await _dbService.Create(createRoutine); // crea la rutina en la base de datos
 
-                                        foreach (Exercise exercise in exercisesInRoutine)
+                                        foreach (Exercise exercise in exercisesInRoutine) // crea las relaciones entre la rutina y los ejercicios
                                         {
                                             RoutinesExercises routineExercises = new RoutinesExercises{RoutineID = createRoutine.routineID,ExerciseID = exercise.execiseID, sets = exercise.sets, reps = exercise.reps, seconds = exercise.seconds};
                                             await _dbService.Create(routineExercises);
                                         }
-                                    }else{
-                                        var existingRelations = await _dbService.GetRoutinesExercisesAsync();
+                                    }else{ // si es para modificar una rutina existente
+                                        var existingRelations = await _dbService.GetRoutinesExercisesAsync(); // obtiene las relaciones existentes
 
-
+                                        //modifica los campos de la rutina
+                                        var selectedBodyTranslation = bodyPartEnumPicker.SelectedItem.ToString();
                                         var selectedTranslation = bodyPartEnumPicker.SelectedItem.ToString();
-                                        var selectedEnum = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == selectedTranslation).Key;
+                                        var selectedBodyEnum = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == selectedBodyTranslation).Key;
+                                        var selectedDificultyEnum = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == selectedTranslation).Key;
                                         routine.nameRoutine = nameRoutineEntry.Text;
                                         routine.description = DescriptionRoutineEntry.Text;
-                                        routine.muscleGroup = selectedEnum;
+                                        routine.muscleGroup = selectedBodyEnum;
+                                        routine.difficulty = selectedDificultyEnum;
                                         routine.Exercises = exercisesInRoutine;
 
 
-                                        var eliminateExercises = existingRelations.Where(r => r.RoutineID.Equals(routine.routineID)).ToList();
+                                        var eliminateExercises = existingRelations.Where(r => r.RoutineID.Equals(routine.routineID)).ToList(); // obtiene las relaciones a eliminar
 
-                                        foreach (var relation in eliminateExercises)
+                                        foreach (var relation in eliminateExercises) // elimina las relaciones si exisitieran
                                         {
                                             if (relation.RoutineID.Equals(routine.routineID))
                                             {
                                                 await _dbService.Delete(relation);
                                             }
                                         }
-                                        foreach (Exercise exercise in routine.Exercises)
+                                        foreach (Exercise exercise in routine.Exercises) // crea las nuevas relaciones entre la rutina y los ejercicios
                                         {
                                              await _dbService.Create(new RoutinesExercises {RoutineID = routine.routineID,ExerciseID = exercise.execiseID,sets = exercise.sets, reps = exercise.reps,seconds = exercise.seconds});
                                         }
-                                        await _dbService.Update(_routine);
+                                        await _dbService.Update(_routine); //actualiza la rutina en la base de datos
                                         
                                     }
                                 }
-                                await _filterViewModel.LoadRoutinesAsync();
-                                _filterViewModel.UpdateFilteredRoutines();
+                                await _filterViewModel.LoadRoutinesAsync(); // recarga las rutinas
+                                _filterViewModel.UpdateFilteredRoutines(); //actualiza las rutinas filtradas
 
-                                await Navigation.PopModalAsync();
+                                await Navigation.PopModalAsync(); // cierra el modal
 
                             })
                         },
-                        new Button
+                        new Button // botón para cancelar y cerrar el modal
                         {
                             Text = "Cancelar",
-                            Command = new Command(async () => await Navigation.PopModalAsync())
+                            Command = new Command(async () => await Navigation.PopModalAsync()) // sale del modal
                         }
                         }
                     }
@@ -1848,8 +1820,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     }
                 }
             };
-            Content = modalPage.Content;
-            BackgroundColor = modalPage.BackgroundColor;
+            Content = modalPage.Content; // muestra el contenido del modal
+            BackgroundColor = modalPage.BackgroundColor; // muestra el color de fondo del modal
         }
        
     }

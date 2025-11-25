@@ -17,7 +17,7 @@ namespace ProyectoFinDeCurso.Pages.Main{
         {
             try
             {
-                InitializeComponent();
+                InitializeComponent(); // Inicializa los componentes de la página
             }
             catch (Exception ex)
             {
@@ -27,28 +27,27 @@ namespace ProyectoFinDeCurso.Pages.Main{
 
             _dbService = dbService;
             _userType = userType;
-            _filter = new ExerciseFilterViewModel(_dbService,_userType);
+            _filter = new ExerciseFilterViewModel(_dbService,_userType); // ViewModel para filtrar ejercicios
+            verificationUserType(_userType); // Verifica el tipo de usuario para mostrar/ocultar elementos
+            BindingContext = _filter; // enlaza el ViewModel al contexto de datos de la página
 
-            BindingContext = _filter;
+            NavigationPage.SetTitleView(this, BuildTitleView()); // Configura la vista del título personalizado
 
-            NavigationPage.SetTitleView(this, BuildTitleView());
-            
         }
-        protected override async void OnAppearing()
+        protected override async void OnAppearing() // Método que se llama cuando la página aparece
         {
-            base.OnAppearing();
-            await _filter.LoadExercisesAsync();
+            base.OnAppearing(); // Llama al método base OnAppearing
+            await _filter.LoadExercisesAsync(); // Carga los ejercicios utilizando el ViewModel
         }
-        public bool ShouldReload { get; set; }
-        private async void OnExerciseTapped(object sender, EventArgs e)
+        private async void OnExerciseTapped(object sender, EventArgs e) // Maneja el evento de toque en un ejercicio
         {
             try
             {
-                if ((sender as Border)?.BindingContext is Exercise selectedExercise)
+                if ((sender as Border)?.BindingContext is Exercise selectedExercise) // Obtiene el ejercicio seleccionado
                 {
                     await Navigation.PushModalAsync(
                         new ExerciseDetailPage(_dbService, _filter, selectedExercise, ModeEnum.View)
-                    );
+                    ); // Navega a la página de detalles del ejercicio en modo vista
                 }
             }
             catch (Exception ex)
@@ -57,9 +56,9 @@ namespace ProyectoFinDeCurso.Pages.Main{
             }
         }
 
-        private async void eliminateExercise(object sender, EventArgs e)
+        private async void eliminateExercise(object sender, EventArgs e) // Maneja el evento de eliminación de un ejercicio
         {
-            if ((sender as ImageButton)?.BindingContext is not Exercise exercise)
+            if ((sender as ImageButton)?.BindingContext is not Exercise exercise) // Obtiene el ejercicio a eliminar
                 return;
 
             bool confirm = await DisplayAlert(
@@ -67,45 +66,45 @@ namespace ProyectoFinDeCurso.Pages.Main{
                 $"¿Seguro deseas eliminar '{exercise.name}'?",
                 "Sí",
                 "No"
-            );
+            ); // Solicita confirmación al usuario
 
-            if (!confirm) return;
+            if (!confirm) return; // Si no se confirma, sale del método
 
-            await _dbService.DeleteExerciseById(exercise.execiseID);
+            await _dbService.DeleteExerciseById(exercise.execiseID); // Elimina el ejercicio de la base de datos
 
-            await _filter.LoadExercisesAsync();
+            await _filter.LoadExercisesAsync(); // Recarga la lista de ejercicios
         }
-        private async void modifyExercise(object sender, EventArgs e)
+        private async void modifyExercise(object sender, EventArgs e) // Maneja el evento de modificación de un ejercicio
         {
-            if ((sender as ImageButton)?.BindingContext is not Exercise selectedExercise)
+            if ((sender as ImageButton)?.BindingContext is not Exercise selectedExercise) // Obtiene el ejercicio a modificar
                 return;
 
             await Navigation.PushModalAsync(
                 new ExerciseDetailPage(_dbService, _filter, selectedExercise, ModeEnum.Edit)
-            );
+            ); // Navega a la página de detalles del ejercicio en modo edición
         }
 
-        private async void createExercise(object sender, TappedEventArgs e)
+        private async void createExercise(object sender, TappedEventArgs e) // Maneja el evento de creación de un nuevo ejercicio
         {
             await Navigation.PushModalAsync(
                 new ExerciseDetailPage(_dbService, _filter, null, ModeEnum.create)
-            );
+            ); // Navega a la página de detalles del ejercicio en modo creación
         }
 
-        private async void filterExercises(object sender, EventArgs e)
+        private async void filterExercises(object sender, EventArgs e) // Maneja el evento de filtrado de ejercicios
         {
             await Navigation.PushModalAsync(
                 new ExerciseDetailPage(filter: _filter, mode: ModeEnum.filter)
-            );
+            ); // Navega a la página de detalles del ejercicio en modo filtrado
         }
 
-        private async void profile(object sender, EventArgs e)
+        private async void profile(object sender, EventArgs e) // Maneja el evento de perfil de usuario
         {
             await Navigation.PushModalAsync(
                new UserDetailPage(null,_dbService, _userType, ModeEnum.View)
-           );
+           ); // Navega a la página de detalles del usuario en modo vista
         }
-        private View BuildTitleView()
+        private View BuildTitleView() // Construye la vista personalizada del título
         {
             var grid = new Grid
             {
@@ -119,8 +118,7 @@ namespace ProyectoFinDeCurso.Pages.Main{
         }
             };
 
-            // ----- TÍTULO -----
-            var titleLabel = new Label
+            var titleLabel = new Label // titulo
             {
                 Text = "Ejercicios",
                 HorizontalOptions = LayoutOptions.Center,
@@ -134,8 +132,7 @@ namespace ProyectoFinDeCurso.Pages.Main{
             Grid.SetColumn(titleLabel, 1);
             grid.Children.Add(titleLabel);
 
-            // ----- BOTÓN DE PERFIL -----
-            var profileButton = new ImageButton
+            var profileButton = new ImageButton // boton perfil
             {
                 Source = "icono_predeterminado.png",
                 WidthRequest = 35,
@@ -145,7 +142,7 @@ namespace ProyectoFinDeCurso.Pages.Main{
                 HorizontalOptions = LayoutOptions.End,
                 Margin = new Thickness(0, 0, 5, 0)
             };
-            Grid.SetColumn(profileButton, 2);
+            Grid.SetColumn(profileButton, 2); // columna derecha
 
             // Evento de perfil
             profileButton.Clicked += profile;
@@ -153,6 +150,11 @@ namespace ProyectoFinDeCurso.Pages.Main{
             grid.Children.Add(profileButton);
 
             return grid;
+        }
+        public void verificationUserType(userTypeEnum userType) // Verifica el tipo de usuario para mostrar/ocultar elementos
+        {
+            if (userType != userTypeEnum.admin) // Si no es admin, oculta el botón de crear
+                Create.IsVisible = false; // Oculta el botón de crear ejercicio
         }
     }
 }

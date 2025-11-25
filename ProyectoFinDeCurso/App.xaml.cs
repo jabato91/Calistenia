@@ -1,4 +1,5 @@
-﻿using ProyectoFinDeCurso.Flyout;
+﻿using Microsoft.Maui.Controls;
+using ProyectoFinDeCurso.Flyout;
 using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Pages;
 using ProyectoFinDeCurso.Pages.Main;
@@ -39,6 +40,13 @@ namespace ProyectoFinDeCurso
                 
                 if (string.IsNullOrEmpty(userId))
                 {
+                    var exercises = await _dbService.GetExercisesAsync();
+                    var routines = await _dbService.GetRoutinesAsync();
+                    if (!exercises.Any() || !routines.Any())
+                    {
+                        var initializer = new CreateExercises(_dbService);
+                        await initializer.InitAsync();
+                    }
                     await _dbService.CreateUserAdmin();
                     // No hay sesión -> a login
                     MainPage = new NavigationPage(new LoginPage(_dbService));   
@@ -46,11 +54,18 @@ namespace ProyectoFinDeCurso
                 else
                 {
                     var user = await _dbService.GetUserById(int.Parse(userId));
-                    if (DeviceInfo.Platform == DevicePlatform.Android)
-                    { 
-                        MainPage = new userFlyoutPage(_dbService, user.userType);
+                    var exercises = await _dbService.GetExercisesAsync();
+                    var routines = await _dbService.GetRoutinesAsync();
+                    if (!exercises.Any())
+                    {
+                        var initializer = new CreateExercises(_dbService);
+                        await initializer.InitAsync();
                     }
-
+                    if (!routines.Any())
+                    {
+                        var initializer = new createRoutine(_dbService);
+                        await initializer.InitAsync();
+                    }
                     MainPage = new userFlyoutPage(_dbService, user.userType);
                 }
             }

@@ -19,14 +19,13 @@ namespace ProyectoFinDeCurso.ViewModels
         private bodyPartEnum _bodyPartFilter = bodyPartEnum.nothing;
         private dificultyEnum _dificultyFilter = dificultyEnum.nothing;
 
-        public ObservableCollection<ExerciseGroup> _filteredExercises { get; set; }
-    = new ObservableCollection<ExerciseGroup>();
+        public ObservableCollection<ExerciseGroup> _filteredExercises { get; set; } = new ObservableCollection<ExerciseGroup>(); //Actualiza la colección observable de grupos de ejercicios filtrados
 
-        public ObservableCollection<Exercise> Exercises { get; set; }
+        public ObservableCollection<Exercise> Exercises { get; set; } //almacena los ejercicios cargados desde la base de datos
     = new ObservableCollection<Exercise>();
 
 
-        public List<Exercise> CachedExercises
+        public List<Exercise> CachedExercises //almacena en caché la lista completa de ejercicios obtenidos de la base de datos
         {
             get => _cachedExercises;
             set
@@ -38,7 +37,7 @@ namespace ProyectoFinDeCurso.ViewModels
                 }
             }
         }
-        public Brush AuraColor  
+        public Brush AuraColor  //propiedad para el color del aura basado en la dificultad del ejercicio
         {
             get => _auraColor;
             set
@@ -51,7 +50,7 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-        public string NameRoutineFilter
+        public string NameRoutineFilter //propiedad para el filtro de nombre de rutina
         {
             get => _nameRoutineFilter;
             set
@@ -65,7 +64,7 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-        public bodyPartEnum BodyPartFilter
+        public bodyPartEnum BodyPartFilter //propiedad para el filtro de grupo muscular
         {
             get => _bodyPartFilter;
             set
@@ -79,7 +78,7 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-        public dificultyEnum DificultyFilter
+        public dificultyEnum DificultyFilter //propiedad para el filtro de dificultad
         {
             get => _dificultyFilter;
             set
@@ -93,7 +92,7 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-        public ObservableCollection<ExerciseGroup> FilteredExercises
+        public ObservableCollection<ExerciseGroup> FilteredExercises //propiedad para los ejercicios filtrados agrupados que actualiza la interfaz de usuario
         {
             get => _filteredExercises;
             private set
@@ -105,59 +104,59 @@ namespace ProyectoFinDeCurso.ViewModels
 
 
 
-        public ExerciseFilterViewModel(DbService dbService, userTypeEnum userType)
+        public ExerciseFilterViewModel(DbService dbService, userTypeEnum userType) 
         {
             _dbService = dbService;
             _userType = userType;
 
-            Exercises = new ObservableCollection<Exercise>();
+            Exercises = new ObservableCollection<Exercise>(); // Inicializa la colección de ejercicios
         }
 
-        public async Task LoadExercisesAsync()
+        public async Task LoadExercisesAsync() //método para cargar los ejercicios desde la base de datos
         {
 
 
-            CachedExercises = await _dbService.GetExercisesAsync();
+            CachedExercises = await _dbService.GetExercisesAsync(); // Obtiene los ejercicios desde la base de datos y los almacena en caché
 
-            if (_userType == userTypeEnum.admin)
+            if (_userType == userTypeEnum.admin) // Si el usuario es admin, marca todos los ejercicios como administradores
                 CachedExercises.ForEach(e => e.IsAdmin = true);
 
 
-            UpdateFilteredExercises();
+            UpdateFilteredExercises(); // Actualiza la lista de ejercicios filtrados
         }
 
-        public void UpdateFilteredExercises()
+        public void UpdateFilteredExercises() //método para actualizar la lista de ejercicios filtrados según los criterios seleccionados
         {
-            var filtered = CachedExercises.AsEnumerable();
+            var filtered = CachedExercises.AsEnumerable(); // Comienza con todos los ejercicios en caché
 
-            if (!string.IsNullOrWhiteSpace(NameRoutineFilter))
+            if (!string.IsNullOrWhiteSpace(NameRoutineFilter)) // Aplica el filtro de nombre si se ha especificado
             {
                 filtered = filtered.Where(r =>
-                    r.name?.Contains(NameRoutineFilter, StringComparison.OrdinalIgnoreCase) == true);
+                    r.name?.Contains(NameRoutineFilter, StringComparison.OrdinalIgnoreCase) == true); // Filtra por nombre de rutina
             }
 
-            if (BodyPartFilter != bodyPartEnum.nothing)
-                filtered = filtered.Where(r => r.muscleGroupId == BodyPartFilter);
-
-            if (DificultyFilter != dificultyEnum.nothing)
-                filtered = filtered.Where(r => r.dificulty == DificultyFilter);
+            if (BodyPartFilter != bodyPartEnum.nothing) // Aplica el filtro de grupo muscular si se ha especificado
+                filtered = filtered.Where(r => r.muscleGroupId == BodyPartFilter); // Filtra por grupo muscular
+             
+            if (DificultyFilter != dificultyEnum.nothing) // Aplica el filtro de dificultad si se ha especificado
+                filtered = filtered.Where(r => r.dificulty == DificultyFilter); // Filtra por dificultad
 
             var grouped = filtered
                 .GroupBy(r => r.muscleGroupId)
                 .Select(g => new ExerciseGroup(
                     g.Key,
                     g.OrderBy(e => e.dificulty)
-                ));
+                )); // Agrupa los ejercicios filtrados por grupo muscular y los ordena por dificultad dentro de cada grupo
 
-            FilteredExercises.Clear();
+            FilteredExercises.Clear(); // Limpia la colección observable de ejercicios filtrados
 
-            foreach (var g in grouped)
-                FilteredExercises.Add(g);
+            foreach (var g in grouped) // Agrega cada grupo de ejercicios filtrados a la colección observable
+                FilteredExercises.Add(g); // Actualiza la interfaz de usuario
         }
 
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-        private void OnPropertyChanged(string name) =>
+        public event PropertyChangedEventHandler? PropertyChanged; // Evento para notificar cambios en las propiedades
+        private void OnPropertyChanged(string name) => // Método para invocar el evento PropertyChanged
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

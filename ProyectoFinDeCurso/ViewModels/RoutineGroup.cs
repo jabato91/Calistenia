@@ -16,7 +16,7 @@ namespace ProyectoFinDeCurso.ViewModels
 
         public ObservableCollection<Routines> Routines { get; set; }
 
-        public RoutineGroup(bodyPartEnum muscleGroupId, IEnumerable<Routines> routines)
+        public RoutineGroup(bodyPartEnum muscleGroupId, IEnumerable<Routines> routines) 
         {
             MuscleGroupId = muscleGroupId;
             Routines = new ObservableCollection<Routines>(routines);

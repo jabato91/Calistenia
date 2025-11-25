@@ -24,25 +24,25 @@ public partial class RoutinesPage : ContentPage
     {
         _dbService = dbService;
         _userType = userType;
-        _filter = new RoutinesFilterViewModel(_dbService, _userType);
+        _filter = new RoutinesFilterViewModel(_dbService, _userType); // asigno el viewmodel
 
         InitializeComponent();
-        BindingContext = _filter;
+        BindingContext = _filter; // asigno el bindingcontext
 
-        NavigationPage.SetTitleView(this, BuildTitleView());
+        NavigationPage.SetTitleView(this, BuildTitleView()); // Establece la vista personalizada del título
     }
-    protected override async void OnAppearing()
+    protected override async void OnAppearing() // Carga las rutinas al aparecer la página
     {
-        base.OnAppearing();
-        await _filter.LoadRoutinesAsync(); // 🔥 refresco real
+        base.OnAppearing(); // Llama al método base OnAppearing
+        await _filter.LoadRoutinesAsync();  // Carga las rutinas desde la base de datos
     }
-    private async void OnExerciseTapped(object sender, EventArgs e)
+    private async void OnExerciseTapped(object sender, EventArgs e) // Maneja el evento de toque en un ejercicio
     {
         try
         {
-            if ((sender as Grid)?.BindingContext is Exercise selectedExercise)
+            if ((sender as Grid)?.BindingContext is Exercise selectedExercise) // Verifica si el contexto de enlace es un ejercicio
             {
-                await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _exerciseFilterViewModel, selectedExercise, ModeEnum.View));
+                await Navigation.PushModalAsync(new ExerciseDetailPage(_dbService, _exerciseFilterViewModel, selectedExercise, ModeEnum.View)); // Navega a la página de detalles del ejercicio en modo de vista
             }
         }
        
@@ -57,13 +57,13 @@ public partial class RoutinesPage : ContentPage
         }
     }
 
-    private async void accessRoutine(object sender, TappedEventArgs e)
+    private async void accessRoutine(object sender, TappedEventArgs e) // Maneja el evento de toque en una rutina
     {
         try
         {
-            if ((sender as Border)?.BindingContext is Routines selectedRoutine)
+            if ((sender as Border)?.BindingContext is Routines selectedRoutine) // Verifica si el contexto de enlace es una rutina
             {
-                await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, _filter,mode: ModeEnum.View, routine: selectedRoutine,userType: _userType));
+                await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, _filter,mode: ModeEnum.View, routine: selectedRoutine,userType: _userType)); // Navega a la página de detalles de la rutina en modo de vista
             }
         }
         catch (Exception ex)
@@ -80,23 +80,22 @@ public partial class RoutinesPage : ContentPage
 
 
 
-    private async void createRoutine(object sender, TappedEventArgs e)
+    private async void createRoutine(object sender, TappedEventArgs e) // Maneja el evento de creación de una nueva rutina
     {
         
-        await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, _filter,userType: _userType,mode: ModeEnum.create));
+        await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, _filter,userType: _userType,mode: ModeEnum.create)); // Navega a la página de detalles de la rutina en modo de creación
     } 
     
-    private async void OnExpanded(object sender, ExpandedChangedEventArgs e)
+    private async void OnExpanded(object sender, ExpandedChangedEventArgs e) // Maneja el evento de expansión de un Expander
     {
-        if (sender is not Expander expander)
+        if (sender is not Expander expander) // Verifica si el remitente es un Expander
             return;
 
-        if (expander.Content is not VisualElement content)
+        if (expander.Content is not VisualElement content) // Verifica si el contenido es un VisualElement
             return;
 
-        if (e.IsExpanded)
+        if (e.IsExpanded) // Si el Expander está expandido, realiza la animación
         {
-            // 🔹 ANIMACIÓN AL ABRIR
             content.Opacity = 0;
             content.TranslationY = -20;
             await Task.WhenAll(
@@ -106,19 +105,19 @@ public partial class RoutinesPage : ContentPage
         }
        
     }
-    private async void filterExercises(object sender, EventArgs e)
+    private async void filterExercises(object sender, EventArgs e) // Maneja el evento de filtrado de ejercicios
     {
 
-        await Navigation.PushModalAsync(new RoutineDetailPage( filterViewModel: _filter, mode: ModeEnum.filter));
+        await Navigation.PushModalAsync(new RoutineDetailPage( filterViewModel: _filter, mode: ModeEnum.filter)); // Navega a la página de detalles de la rutina en modo de filtro
     }
 
-    private async void profile(object sender, EventArgs e)
+    private async void profile(object sender, EventArgs e) // Maneja el evento del botón de perfil
     {
         await Navigation.PushModalAsync(
            new UserDetailPage(null, _dbService, _userType, ModeEnum.View)
-       );
+       ); // Navega a la página de detalles del usuario en modo de vista
     }
-    private View BuildTitleView()
+    private View BuildTitleView() // Construye la vista personalizada del título
     {
         // Grid principal del TitleView
         var grid = new Grid
@@ -134,7 +133,7 @@ public partial class RoutinesPage : ContentPage
         };
 
         // ***** TÍTULO *****
-        var titleLabel = new Label
+        var titleLabel = new Label // titulo centrado
         {
             Text = "Inicio",
             HorizontalOptions = LayoutOptions.Center,
@@ -146,10 +145,9 @@ public partial class RoutinesPage : ContentPage
             Margin = new Thickness(0, 0, 0, 0)
         };
         Grid.SetColumn(titleLabel, 1);
-        grid.Children.Add(titleLabel);
+        grid.Children.Add(titleLabel); // Añade el título al grid
 
-        // ***** BOTÓN PERFIL (derecha) *****
-        var profileButton = new ImageButton
+        var profileButton = new ImageButton // botón de perfil a la derecha
         {
             Source = "icono_predeterminado.png",
             WidthRequest = 35,
@@ -159,13 +157,12 @@ public partial class RoutinesPage : ContentPage
             VerticalOptions = LayoutOptions.Center,
             Margin = new Thickness(0, 0, 5, 0)
         };
-        Grid.SetColumn(profileButton, 2);
+        Grid.SetColumn(profileButton, 2); // Coloca el botón en la columna 2
 
-        // Conecta correctamente al evento: profile(object, EventArgs)
-        profileButton.Clicked += profile;
+        profileButton.Clicked += profile; // Conecta al handler existente
 
-        grid.Children.Add(profileButton);
+        grid.Children.Add(profileButton); // Añade el botón al grid
 
-        return grid;
+        return grid; // Devuelve el grid completo como la vista del título
     }
 }

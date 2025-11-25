@@ -27,7 +27,7 @@ namespace ProyectoFinDeCurso.ViewModels
         }
 
         
-        public string NameRoutineFilter
+        public string NameRoutineFilter // Filtro por nombre de rutina
         {
             get => _nameRoutineFilter;
             set
@@ -41,7 +41,7 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-        public bodyPartEnum BodyPartFilter
+        public bodyPartEnum BodyPartFilter // Filtro por grupo muscular
         {
             get => _bodyPartFilter;
             set
@@ -55,7 +55,7 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-        public dificultyEnum DificultyFilter
+        public dificultyEnum DificultyFilter // Filtro por dificultad
         {
             get => _dificultyFilter;
             set
@@ -69,7 +69,7 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-        public IEnumerable<RoutineGroup> FilteredRoutines
+        public IEnumerable<RoutineGroup> FilteredRoutines // Agrupado por grupo muscular
         {
             get => _filteredRoutines;
             private set
@@ -79,17 +79,10 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-        public async Task InitializeAsync()
-        {
-            if (Initialized) return;
 
-            Initialized = true;
-            await LoadRoutinesAsync();
-        }
-
-        public async Task LoadRoutinesAsync()
+        public async Task LoadRoutinesAsync() // Carga las rutinas desde la base de datos
         {
-            var routines = await _dbService.GetRoutinesAsync();
+            var routines = await _dbService.GetRoutinesAsync(); // Obtiene todas las rutinas
             var routinesExercises = await _dbService.GetRoutinesExercisesAsync();
             var exercises = await _dbService.GetExercisesAsync();
 
