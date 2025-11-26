@@ -12,15 +12,14 @@ namespace ProyectoFinDeCurso
     {
         public static MauiApp CreateMauiApp()
         {
-            // 🔹 Inicializa SQLite antes de cualquier uso
-            Batteries_V2.Init();
+            Batteries_V2.Init(); //inicia sqlite antes de culquier uso
 
             var builder = MauiApp.CreateBuilder();
 
             builder
                 .UseMauiApp<App>()
-                .UseMauiCommunityToolkit()                    // Toolkit principal
-                .UseMauiCommunityToolkitMediaElement()        // MediaElement
+                .UseMauiCommunityToolkit()                    // llama a la librería de herramientas
+                .UseMauiCommunityToolkitMediaElement()        // llama a la librería de video
                 .ConfigureFonts(fonts =>
                 {
                     

@@ -12,11 +12,11 @@ namespace ProyectoFinDeCurso.ViewModels
     public class RoutineGroup 
     {
         public bodyPartEnum MuscleGroupId { get; set; }
-        public string DisplayName => MuscleGroupId.ToFriendlyName();
+        public string DisplayName => MuscleGroupId.ToFriendlyName(); // traducción a español
 
-        public ObservableCollection<Routines> Routines { get; set; }
+        public ObservableCollection<Routines> Routines { get; set; } // actualiza los datos
 
-        public RoutineGroup(bodyPartEnum muscleGroupId, IEnumerable<Routines> routines) 
+        public RoutineGroup(bodyPartEnum muscleGroupId, IEnumerable<Routines> routines) // filtra por tipo de grupo muscular
         {
             MuscleGroupId = muscleGroupId;
             Routines = new ObservableCollection<Routines>(routines);
