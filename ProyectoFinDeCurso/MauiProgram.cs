@@ -4,8 +4,8 @@ using ProyectoFinDeCurso.Pages;
 using ProyectoFinDeCurso.Pages.Authentication;
 using ProyectoFinDeCurso.Services;
 using SQLitePCL;
-
-
+using Syncfusion.Maui.Core.Hosting;
+using Syncfusion.Licensing;
 namespace ProyectoFinDeCurso
 {
     public static class MauiProgram
@@ -15,11 +15,12 @@ namespace ProyectoFinDeCurso
             Batteries_V2.Init(); //inicia sqlite antes de culquier uso
 
             var builder = MauiApp.CreateBuilder();
-
+            SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JFaF1cXGFCf1FpQ3xbf1x1ZFBMYlhbR3FPMyBoS35Rc0RiW3ZedXZRRWdfU0Z2VEFc");
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()                    // llama a la librería de herramientas
                 .UseMauiCommunityToolkitMediaElement()        // llama a la librería de video
+                .ConfigureSyncfusionCore()
                 .ConfigureFonts(fonts =>
                 {
                     
@@ -36,29 +37,12 @@ namespace ProyectoFinDeCurso
                     fonts.AddFont("Champagne & Limousines Bold.ttf", "ChampagneYLimousinesBold");
                     fonts.AddFont("Champagne & Limousines Italic.ttf", "ChampagneYLimousinesItalic");
                     fonts.AddFont("Champagne & Limousines.ttf", "ChampagneYLimousines");
+                    //
                     fonts.AddFont("Comfortaa-Bold.ttf", "ComfortaaBold");
-                    fonts.AddFont("Comfortaa-Light.ttf", "ComfortaaLight");
-                    fonts.AddFont("Comfortaa-Regular.ttf", "ComfortaaRegular");
-                    fonts.AddFont("cream-DEMO.ttf", "CreamDEMO");
-                    fonts.AddFont("FNCocoSans-Thin.ttf", "FNCocoSansThin");
-                    fonts.AddFont("Garet-Book.ttf", "GaretBook");
-                    fonts.AddFont("Garet-Heavy.ttf", "GaretHeavy");
-                    fonts.AddFont("LiberationSans-Bold.ttf", "LiberationSansBold");
-                    fonts.AddFont("LiberationSans-BoldItalic.ttf", "LiberationSansBoldItalic");
-                    fonts.AddFont("LiberationSans-Italic.ttf", "LiberationSansItalic");
-                    fonts.AddFont("LiberationSans-Regular.ttf", "LiberationSansRegular");
-                    fonts.AddFont("Louis George Cafe Bold Italic.ttf", "LouisGeorgeCafeBoldItalic");
-                    fonts.AddFont("Louis George Cafe Light Italic.ttf", "LouisGeorgeCafeLightItalic");
-                    fonts.AddFont("Louis George Cafe Light.ttf", "LouisGeorgeCafeLight");
-                    fonts.AddFont("Louis George Cafe.ttf", "LouisGeorgeCafe");
-                    fonts.AddFont("Nearo-Bold.ttf", "NearoBold");
-                    fonts.AddFont("Nearo-Light.ttf", "NearoLight");
-                    fonts.AddFont("Nearo-Medium.ttf", "NearoMedium");
-                    fonts.AddFont("Nearo-Regular.ttf", "NearoRegular");
-                    fonts.AddFont("Nearo-SemiBold.ttf", "NearoSemiBold");
-                    fonts.AddFont("Walkway Black RevOblique.ttf", "WalkwayBlackRevOblique");
-                    fonts.AddFont("Walkway Black.ttf", "WalkwayBlack");
-                    fonts.AddFont("Walkway Bold RevOblique.ttf", "WalkwayBoldRevOblique");
+                    //
+                    fonts.AddFont("OpenSansRegular.ttf", "OpenSansRegular");
+                    fonts.AddFont("OpenSansSemibold.ttf", "OpenSansSemibold");
+
                 });
 
             // 🔹 Inyección de dependencias

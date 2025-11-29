@@ -50,7 +50,16 @@
                         TextColor="#FFE1D9"
                         Pressed="RoutinesPage"/>
                 <!-- Boton de routinesPage-->
-
+                <Button Text="Calendario" 
+        FontSize="18"
+        Clicked="CalendarPage"
+        Margin="30,10"
+        BorderWidth="4"
+        BorderColor="#FF542E"
+        BackgroundColor="#FF4C24"
+        CharacterSpacing="0.75"
+        CornerRadius="1"
+        TextColor="#FFE1D9" />
                 <Button Text="Cerrar Sesión" 
                         FontSize="18"
                         Clicked="LogoutButton"

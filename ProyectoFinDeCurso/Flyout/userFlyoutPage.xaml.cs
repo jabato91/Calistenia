@@ -110,7 +110,13 @@ public partial class userFlyoutPage : FlyoutPage
             () => new RoutinesPage(_dbService, _userType)
         );
     }
-
+    private async void CalendarPage(object sender, EventArgs e)
+    {
+        await NavigateToAsync(
+         "Calendar",
+         () => new CalendarPage()
+     );
+    }
     private async void UsersBottonAdmin(object sender, EventArgs e)
     {
         await NavigateToAsync(

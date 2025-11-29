@@ -127,15 +127,15 @@
                                                                     <Label Text="{Binding reps}" FontSize="16"
                                                                      TextColor="#E0CFC2" Grid.Column="1"
                                                                      HorizontalOptions="End" Margin="10,0"
-                                                                     FontFamily="calculator"/>
+                                                                     FontFamily="ComfortaaBold"/>
                                                                     <Label Text="X" FontSize="16"
                                                                          TextColor="#E0CFC2" Grid.Column="2"
                                                                          HorizontalOptions="End" Margin="10,0"
-                                                                         FontFamily="calculator"/>  
+                                                                         FontFamily="ComfortaaBold"/>  
                                                                     <Label Text="{Binding sets}" FontSize="16"
                                                                      TextColor="#E0CFC2" Grid.Column="3"
                                                                      HorizontalOptions="End" Margin="10,0"
-                                                                     FontFamily="calculator"/>
+                                                                     FontFamily="ComfortaaBold"/>
 
                                                                     <!-- Bordes -->
                                                                     <Border WidthRequest="3" Stroke="#171616" StrokeThickness="20"

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProyectoFinDeCurso.Pages.Main.CalendarPage"
+             xmlns:cal="clr-namespace:Plugin.Maui.Calendar.Controls;assembly=Plugin.Maui.Calendar"
+             Title="CalendarPage">
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#1A1A1A" Offset="0.0"/>
+            <GradientStop Color="#2E1E1B" Offset="1.0"/>
+        </LinearGradientBrush>
+    </ContentPage.Background>
+
+    <VerticalStackLayout Padding="20">
+
+
+        <VerticalStackLayout Padding="0,10,0,0">
+
+            <Label Text="Calendario"
+               FontSize="28"
+               TextColor="#E0E0E0"
+               HorizontalOptions="Center" />
+
+            <VerticalStackLayout Padding="0,20,0,0">
+                <Frame BackgroundColor="#3B2523"
+               CornerRadius="20"
+               Padding="10"
+               HasShadow="False">
+
+                    <cal:Calendar
+                x:Name="MiCalendario"
+                StartDate="{Binding StartDate}"
+    SelectedDate="{Binding FechaSeleccionada, Mode=TwoWay}"
+                FirstDayOfWeek="Monday"
+                CalendarLayout="Month"
+
+                        DeselectedDayTextColor="#E0E0E0"
+                OtherMonthDayColor="#5E5E5E"
+
+                SelectedDayTextColor="#1A1A1A"
+                SelectedDayBackgroundColor="#D4A857"
+
+                SelectedTodayTextColor="#1A1A1A"
+
+                TodayFillColor="#9C6B2F"
+                TodayOutlineColor="#D4A857"
+                TodayTextColor="White"
+
+                OtherMonthSelectedDayColor="#8C5A3C"
+
+                EventIndicatorColor="#B84040"
+                EventIndicatorSelectedColor="#1A1A1A">
+
+
+                        <!-- ======= HEADER PERSONALIZADO ======= -->
+                        <cal:Calendar.HeaderSectionTemplate>
+                            <DataTemplate>
+                                <Grid Padding="10"
+                              RowDefinitions="Auto"
+                              ColumnDefinitions="50,*,50">
+
+                                    <Button Grid.Column="0"
+                                    Text="◀"
+                                    BackgroundColor="#2E1E1B"
+                                    TextColor="White"
+                                    CornerRadius="20"
+                                    Padding="10"
+                                    Command="{Binding Source={x:Reference MiCalendario}, Path=BindingContext.GoPreviousMonth}" />   
+
+                                    <!-- Mes + Año -->
+                                    <StackLayout Grid.Column="1"
+             HorizontalOptions="Center">
+                                        <Label Text="{Binding Source={x:Reference MiCalendario}, Path=MonthName}"
+           FontSize="20"
+           TextColor="#E0E0E0"
+           HorizontalTextAlignment="Center" />
+
+                                        <Label Text="{Binding Source={x:Reference MiCalendario}, Path=Year}"
+           FontSize="16"
+           TextColor="#D4A857"
+           HorizontalTextAlignment="Center" />
+                                    </StackLayout>
+
+                                    <Button Grid.Column="2"
+                                        Text="▶"
+                                        BackgroundColor="#2E1E1B"
+                                        TextColor="White"
+                                        CornerRadius="20"
+                                        Padding="10"
+                                        Command="{Binding Source={x:Reference MiCalendario}, Path=BindingContext.GoNextMonth}" />       
+
+                                </Grid>
+                            </DataTemplate>
+                        </cal:Calendar.HeaderSectionTemplate>
+
+                    </cal:Calendar>
+
+                </Frame>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+
+    </VerticalStackLayout>
+</ContentPage>
