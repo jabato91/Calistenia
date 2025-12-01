@@ -5,7 +5,6 @@ using ProyectoFinDeCurso.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-
 namespace ProyectoFinDeCurso.ViewModels
 {
     public class ExerciseFilterViewModel : INotifyPropertyChanged

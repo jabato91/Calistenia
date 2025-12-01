@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="ProyectoFinDeCurso.Pages.Main.CalendarPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewmodels="clr-namespace:ProyectoFinDeCurso.ViewModels">
+
+    <ContentPage.BindingContext>
+        <viewmodels:CalendarViewModel />
+    </ContentPage.BindingContext>
+
+    <!-- FONDO OSCURO CON DEGRADADO -->
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#1A1A1A" Offset="0" />
+            <GradientStop Color="#2E1E1B" Offset="1" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
+
+    <VerticalStackLayout Padding="20" Spacing="20" x:Name="CalendarRoot">
+
+        <Label Text="Calendario"
+               FontSize="28"
+               TextColor="White"
+               HorizontalOptions="Center" />
+
+        <!-- CONTENEDOR PRINCIPAL CON BORDER -->
+        <Border Background="#3B2523"
+                Stroke="#D4A857"
+                StrokeThickness="2">
+
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="20" />
+            </Border.StrokeShape>
+
+            <!-- CONTENIDO DEL CALENDARIO -->
+            <VerticalStackLayout Spacing="10">
+
+                <!-- Header Mes / Año -->
+                <Grid ColumnDefinitions="50,*,50">
+
+                    <!-- Flecha atrás -->
+                    <Button Grid.Column="0"
+                            Text="◀"
+                            BackgroundColor="#2E1E1B"
+                            TextColor="White"
+                            CornerRadius="20"
+                            Command="{Binding PreviousMonthCommand}" />
+
+                    <!-- Mes y Año -->
+                    <StackLayout Grid.Column="1" HorizontalOptions="Center">
+                        <Label Text="{Binding DisplayMonth, StringFormat='{0:MMMM}'}"
+                               FontSize="20"
+                               TextColor="White"
+                               HorizontalTextAlignment="Center" />
+
+                        <Label Text="{Binding DisplayMonth, StringFormat='{0:yyyy}'}"
+                               FontSize="15"
+                               TextColor="#D4A857"
+                               HorizontalTextAlignment="Center" />
+                    </StackLayout>
+
+                    <!-- Flecha adelante -->
+                    <Button Grid.Column="2"
+                            Text="▶"
+                            BackgroundColor="#2E1E1B"
+                            TextColor="White"
+                            CornerRadius="20"
+                            Command="{Binding NextMonthCommand}" />
+                </Grid>
+
+                <!-- CABECERA DE DÍAS -->
+                <Grid ColumnDefinitions="*,*,*,*,*,*,*" Padding="0,5,0,5">
+                    <Label Grid.Column="0" Text="L" TextColor="#E0E0E0" HorizontalTextAlignment="Center" />
+                    <Label Grid.Column="1" Text="M" TextColor="#E0E0E0" HorizontalTextAlignment="Center" />
+                    <Label Grid.Column="2" Text="X" TextColor="#E0E0E0" HorizontalTextAlignment="Center" />
+                    <Label Grid.Column="3" Text="J" TextColor="#E0E0E0" HorizontalTextAlignment="Center" />
+                    <Label Grid.Column="4" Text="V" TextColor="#E0E0E0" HorizontalTextAlignment="Center" />
+                    <Label Grid.Column="5" Text="S" TextColor="#E0E0E0" HorizontalTextAlignment="Center" />
+                    <Label Grid.Column="6" Text="D" TextColor="#E0E0E0" HorizontalTextAlignment="Center" />
+                </Grid>
+
+                <!-- GRID DE LOS DÍAS DEL MES -->
+                <CollectionView ItemsSource="{Binding Days}"
+                                SelectionMode="None">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" Span="7" />
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="2">
+
+                                <!-- Border que representa cada día -->
+                                <Border x:Name="DayBorder"
+                                        Background="#3B2523"
+                                        StrokeThickness="0">
+
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+
+                                    <Border.Triggers>
+                                        <!-- Día fuera del mes -->
+                                        <DataTrigger TargetType="Border"
+                                                     Binding="{Binding IsCurrentMonth}"
+                                                     Value="False">
+                                            <Setter Property="Background" Value="#2A1A18" />
+                                        </DataTrigger>
+
+                                        <!-- Hoy -->
+                                        <DataTrigger TargetType="Border"
+                                                     Binding="{Binding IsToday}"
+                                                     Value="True">
+                                            <Setter Property="Stroke" Value="#D4A857" />
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                        </DataTrigger>
+
+                                        <!-- Seleccionado -->
+                                        <DataTrigger TargetType="Border"
+                                                     Binding="{Binding IsSelected}"
+                                                     Value="True">
+                                            <Setter Property="Background" Value="#D4A857" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+
+                                    <!-- Botón que recibe la pulsación -->
+                                    <Button
+                                        Command="{Binding BindingContext.DayTappedCommand, Source={x:Reference CalendarRoot}}"
+                                        CommandParameter="{Binding}"
+                                        BackgroundColor="Transparent"
+                                        Padding="0"
+                                        Text="{Binding Date.Day}"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center">
+
+                                        <Button.Triggers>
+                                            <!-- Texto de días del mes -->
+                                            <DataTrigger TargetType="Button"
+                                                         Binding="{Binding IsCurrentMonth}"
+                                                         Value="True">
+                                                <Setter Property="TextColor" Value="#E0E0E0" />
+                                            </DataTrigger>
+
+                                            <!-- Texto de días fuera del mes -->
+                                            <DataTrigger TargetType="Button"
+                                                         Binding="{Binding IsCurrentMonth}"
+                                                         Value="False">
+                                                <Setter Property="TextColor" Value="#666666" />
+                                            </DataTrigger>
+
+                                            <!-- Texto cuando está seleccionado -->
+                                            <DataTrigger TargetType="Button"
+                                                         Binding="{Binding IsSelected}"
+                                                         Value="True">
+                                                <Setter Property="TextColor" Value="#1A1A1A" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+
+                                    </Button>
+
+                                </Border>
+
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </Border>
+
+    </VerticalStackLayout>
+</ContentPage>
