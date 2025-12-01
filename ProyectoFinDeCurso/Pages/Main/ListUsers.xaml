@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProyectoFinDeCurso.Pages.Main.ListUsers"
+             Title="ListUsers">
+    <ContentPage.Background><!--Fondo de la página-->
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#1A1A1A" Offset="0.0"/>
+            <GradientStop Color="#2E1E1B" Offset="1.0"/>
+        </LinearGradientBrush>
+    </ContentPage.Background>
+    <VerticalStackLayout Padding="10"
+        HorizontalOptions="Fill">
+        <SearchBar Placeholder="Buscar ejercicio por correo electrónico"
+       Text="{Binding SearchText}"
+       BackgroundColor="#2B2B2B"
+       TextColor="#E0CFC2"
+       PlaceholderColor="#A59D95"/> <!--Barra de busqueda el usuario por correo, obteniendo el usuario a tiempo real-->
+        <CollectionView ItemsSource="{Binding FilteredUsers}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame
+                Padding="15"
+                Margin="15,10"
+                BackgroundColor="#2E1E1B"
+                CornerRadius="20"
+                HasShadow="True">
+
+                        <Grid ColumnDefinitions="*,Auto"
+                      RowDefinitions="Auto,Auto,Auto,Auto"
+                      Padding="5">
+
+                            <!-- Nombre -->
+                            <Label Grid.Row="0" Grid.Column="0"
+                           Text="{Binding FullName}"
+                           FontSize="20"
+                           FontFamily="EatMeAlive"
+                           TextColor="#C49362"
+                           Margin="0,0,0,8"/>
+
+                            <!-- Botones -->
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="1"
+                                           Spacing="12"
+                                           VerticalOptions="Center">
+
+                                <ImageButton Source="editar.png"
+                                     WidthRequest="26"
+                                     HeightRequest="26"
+                                     BackgroundColor="Transparent"
+                                     Clicked="modifyUser"/>
+
+                                <ImageButton Source="papelera.png"
+                                     WidthRequest="26"
+                                     HeightRequest="26"
+                                     BackgroundColor="Transparent"
+                                     Clicked="EliminateUser"/>
+
+                            </HorizontalStackLayout>
+
+                            <!-- Email -->
+                            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                           Text="{Binding Email, StringFormat='📧 {0}'}"
+                           FontSize="15"
+                           TextColor="#C49362"
+                           FontFamily="ComfortaaBold"/>
+
+                            <!-- Teléfono -->
+                            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                           Text="{Binding Phone, StringFormat='📱 {0}'}"
+                           FontSize="15"
+                           TextColor="#C49362"
+                           Margin="0,3,0,0"
+                           FontFamily="ComfortaaBold"/>
+
+                            <!-- Tipo de usuario -->
+                            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                           Text="{Binding listUserType, StringFormat='👤 {0}'}"
+                           FontSize="15"
+                           TextColor="#856D54"
+                           Margin="0,3,0,0"
+                           FontFamily="ComfortaaBold"/>
+
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

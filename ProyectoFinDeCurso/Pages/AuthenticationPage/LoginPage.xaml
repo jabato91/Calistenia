@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProyectoFinDeCurso.Pages.LoginPage"
+             Title="Iniciar Sesión"
+             BackgroundColor="#F5F5F5">
+    
+        <VerticalStackLayout 
+         Spacing="25"
+         Padding="40"
+         VerticalOptions="Center"
+         HorizontalOptions="Center">
+            <!--Contenedor vertical donde contiene todos los controladores-->
+
+            <Label Text="Bienvenido"
+            FontSize="28"
+            FontAttributes="Bold"
+            TextColor="#333333"
+            HorizontalOptions="Center" />
+            <!--Texto de bienbenida-->
+
+
+            <Border BackgroundColor="White"
+         Padding="25"
+         WidthRequest="300">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20" />
+                </Border.StrokeShape>
+                <!--Border donde almacena el contenido para iniciar sesión, con el que podemos deficinir el contenido y el borde que está detrás-->
+
+                <VerticalStackLayout Spacing="20">
+                    <!--Necesario para definir el interior de Border-->
+                    <!-- Campo de Correo -->
+                    <Entry x:Name="loginEmail"
+                    Placeholder="Correo Electrónico"
+                    Keyboard="Email"
+                    TextColor="#333333"
+                    PlaceholderColor="#999999"
+                    ClearButtonVisibility="WhileEditing"
+                    BackgroundColor="#F1F1F1"
+                    HeightRequest="45"
+                    Margin="0,0,0,10"
+                    />
+
+                    <!-- Campo de Contraseña -->
+                    <Entry x:Name="loginPassword"
+                    Placeholder="Contraseña"
+                    IsPassword="True"
+                    TextColor="#333333"
+                    PlaceholderColor="#999999"
+                    BackgroundColor="#F1F1F1"
+                    HeightRequest="45"
+                    />
+
+                    <!-- Botón de Iniciar Sesión -->
+                    <Button Text="Iniciar Sesión"
+                     Clicked="LoginButton"
+                     BackgroundColor="#3B82F6"
+                     TextColor="White"
+                     CornerRadius="10"
+                     HeightRequest="45"
+                     FontAttributes="Bold"/>
+
+                    <!-- Botón de Registro -->
+                    <Button Text="Registrarse"
+                     Clicked="RegisterButton"
+                     BackgroundColor="#E5E7EB"
+                     TextColor="#333333"
+                     CornerRadius="10"
+                     HeightRequest="45"
+                     />
+
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+        <!-- Aquí va el resto de tu layout -->
+    
+   
+</ContentPage>
