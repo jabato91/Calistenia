@@ -22,6 +22,7 @@ namespace ProyectoFinDeCurso.Services
             await _connection.CreateTableAsync<Routines>();
             await _connection.CreateTableAsync<RoutinesExercises>();
             await _connection.CreateTableAsync<RegisterLogging>();
+            await _connection.CreateTableAsync<Alarm>();
         }
 
 
@@ -38,7 +39,8 @@ namespace ProyectoFinDeCurso.Services
             _connection.Table<RoutinesExercises>().ToListAsync();
         public Task<List<RegisterLogging>> GetRegisterLoggingAsync() => // Obtiene todas las asociaciones de registro de rutinas de la tabla RoutinesExercises
             _connection.Table<RegisterLogging>().ToListAsync();
-
+        public Task<List<Alarm>> GetAlarmsAsync() => // Obtiene todas las alarmas de la tabla Alarm
+            _connection.Table<Alarm>().ToListAsync();
 
         public Task<User> GetUserById(int id) => // Obtiene un usuario por su ID
             _connection.Table<User>().Where(x => x.UserID == id).FirstOrDefaultAsync();

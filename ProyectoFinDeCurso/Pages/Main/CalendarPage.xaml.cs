@@ -26,7 +26,13 @@ public partial class CalendarPage : ContentPage
         );
         string fechaTexto = fecha.ToString("dd/MM/yyyy");
         await Navigation.PushModalAsync(
-                new CalendarDetailPage(_dbService, fechaTexto,ModeEnum.View)
+                new CalendarDetailPage(_dbService,ModeEnum.View, fechaTexto)
+            );
+    }
+    private async void OnAddAlarm(object sender, EventArgs e)
+    {
+        await Navigation.PushModalAsync(
+                new CalendarDetailPage(_dbService, ModeEnum.Edit)
             );
     }
 }
