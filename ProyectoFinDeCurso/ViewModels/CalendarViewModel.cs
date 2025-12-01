@@ -52,9 +52,10 @@ namespace ProyectoFinDeCurso.ViewModels
         public ICommand NextMonthCommand { get; }
         public ICommand PreviousMonthCommand { get; }
         public ICommand DayTappedCommand { get; }
-
-        public CalendarViewModel()
+        private readonly Action<CalendarDay> _onDaySelected;
+        public CalendarViewModel(Action<CalendarDay> onDaySelected)
         {
+            _onDaySelected = onDaySelected;
             DisplayMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
 
             NextMonthCommand = new Command(() =>
@@ -77,6 +78,8 @@ namespace ProyectoFinDeCurso.ViewModels
                 }
 
                 SelectedDay = day;
+
+                _onDaySelected?.Invoke(day); 
             });
 
             GenerateDays();

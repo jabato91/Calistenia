@@ -21,6 +21,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
         private static TimeSpan timeBetweenReps = TimeSpan.Zero;
         private static TimeSpan timeBetweenExercises = TimeSpan.Zero;
         private Boolean firstExercise = false;
+        private static String timeToStart;
+        private static String timeToEnd;
+
         public RoutineDetailPage(DbService? dbService = null,RoutinesFilterViewModel? filterViewModel = null,userTypeEnum userType = userTypeEnum.user ,Routines? routine = null, ModeEnum mode = ModeEnum.nothing) {
             _userType = userType;
             _filterViewModel = filterViewModel;
@@ -129,6 +132,46 @@ namespace ProyectoFinDeCurso.Pages.Detail
             {
                 eleccionExercise.expaded = true; //expande el ejercicio seleccionado
             }
+            var finnishButton = new Button //botón para cancelar y cerrar la rutina
+            {
+                Text = "Acabar rutina",
+                BackgroundColor = Colors.Purple,
+                TextColor = Colors.White,
+                CornerRadius = 8,
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.End,
+                Margin = new Thickness(10, 0, 0, 10),
+                IsVisible = false,
+                Command = new Command(async () => //comando para cerrar la rutina
+                {
+                    string hora = DateTime.Now.ToString("HH:mm:ss");
+                    timeToEnd = hora;
+                    await RegisterInCalendar();
+                    await Navigation.PopModalAsync();
+                })
+            };
+            var cancelButton = new Button //botón para cancelar y cerrar la rutina
+            {
+                Text = "Cancelar",
+                BackgroundColor = Colors.Purple,
+                TextColor = Colors.White,
+                CornerRadius = 8,
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.End,
+                Margin = new Thickness(10, 0, 0, 10),
+                Command = new Command(async () => //comando para cerrar la rutina
+                {
+                    await Navigation.PopModalAsync();
+
+                    foreach (Exercise exercise in exercisesInRoutine) //reinicia los ejercicios de la rutina
+                    {
+
+                        exercise.expaded = false;
+                        exercise.exerciseFinished = false;
+
+                    }
+                })
+            };
             CollectionView listExercise = new CollectionView //muestra la lista de ejercicios en la rutina
             {
                 ItemsSource = exercisesInRoutine, //recoge los ejercicios de la rutina
@@ -360,6 +403,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                                                 await Navigation.PopModalAsync(); //sale del modal
                                                 tcs.TrySetResult(true); //establece el resultado de la tarea como verdadero
+                                                string hora = DateTime.Now.ToString("HH:mm:ss");
+                                                timeToStart = hora; //asigna la hora de inicio
                                             })
                                         },
 
@@ -486,8 +531,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 await Navigation.PopModalAsync(); //cierra el modal del ejercicio
 
                                 var siguiente = exercisesInRoutine.FirstOrDefault(x => !x.exerciseFinished); //selecciona el siguiente ejercicio que no ha sido terminado
-                                if (siguiente != null) //si existe un siguiente ejercicio
+                                if (siguiente != null) {  //si existe un siguiente ejercicio
                                     siguiente.expaded = true; //expande el siguiente ejercicio
+                                }
+                                else
+                                {
+                                    finnishButton.IsVisible = true;
+                                }
                             }
                             else
                             {
@@ -654,29 +704,18 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     ModifyOrCreateRoutine(_routine); //llama al método para modificar o crear la rutina
                 })
             });
-            var cancelButton = new Button //botón para cancelar y cerrar la rutina
+            
+            var horizontalButtons = new HorizontalStackLayout
             {
-                Text = "Cancelar",
-                BackgroundColor = Colors.Purple,
-                TextColor = Colors.White,
-                CornerRadius = 8,
-                HorizontalOptions = LayoutOptions.Start,
-                VerticalOptions = LayoutOptions.End,
-                Margin = new Thickness(10, 0, 0, 10),
-                Command = new Command(async () => //comando para cerrar la rutina
-                {
-                    await Navigation.PopModalAsync();
-
-                    foreach (Exercise exercise in exercisesInRoutine) //reinicia los ejercicios de la rutina
-                    {
-
-                        exercise.expaded = false;
-                        exercise.exerciseFinished = false;
-
-                    }
-                })
+                Padding = new Thickness(10),
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center,
+                Children =
+                        {
+                            cancelButton,
+                            finnishButton
+                        }
             };
-
             var headerGrid = new Grid //grid para el encabezado de la rutina
             {
                 ColumnDefinitions =
@@ -711,8 +750,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
             Grid.SetRow(listExercise, 1); // asigna la fila 1 a la lista de ejercicios
             baseGrid.Children.Add(listExercise); // Añade la lista de ejercicios al grid base
 
-            Grid.SetRow(cancelButton, 2); //asigna la fila 2 al botón cancelar
-            baseGrid.Children.Add(cancelButton); // Añade el botón cancelar al grid base
+            Grid.SetRow(horizontalButtons, 2); //asigna la fila 2 al botón cancelar
+            baseGrid.Children.Add(horizontalButtons); // Añade el botón cancelar al grid base
 
             var overlay = new AbsoluteLayout //overlay para el menú desplegable
             {
@@ -1824,5 +1863,25 @@ namespace ProyectoFinDeCurso.Pages.Detail
             BackgroundColor = modalPage.BackgroundColor; // muestra el color de fondo del modal
         }
        
+        private async Task RegisterInCalendar()
+        {
+            var userId = await SecureStorage.GetAsync("user_id"); //obtiene la id del usuario
+            if(userId == null)
+            {
+                await DisplayAlert(
+                                     "Ejercicio isométrico",
+                                     "usuario no identificado.",
+                                     "Aceptar"
+                                 );
+                return;
+            }
+            var user = await _dbService.GetUserById(int.Parse(userId));  //obtiene el usuario de la base de datos
+            string fecha = DateTime.Today.ToString("dd/MM/yyyy");
+            if (_routine != null)
+            {
+                var regiter = new RegisterLogging { routineID = _routine.routineID, userID = user.UserID,  day = fecha, timeToStart = timeToStart, timeToEnd = timeToEnd};
+                _dbService.Create(regiter);
+            }
+        }
     }
 }

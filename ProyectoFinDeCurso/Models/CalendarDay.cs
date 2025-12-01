@@ -9,11 +9,23 @@ namespace ProyectoFinDeCurso.Models
 {
     public class CalendarDay : INotifyPropertyChanged
     {
+        private DateTime _date;
         private bool _isSelected;
+        private bool _isCurrentMonth;
+        private bool _isToday;
 
-        public DateTime Date { get; set; }
-        public bool IsCurrentMonth { get; set; }
-        public bool IsToday { get; set; }
+        public DateTime Date
+        {
+            get => _date;
+            set
+            {
+                if (_date != value)
+                {
+                    _date = value;
+                    OnPropertyChanged(nameof(Date));
+                }
+            }
+        }
 
         public bool IsSelected
         {
@@ -23,11 +35,39 @@ namespace ProyectoFinDeCurso.Models
                 if (_isSelected != value)
                 {
                     _isSelected = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
+                    OnPropertyChanged(nameof(IsSelected));
+                }
+            }
+        }
+
+        public bool IsCurrentMonth
+        {
+            get => _isCurrentMonth;
+            set
+            {
+                if (_isCurrentMonth != value)
+                {
+                    _isCurrentMonth = value;
+                    OnPropertyChanged(nameof(IsCurrentMonth));
+                }
+            }
+        }
+
+        public bool IsToday
+        {
+            get => _isToday;
+            set
+            {
+                if (_isToday != value)
+                {
+                    _isToday = value;
+                    OnPropertyChanged(nameof(IsToday));
                 }
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string name)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

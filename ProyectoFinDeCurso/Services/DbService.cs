@@ -21,6 +21,7 @@ namespace ProyectoFinDeCurso.Services
             await _connection.CreateTableAsync<Exercise>();
             await _connection.CreateTableAsync<Routines>();
             await _connection.CreateTableAsync<RoutinesExercises>();
+            await _connection.CreateTableAsync<RegisterLogging>();
         }
 
 
@@ -35,6 +36,8 @@ namespace ProyectoFinDeCurso.Services
 
         public Task<List<RoutinesExercises>> GetRoutinesExercisesAsync() => // Obtiene todas las asociaciones de rutinas y ejercicios de la tabla RoutinesExercises
             _connection.Table<RoutinesExercises>().ToListAsync();
+        public Task<List<RegisterLogging>> GetRegisterLoggingAsync() => // Obtiene todas las asociaciones de registro de rutinas de la tabla RoutinesExercises
+            _connection.Table<RegisterLogging>().ToListAsync();
 
 
         public Task<User> GetUserById(int id) => // Obtiene un usuario por su ID
@@ -50,7 +53,8 @@ namespace ProyectoFinDeCurso.Services
         public Task<RoutinesExercises> GetRoutinesExercisesByIdRoutine(int id) => // obtiene una rutina-ejercicio por su ID
             _connection.Table<RoutinesExercises>().Where(x => x.Id == id).FirstOrDefaultAsync();
 
-
+        public Task<RegisterLogging> GetRegisterLoggingByIdRegister(int id) => // obtiene una rutina-ejercicio por su ID
+            _connection.Table<RegisterLogging>().Where(x => x.registerID == id).FirstOrDefaultAsync();
 
         public Task Create(object obj) => // Crea un nuevo registro en la tabla correspondiente, independientemente del tipo de objeto
             _connection.InsertAsync(obj);
