@@ -5,50 +5,53 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProyectoFinDeCurso.Models
-{
-    public class Alarm
+    namespace ProyectoFinDeCurso.Models
     {
-        [PrimaryKey, AutoIncrement, Column("alarmID")]
-        public int AlarmID { get; set; }
+        public class Alarm
+        {
+            [PrimaryKey, AutoIncrement, Column("alarmID")]
+            public int AlarmID { get; set; }
 
-        // Nombre que ponga el usuario
-        [Column("name")]
-        public string Name { get; set; }
+            // Nombre que ponga el usuario
+            [Column("name")]
+            public string Name { get; set; }
 
-        // Hora y minutos
-        [Column("hour")]
-        public int Hour { get; set; }   // 0–23
+            // Hora y minutos
+            [Column("hour")]
+            public int Hour { get; set; }   // 0–23
 
-        [Column("minute")]
-        public int Minute { get; set; } // 0–59
+            [Column("minute")]
+            public int Minute { get; set; } // 0–59
 
-        // Días de la semana (true/false)
-        [Column("monday")]
-        public bool Monday { get; set; }
+            // Días de la semana (true/false)
+            [Column("monday")]
+            public bool Monday { get; set; }
 
-        [Column("tuesday")]
-        public bool Tuesday { get; set; }
+            [Column("tuesday")]
+            public bool Tuesday { get; set; }
 
-        [Column("wednesday")]
-        public bool Wednesday { get; set; }
+            [Column("wednesday")]
+            public bool Wednesday { get; set; }
 
-        [Column("thursday")]
-        public bool Thursday { get; set; }
+            [Column("thursday")]
+            public bool Thursday { get; set; }
 
-        [Column("friday")]
-        public bool Friday { get; set; }
+            [Column("friday")]
+            public bool Friday { get; set; }
 
-        [Column("saturday")]
-        public bool Saturday { get; set; }
+            [Column("saturday")]
+            public bool Saturday { get; set; }
 
-        [Column("sunday")]
-        public bool Sunday { get; set; }
+            [Column("sunday")]
+            public bool Sunday { get; set; }
 
-        // Activada o no
-        [Column("isActive")]
-        public bool IsActive { get; set; } = true;
-        [Column("userID")]
-        public bool userID { get; set; } = true;
-    }
+            // Activada o no
+            [Column("isActive")]
+            public bool IsActive { get; set; } = true;
+            [Column("userID")]
+            public int userID { get; set; } = -1;
+
+            [Ignore]
+            public string FormattedTime => $"{Hour:D2}:{Minute:D2}";
+        }
 }

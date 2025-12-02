@@ -1,5 +1,8 @@
 ﻿using Microsoft.Maui.Controls.Shapes;
+using Plugin.LocalNotification;
+using Plugin.LocalNotification.AndroidOption;
 using ProyectoFinDeCurso.Enums;
+using ProyectoFinDeCurso.Models;
 using ProyectoFinDeCurso.Services;
 using System;
 using System.Collections.Generic;
@@ -417,7 +420,29 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 TextColor = Color.FromArgb("#C77B30"),
                 HorizontalOptions = LayoutOptions.Start
             };
-
+            VerticalStackLayout CreateDay(string text)
+            {
+                return new VerticalStackLayout
+                {
+                    Spacing = 3,
+                    HorizontalOptions = LayoutOptions.Center,
+                    Children =
+        {
+            new Label
+            {
+                Text = text,
+                TextColor = Color.FromArgb("#CFC86D"),
+                FontFamily = "ComfortaaBold",
+                HorizontalOptions = LayoutOptions.Center
+            },
+            new CheckBox
+            {
+                Color = Color.FromArgb("#CFC86D"),
+                HorizontalOptions = LayoutOptions.Center
+            }
+        }
+                };
+            }
             // ==== BOTÓN "+" ====
             var addButton = new Button
             {
@@ -428,13 +453,247 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 FontFamily = "Forresten",
                 CornerRadius = 10,
                 WidthRequest = 50,
-                HeightRequest = 50
+                HeightRequest = 50,
+                 Command = new Command(async () =>
+                 {
+                     // ---- CONTROLES QUE QUEREMOS RECUPERAR ----
+
+                     Entry entryName = new Entry
+                     {
+                         Placeholder = "Ejemplo: Despertar",
+                         FontFamily = "Comfortaa",
+                         TextColor = Color.FromArgb("#E9C68A"),
+                         PlaceholderColor = Color.FromArgb("#C49362")
+                     };
+
+                     TimePicker timePicker = new TimePicker
+                     {
+                         TextColor = Color.FromArgb("#E9C68A"),
+                         FontFamily = "Comfortaa"
+                     };
+                     timePicker.Time = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, 0);
+                     // Lista donde guardaremos TODOS los checkboxes
+                     List<CheckBox> dayCheckboxes = new List<CheckBox>();
+
+                     // Crea cada día con su checkbox
+                     VerticalStackLayout CreateDay(string text)
+                     {
+                         var check = new CheckBox
+                         {
+                             Color = Color.FromArgb("#CFC86D"),
+                             HorizontalOptions = LayoutOptions.Center
+                         };
+
+                         dayCheckboxes.Add(check);
+
+                         return new VerticalStackLayout
+                         {
+                             Spacing = 3,
+                             HorizontalOptions = LayoutOptions.Center,
+                             Children =
+                            {
+                                new Label
+                                {
+                                    Text = text,
+                                    TextColor = Color.FromArgb("#CFC86D"),
+                                    FontFamily = "ComfortaaBold",
+                                    HorizontalOptions = LayoutOptions.Center
+                                },
+                                check
+                            }
+                         };
+                     }
+                     var scrollView = new ScrollView
+                     {
+                         Content = new VerticalStackLayout
+                         {
+                             Padding = 20,
+                             Spacing = 20,
+
+                             Children =
+        {
+            new Label
+            {
+                Text = "Nueva alarma",
+                FontSize = 28,
+                FontFamily = "EatMeAlive",
+                TextColor = Color.FromArgb("#C77B30"),
+                HorizontalOptions = LayoutOptions.Start
+            },
+
+            new Border
+            {
+                BackgroundColor = Color.FromArgb("#3B2523"),
+                Stroke = Color.FromArgb("#D4A857"),
+                StrokeThickness = 2,
+                Padding = 15,
+                StrokeShape = new RoundRectangle { CornerRadius = 20 },
+
+                Content = new VerticalStackLayout
+                {
+                    Spacing = 15,
+                    Children =
+                    {
+                        new Label
+                        {
+                            Text = "Nombre",
+                            FontSize = 18,
+                            FontFamily = "ComfortaaBold",
+                            TextColor = Color.FromArgb("#CFC86D")
+                        },
+
+                        entryName,
+
+                        new Label
+                        {
+                            Text = "Hora",
+                            FontSize = 18,
+                            FontFamily = "ComfortaaBold",
+                            TextColor = Color.FromArgb("#CFC86D")
+                        },
+
+                        timePicker,
+
+                        new Label
+                        {
+                            Text = "Repetir",
+                            FontSize = 18,
+                            FontFamily = "ComfortaaBold",
+                            TextColor = Color.FromArgb("#CFC86D")
+                        },
+
+                        new HorizontalStackLayout
+                        {
+                            Spacing = 3,
+                            Children =
+                            {
+                                CreateDay("L"),
+                                CreateDay("M"),
+                                CreateDay("X"),
+                                CreateDay("J"),
+                                CreateDay("V"),
+                                CreateDay("S"),
+                                CreateDay("D")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+                         }
+                     };
+
+                     var buttonBar = new HorizontalStackLayout
+                     {
+                         Spacing = 10,
+                         Padding = 20,
+                         BackgroundColor = Color.FromArgb("#1A1A1A"),
+                         Children =
+                        {
+                            new Button
+                            {
+                                Text = "Cerrar",
+                                BackgroundColor = Color.FromArgb("#CFC86D"),
+                                TextColor = Color.FromArgb("#3B2523"),
+                                CornerRadius = 10,
+                                HeightRequest = 45,
+                                FontFamily = "Forresten",
+                                HorizontalOptions = LayoutOptions.FillAndExpand,
+                                Command = new Command(async () =>
+                                {
+                                    await Navigation.PopModalAsync();
+                                })
+                            },
+
+                            new Button
+                            {
+                                Text = "Crear",
+                                BackgroundColor = Color.FromArgb("#CFC86D"),
+                                TextColor = Color.FromArgb("#3B2523"),
+                                CornerRadius = 10,
+                                HeightRequest = 45,
+                                FontFamily = "Forresten",
+                                HorizontalOptions = LayoutOptions.FillAndExpand,
+                                Command = new Command(async () =>
+                                {
+                                     var userId = await SecureStorage.GetAsync("user_id");
+                                    if(userId == null)
+                                    {
+                                        await DisplayAlert(
+                                                             "Ejercicio isométrico",
+                                                             "usuario no identificado.",
+                                                             "Aceptar"
+                                                         );
+                                        return;
+                                    }
+                                     var user = await _dbService.GetUserById(int.Parse(userId));
+                                     string name = entryName.Text;
+                                TimeSpan time = timePicker.Time;
+
+                                bool monday = dayCheckboxes[0].IsChecked;
+                                bool tuesday = dayCheckboxes[1].IsChecked;
+                                bool wednesday = dayCheckboxes[2].IsChecked;
+                                bool thursday = dayCheckboxes[3].IsChecked;
+                                bool friday = dayCheckboxes[4].IsChecked;
+                                bool saturday = dayCheckboxes[5].IsChecked;
+                                bool sunday = dayCheckboxes[6].IsChecked;
+
+                                Alarm newAlarm = new Alarm
+                                {
+                                    Name = name,
+                                    Hour = time.Hours,
+                                    Minute = time.Minutes,
+
+                                    Monday = monday,
+                                    Tuesday = tuesday,
+                                    Wednesday = wednesday,
+                                    Thursday = thursday,
+                                    Friday = friday,
+                                    Saturday = saturday,
+                                    Sunday = sunday,
+
+                                    IsActive = true,
+
+                                    // 👇 Si userID es bool, esto es lo único que puedo poner
+                                    userID = user.UserID
+                                };
+                                    await _dbService.Create(newAlarm);
+                                    ScheduleAlarm(newAlarm);
+                                    await DisplayAlert("Alarma creada", $"Sonará a las {newAlarm.FormattedTime}", "OK");
+                                    await Navigation.PopModalAsync();
+
+                                await Navigation.PopModalAsync();
+                                })
+                            }
+                        }
+                     };
+                     var modalPage = new ContentPage
+                     {
+                         BackgroundColor = Color.FromArgb("#1A1A1A"),
+                         Content = new Grid
+                         {
+                             RowDefinitions =
+                            {
+                                new RowDefinition { Height = GridLength.Star },  // scroll
+                                new RowDefinition { Height = GridLength.Auto }   // botones
+                            },
+                            Children =
+                            {
+                                scrollView,
+                                buttonBar
+                            }
+                         }
+                     };
+
+                     // ASIGNAR FILAS
+                     Grid.SetRow(scrollView, 0);
+                     Grid.SetRow(buttonBar, 1);
+
+                     await Navigation.PushModalAsync(modalPage);
+
+                 })
             };
 
-            addButton.Clicked += async (s, e) =>
-            {
-                await DisplayAlert("Añadir", "Aquí irá la UI para crear una nueva alarma.", "OK");
-            };
 
             // ==== HEADER ====
             var headerGrid = new Grid
@@ -472,52 +731,90 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     FontFamily = "ComfortaaBold",
                     HorizontalOptions = LayoutOptions.Center,
                     VerticalOptions = LayoutOptions.Center
-                },
-
-                ItemTemplate = new DataTemplate(() =>
-                {
-                    var nameLabel = new Label
-                    {
-                        FontSize = 18,
-                        FontFamily = "ComfortaaBold",
-                        TextColor = Color.FromArgb("#CFC86D")
-                    };
-                    nameLabel.SetBinding(Label.TextProperty, "Name");
-
-                    var hourLabel = new Label
-                    {
-                        FontSize = 16,
-                        FontFamily = "Comfortaa",
-                        TextColor = Color.FromArgb("#E9C68A")
-                    };
-                    hourLabel.SetBinding(Label.TextProperty, "TimeFormatted");
-
-                    var daysLabel = new Label
-                    {
-                        FontSize = 14,
-                        FontFamily = "Comfortaa",
-                        TextColor = Color.FromArgb("#C49362")
-                    };
-                    daysLabel.SetBinding(Label.TextProperty, "DaysFormatted");
-
-                    var stack = new VerticalStackLayout
-                    {
-                        Spacing = 6,
-                        Children = { nameLabel, hourLabel, daysLabel }
-                    };
-
-                    return new Border
-                    {
-                        BackgroundColor = Color.FromArgb("#2E1E1B"),
-                        Stroke = Color.FromArgb("#6A463F"),
-                        StrokeThickness = 1.5,
-                        Margin = new Thickness(0, 10),
-                        Padding = new Thickness(15),
-                        StrokeShape = new RoundRectangle { CornerRadius = 15 },
-                        Content = stack
-                    };
-                })
+                }
             };
+
+            alarmsCollection.ItemTemplate = new DataTemplate(() =>
+            {
+                var nameLabel = new Label
+                {
+                    FontSize = 18,
+                    FontFamily = "ComfortaaBold",
+                    TextColor = Color.FromArgb("#CFC86D")
+                };
+                nameLabel.SetBinding(Label.TextProperty, "Name");
+
+                var hourLabel = new Label
+                {
+                    FontSize = 16,
+                    FontFamily = "Comfortaa",
+                    TextColor = Color.FromArgb("#E9C68A")
+                };
+                hourLabel.SetBinding(Label.TextProperty, "FormattedTime");
+
+                var weekLayout = new HorizontalStackLayout
+                {
+                    Spacing = 12,
+                    HorizontalOptions = LayoutOptions.Start
+                };
+
+                VerticalStackLayout CreateDay(string text, string binding)
+                {
+                    var check = new CheckBox
+                    {
+                        Color = Color.FromArgb("#CFC86D"),
+                        IsEnabled = false,
+                        Scale = 0.9,
+                        HorizontalOptions = LayoutOptions.Center
+                    };
+                    check.SetBinding(CheckBox.IsCheckedProperty, binding);
+
+                    return new VerticalStackLayout
+                    {
+                        Spacing = 1,
+                        Children =
+            {
+                new Label
+                {
+                    Text = text,
+                    FontFamily = "ComfortaaBold",
+                    TextColor = Color.FromArgb("#CFC86D")
+                },
+                check
+            }
+                    };
+                }
+
+                weekLayout.Children.Add(CreateDay("L", "Monday"));
+                weekLayout.Children.Add(CreateDay("M", "Tuesday"));
+                weekLayout.Children.Add(CreateDay("X", "Wednesday"));
+                weekLayout.Children.Add(CreateDay("J", "Thursday"));
+                weekLayout.Children.Add(CreateDay("V", "Friday"));
+                weekLayout.Children.Add(CreateDay("S", "Saturday"));
+                weekLayout.Children.Add(CreateDay("D", "Sunday"));
+
+                var stack = new VerticalStackLayout
+                {
+                    Spacing = 10,
+                    Children =
+        {
+            nameLabel,
+            hourLabel,     // 👈 AQUI SE MUESTRA LA HORA
+            weekLayout
+        }
+                };
+
+                return new Border
+                {
+                    BackgroundColor = Color.FromArgb("#2E1E1B"),
+                    Stroke = Color.FromArgb("#6A463F"),
+                    StrokeThickness = 1.5,
+                    Margin = new Thickness(0, 10),
+                    Padding = new Thickness(15),
+                    StrokeShape = new RoundRectangle { CornerRadius = 15 },
+                    Content = stack
+                };
+            });
 
             // ==== CONTENEDOR DE LISTA ====
             var listContainer = new Border
@@ -535,10 +832,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
             var exitButton = new Button
             {
                 Text = "Salir",
-                BackgroundColor = Color.FromArgb("ffd700"),
-                TextColor = Colors.White,
+                BackgroundColor = Color.FromArgb("#CFC86D"),
+                TextColor = Color.FromArgb("#3B2523"),
                 CornerRadius = 10,
-                WidthRequest = 160,
                 HeightRequest = 45,
                 FontFamily = "Forresten",
                 HorizontalOptions = LayoutOptions.Center,
@@ -550,37 +846,120 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 await Navigation.PopModalAsync();
             };
 
-            // ==== GRID PRINCIPAL (2 FILAS, SEGUNDA PARA EL BOTÓN) ====
+
             var mainGrid = new Grid
             {
                 RowDefinitions =
-        {
-            new RowDefinition { Height = GridLength.Star },   // contenido
-            new RowDefinition { Height = GridLength.Auto }    // botón salir fijo
-        },
+    {
+        new RowDefinition { Height = GridLength.Star },   // contenido scrollable
+        new RowDefinition { Height = GridLength.Auto }    // botón salir fijo
+    },
                 Padding = new Thickness(20),
                 BackgroundColor = Color.FromArgb("#1A1A1A")
             };
 
-            // Fila 0 → contenido
+            // Fila 0 → contenido dentro de ScrollView
             var contentLayout = new VerticalStackLayout
             {
                 Spacing = 20,
                 Children =
-        {
-            headerGrid,
-            listContainer
-        }
+    {
+        headerGrid,
+        listContainer
+    }
             };
 
-            mainGrid.Children.Add(contentLayout);
-            Grid.SetRow(contentLayout, 0);
+            // Scroll externo
+            var scrollContent = new ScrollView
+            {
+                Content = contentLayout
+            };
 
-            // Fila 1 → botón salir
+            // Añadir a la fila 0
+            mainGrid.Children.Add(scrollContent);
+            Grid.SetRow(scrollContent, 0);
+
+            // Fila 1 → botón salir fijo
             mainGrid.Children.Add(exitButton);
             Grid.SetRow(exitButton, 1);
 
+            // Establecer contenido final
             Content = mainGrid;
         }
+
+        void ScheduleAlarm(Alarm alarm)
+        {
+            DateTime now = DateTime.Now;
+            DateTime nextTrigger = FindNextTriggerDay(alarm, now);
+
+            var request = new NotificationRequest
+            {
+                NotificationId = alarm.AlarmID,
+                Title = "CalisSAPP",
+                Description = "Es Hora de Entrenar!!!!",
+
+                Android =
+        {
+            ChannelId = "alarm_channel",
+            AutoCancel = false
+        },
+
+                Schedule = new NotificationRequestSchedule
+                {
+                    NotifyTime = nextTrigger,
+                    RepeatType = NotificationRepeat.Weekly
+                }
+            };
+
+            LocalNotificationCenter.Current.Show(request);
+        }
+        DateTime FindNextTriggerDay(Alarm alarm, DateTime now)
+        {
+            bool[] days = new bool[]
+            {
+                alarm.Monday,
+                alarm.Tuesday,
+                alarm.Wednesday,
+                alarm.Thursday,
+                alarm.Friday,
+                alarm.Saturday,
+                alarm.Sunday
+            };
+
+            int todayIndex = ConvertToLunesIndex(now.DayOfWeek);
+
+            for (int offset = 0; offset < 7; offset++)
+            {
+                int checkIndex = (todayIndex + offset) % 7;
+
+                if (days[checkIndex])
+                {
+                    DateTime candidate = now.Date
+                        .AddDays(offset)
+                        .AddHours(alarm.Hour)
+                        .AddMinutes(alarm.Minute);
+
+                    if (candidate > now)
+                        return candidate;
+                }
+            }
+
+            return now.AddMinutes(1);
+        }
+        int ConvertToLunesIndex(DayOfWeek day)
+        {
+            return day switch
+            {
+                DayOfWeek.Monday => 0,
+                DayOfWeek.Tuesday => 1,
+                DayOfWeek.Wednesday => 2,
+                DayOfWeek.Thursday => 3,
+                DayOfWeek.Friday => 4,
+                DayOfWeek.Saturday => 5,
+                DayOfWeek.Sunday => 6,
+                _ => 0
+            };
+        }
+       
     }
 }

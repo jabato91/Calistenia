@@ -6,6 +6,8 @@ using ProyectoFinDeCurso.Services;
 using SQLitePCL;
 using Syncfusion.Maui.Core.Hosting;
 using Syncfusion.Licensing;
+using Plugin.LocalNotification;
+
 namespace ProyectoFinDeCurso
 {
     public static class MauiProgram
@@ -21,6 +23,7 @@ namespace ProyectoFinDeCurso
                 .UseMauiCommunityToolkit()                    // llama a la librería de herramientas
                 .UseMauiCommunityToolkitMediaElement()        // llama a la librería de video
                 .ConfigureSyncfusionCore()
+                .UseLocalNotification()
                 .ConfigureFonts(fonts =>
                 {
                     
