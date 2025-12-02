@@ -32,7 +32,7 @@ public partial class CalendarPage : ContentPage
     private async void OnAddAlarm(object sender, EventArgs e)
     {
         await Navigation.PushModalAsync(
-                new CalendarDetailPage(_dbService, ModeEnum.Edit)
+                new CalendarDetailPage(_dbService, ModeEnum.create)
             );
     }
 }

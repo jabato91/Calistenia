@@ -116,26 +116,26 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 Margin = new Thickness(10, 0)
             };
 
-           
 
-            var videoElement = new MediaElement //elemento de video para mostrar el video del ejercicio
+            var video = new MediaElement
             {
-                Source = GetVideoSource(_selectedExercise.video),
-                Aspect = Aspect.AspectFit,
+                Source = _selectedExercise.VideoMediaSource,
                 ShouldShowPlaybackControls = true,
-                HeightRequest = 325,
-                WidthRequest = 500
+                Aspect = Aspect.AspectFit,
+                HeightRequest = 250,
+                HorizontalOptions = LayoutOptions.Fill,
+                VerticalOptions = LayoutOptions.Center
             };
 
-            var videoFrame = new Frame
+            var videoContainer = new Grid
             {
-                CornerRadius = 15,
-                HasShadow = true,
                 BackgroundColor = Colors.Black,
-                Padding = 0,
-                Margin = new Thickness(0, 10),
-                Content = videoElement
+                HeightRequest = 300,
+                WidthRequest = 500,
+                Margin = new Thickness(0, 10)
             };
+
+            videoContainer.Children.Add(video);
 
 
             var exitButton = new Button
@@ -173,7 +173,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     titleLabel,
                     descriptionLabel,
                     materialsLabel,
-                    videoFrame,
+                    videoContainer,
                     exitButton
                 }
             }
@@ -348,30 +348,51 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 BackgroundColor = Color.FromArgb("#3B2523")
             };
 
-            imageButton.Clicked += async (s, e) => //evento al hacer clic en el botón de imagen
+            imageButton.Clicked += async (s, e) =>
             {
                 try
                 {
-                    var result = await FilePicker.Default.PickAsync(new PickOptions//abre el explorador de archivos para seleccionar una imagen
+                    var result = await FilePicker.Default.PickAsync(new PickOptions
                     {
                         PickerTitle = "Selecciona una imagen",
                         FileTypes = FilePickerFileType.Images
                     });
 
-                    if (result != null) //verifica que se haya seleccionado una imagen
+                    if (result != null)
                     {
-                        string nombreArchivo = IOPath.GetFileName(result.FullPath); //obtiene el nombre del archivo seleccionado
-                        string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images"); //ruta de la carpeta donde se guardarán las imágenes
-                        Directory.CreateDirectory(carpetaImagenes); //crea la carpeta si no existe
+                        string nombreOriginal = IOPath.GetFileName(result.FullPath);
 
-                        string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo); //ruta completa del archivo destino
+                        string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images");
+                        Directory.CreateDirectory(carpetaImagenes);
 
-                        using var origen = await result.OpenReadAsync(); //abre el archivo seleccionado para lectura
-                        using var destino = File.Create(rutaDestino); //crea el archivo destino
-                        await origen.CopyToAsync(destino); //copia el contenido del archivo seleccionado al archivo destino
+                        string rutaDestinoOriginal = IOPath.Combine(carpetaImagenes, nombreOriginal);
 
-                        imageButton.BindingContext = rutaDestino; // guardamos la ruta
-                        imageButton.Source = ImageSource.FromFile(rutaDestino); //actualiza la fuente de la imagen del botón
+                        // Copiar archivo original
+                        using (var origen = await result.OpenReadAsync())
+                        using (var destino = File.Create(rutaDestinoOriginal))
+                            await origen.CopyToAsync(destino);
+
+                        // ⬇ NORMALIZAR (quitar espacios y mayúsculas)
+                        string nombreLimpio = nombreOriginal
+                                                .ToLower()
+                                                .Replace(" ", "_");
+
+                        string rutaDestinoLimpia = IOPath.Combine(carpetaImagenes, nombreLimpio);
+
+                        // Renombrar archivo físico si el nombre cambió
+                        if (rutaDestinoOriginal != rutaDestinoLimpia)
+                        {
+                            File.Move(rutaDestinoOriginal, rutaDestinoLimpia, true);
+                        }
+
+                        // Guardar nombre limpio en el Exercise
+                        exercise.image = nombreLimpio;
+
+                        // Actualizar Binding
+                        imageButton.BindingContext = rutaDestinoLimpia;
+
+                        // Mostrar imagen
+                        imageButton.Source = ImageSource.FromFile(rutaDestinoLimpia);
                     }
                 }
                 catch (Exception ex)
@@ -402,29 +423,48 @@ namespace ProyectoFinDeCurso.Pages.Detail
             string selectedVideoName = null; //variable para almacenar el nombre del video seleccionado
 
             var videoTap = new TapGestureRecognizer();//gesto para detectar el toque en el marco de video
-            videoTap.Tapped += async (s, e) => //evento al tocar el marco de video
+            videoTap.Tapped += async (s, e) =>
             {
-                var result = await FilePicker.PickAsync(new PickOptions //abre el explorador de archivos para seleccionar un video
+                var result = await FilePicker.PickAsync(new PickOptions
                 {
                     PickerTitle = "Seleccionar video",
                     FileTypes = FilePickerFileType.Videos
                 });
 
-                if (result != null) //verifica que se haya seleccionado un video
+                if (result != null)
                 {
-                    string folder = IOPath.Combine(FileSystem.AppDataDirectory, "Videos"); //ruta de la carpeta donde se guardarán los videos
-                    Directory.CreateDirectory(folder); //crea la carpeta si no existe
+                    string folder = IOPath.Combine(FileSystem.AppDataDirectory, "Videos");
+                    Directory.CreateDirectory(folder);
 
-                    string destPath = IOPath.Combine(folder, result.FileName); //ruta completa del archivo destino
+                    // Nombre original
+                    string nombreOriginal = result.FileName;
 
-                    using var src = await result.OpenReadAsync(); //abre el archivo seleccionado para lectura
-                    using var dest = File.Create(destPath); //crea el archivo destino
-                    await src.CopyToAsync(dest); //copia el contenido del archivo seleccionado al archivo destino
+                    // Crear versión limpia del nombre
+                    string nombreLimpio = nombreOriginal
+                                            .ToLower()
+                                            .Replace(" ", "_");
 
-                    selectedVideoName = result.FileName; //almacena el nombre del video seleccionado
-                    videoLabel.Text = "Cambiar video"; //actualiza el texto de la etiqueta del botón de video
+                    // Rutas
+                    string rutaDestinoOriginal = IOPath.Combine(folder, nombreOriginal);
+                    string rutaDestinoLimpia = IOPath.Combine(folder, nombreLimpio);
 
-                    await DisplayAlert("Video añadido", "El video se ha guardado correctamente.", "OK"); //muestra una alerta indicando que el video se ha guardado correctamente
+                    // 1️⃣ Copiar el archivo original
+                    using (var src = await result.OpenReadAsync())
+                    using (var dest = File.Create(rutaDestinoOriginal))
+                        await src.CopyToAsync(dest);
+
+                    // 2️⃣ Renombrar si es necesario
+                    if (rutaDestinoOriginal != rutaDestinoLimpia)
+                    {
+                        File.Move(rutaDestinoOriginal, rutaDestinoLimpia, true);
+                    }
+
+                    // 3️⃣ Guardar solo el nombre limpio en tu variable o BD
+                    selectedVideoName = nombreLimpio;
+
+                    // 4️⃣ Mostrar feedback
+                    videoLabel.Text = "Cambiar video";
+                    await DisplayAlert("Video añadido", "El video se ha guardado correctamente.", "OK");
                 }
             };
 
@@ -540,7 +580,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                                 string nombreArchivo = IOPath.GetFileName(rutaNueva);
                                                 exercise.image = nombreArchivo;
                                             }
-
+                                            if (!string.IsNullOrEmpty(selectedVideoName))
+                                            {
+                                                exercise.video = selectedVideoName; // 🔥 AHORA SÍ CAMBIA EL NOMBRE DEL VIDEO
+                                            }
                                             await _dbService.Update(exercise); //actualiza el ejercicio en la base de datos
 
                                             var index = _filter.Exercises.IndexOf(_selectedExercise); //busca el índice del ejercicio modificado en la lista de ejercicios filtrados

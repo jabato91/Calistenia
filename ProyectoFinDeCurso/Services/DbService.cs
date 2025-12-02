@@ -58,6 +58,9 @@ namespace ProyectoFinDeCurso.Services
         public Task<RegisterLogging> GetRegisterLoggingByIdRegister(int id) => // obtiene una rutina-ejercicio por su ID
             _connection.Table<RegisterLogging>().Where(x => x.registerID == id).FirstOrDefaultAsync();
 
+        public Task<Alarm> GetAlarmByIdAlarm(int id) => // obtiene una rutina-ejercicio por su ID
+            _connection.Table<Alarm>().Where(x => x.AlarmID == id).FirstOrDefaultAsync();
+
         public Task Create(object obj) => // Crea un nuevo registro en la tabla correspondiente, independientemente del tipo de objeto
             _connection.InsertAsync(obj);
 
@@ -74,7 +77,12 @@ namespace ProyectoFinDeCurso.Services
             if (exercise != null)
                 await _connection.DeleteAsync(exercise);
         }
-
+        public async Task DeleteAlarmById(int id) // Elimina un ejercicio por su ID
+        {
+            var alarm = await GetAlarmByIdAlarm(id);
+            if (alarm != null)
+                await _connection.DeleteAsync(alarm);
+        }
         public async Task DeleteUserById(int id) // Elimina un usuario por su ID
         {
             var user = await GetUserById(id);

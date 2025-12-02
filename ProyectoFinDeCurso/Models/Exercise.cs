@@ -1,13 +1,12 @@
-﻿    using ProyectoFinDeCurso.Enums;
+﻿using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Views;
+    using ProyectoFinDeCurso.Enums;
     using SQLite;
     using System;
     using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    namespace ProyectoFinDeCurso.Models 
+using IOPath = System.IO.Path;
+namespace ProyectoFinDeCurso.Models 
     {
         public class Exercise : INotifyPropertyChanged
     {
@@ -132,6 +131,76 @@ using System.Linq;
                 expaded = false,
                 IsAdmin = this.IsAdmin
             };
+        }
+        [Ignore]
+        public ImageSource ImageSourcePath
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(image))
+                    return null;
+
+                // 1️⃣ Buscar en AppDataDirectory/Images
+                string localPath = IOPath.Combine(
+                    FileSystem.AppDataDirectory,
+                    "Images",
+                    image
+                );
+                if (File.Exists(localPath))
+                    return ImageSource.FromFile(localPath);
+
+                // 2️⃣ Buscar en Resources/Images
+                string resourcePath = image;
+                try
+                {
+                    return ImageSource.FromFile(resourcePath); // MAUI busca en Resources/Images automáticamente
+                }
+                catch { }
+
+                // 3️⃣ Buscar en Packages (opcional)
+                string packagePath = IOPath.Combine(
+                    FileSystem.AppDataDirectory,
+                    "Packages",
+                    image
+                );
+                if (File.Exists(packagePath))
+                    return ImageSource.FromFile(packagePath);
+
+                // 4️⃣ Imagen por defecto si no existe
+                return ImageSource.FromFile("no_image.png");
+            }
+        }
+        [Ignore]
+        public MediaSource VideoMediaSource
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(video))
+                    return null;
+
+                // 1️⃣ Buscar en carpeta local: AppDataDirectory/Videos
+                string localPath = Path.Combine(FileSystem.AppDataDirectory, "Videos", video);
+                if (File.Exists(localPath))
+                    return MediaSource.FromFile(localPath);
+
+                // 2️⃣ Intentar cargar desde Resources/Raw por nombre:
+                // (NO necesita ruta, solo el nombre del archivo)
+                try
+                {
+                    return MediaSource.FromResource(video);
+                }
+                catch
+                {
+                    // ignorar si no existe
+                }
+
+                // 3️⃣ Buscar en Packages (si tú guardas allí videos)
+                string packagePath = Path.Combine(FileSystem.AppDataDirectory, "Packages", video);
+                if (File.Exists(packagePath))
+                    return MediaSource.FromFile(packagePath);
+
+                return null;
+            }
         }
     }
     }

@@ -31,11 +31,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
             switch (_mode)
             {
                 case ModeEnum.create:
-                    
+                    BuildCreateAlarmUI();
                     break;
 
                 case ModeEnum.Edit:
-                    BuildEditAlarmUI();
+                    
                     break;
 
                 case ModeEnum.View:
@@ -407,7 +407,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
             BackgroundColor = Color.FromRgba(0, 0, 0, 0.6);
         }
 
-        private async Task BuildEditAlarmUI()
+        private async Task BuildCreateAlarmUI()
         {
             var alarmas = await _dbService.GetAlarmsAsync();
 
@@ -736,6 +736,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             alarmsCollection.ItemTemplate = new DataTemplate(() =>
             {
+                // ===== LABEL NOMBRE =====
                 var nameLabel = new Label
                 {
                     FontSize = 18,
@@ -744,6 +745,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 };
                 nameLabel.SetBinding(Label.TextProperty, "Name");
 
+                // ===== LABEL HORA =====
                 var hourLabel = new Label
                 {
                     FontSize = 16,
@@ -752,6 +754,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 };
                 hourLabel.SetBinding(Label.TextProperty, "FormattedTime");
 
+                // ===== DÍAS =====
                 var weekLayout = new HorizontalStackLayout
                 {
                     Spacing = 12,
@@ -793,17 +796,78 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 weekLayout.Children.Add(CreateDay("S", "Saturday"));
                 weekLayout.Children.Add(CreateDay("D", "Sunday"));
 
-                var stack = new VerticalStackLayout
+
+                // ===== BOTÓN EDITAR =====
+                var editButton = new ImageButton
                 {
-                    Spacing = 10,
-                    Children =
+                    Source = "editar.png",
+                    WidthRequest = 30,
+                    HeightRequest = 30,
+                    BackgroundColor = Colors.Transparent,
+                    HorizontalOptions = LayoutOptions.End,
+                    Margin = new Thickness(0, 0, 8, 0)
+                };
+                editButton.SetBinding(ImageButton.CommandParameterProperty, ".");
+                
+
+                // ===== BOTÓN ELIMINAR =====
+                var deleteButton = new ImageButton
+                {
+                    Source = "papelera.png",
+                    WidthRequest = 30,
+                    HeightRequest = 30,
+                    BackgroundColor = Colors.Transparent,
+                    HorizontalOptions = LayoutOptions.End,
+                    
+                };
+                deleteButton.SetBinding(ImageButton.CommandParameterProperty, ".");
+                deleteButton.Command = new Command<Alarm>(async (alarm) =>
+                {
+                    bool confirm = await Application.Current.MainPage.DisplayAlert(
+                        "Eliminar alarma",
+                        $"¿Eliminar la alarma \"{alarm.Name}\"?",
+                        "Sí",
+                        "No"
+                    );
+
+                    if (confirm)
+                    {
+                        LocalNotificationCenter.Current.Cancel(alarm.AlarmID);
+                        await _dbService.Delete(alarm);
+                    }
+                });
+
+
+                // ===== GRID PARA ALINEAR TODO =====
+                var grid = new Grid
+                {
+                    ColumnDefinitions =
         {
-            nameLabel,
-            hourLabel,     // 👈 AQUI SE MUESTRA LA HORA
-            weekLayout
+            new ColumnDefinition { Width = GridLength.Star },  // texto y días
+            new ColumnDefinition { Width = GridLength.Auto },  // editar
+            new ColumnDefinition { Width = GridLength.Auto }   // eliminar
         }
                 };
 
+                // SUBSTACK IZQUIERDO (nombre, hora, días)
+                var dataStack = new VerticalStackLayout
+                {
+                    Spacing = 10,
+                    Children = { nameLabel, hourLabel, weekLayout }
+                };
+
+                // AGREGAR A CELDAS
+                Grid.SetColumn(dataStack, 0);
+                grid.Children.Add(dataStack);
+
+                Grid.SetColumn(editButton, 1);
+                grid.Children.Add(editButton);
+
+                Grid.SetColumn(deleteButton, 2);
+                grid.Children.Add(deleteButton);
+
+
+                // ===== BORDER EXTERNO =====
                 return new Border
                 {
                     BackgroundColor = Color.FromArgb("#2E1E1B"),
@@ -812,7 +876,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     Margin = new Thickness(0, 10),
                     Padding = new Thickness(15),
                     StrokeShape = new RoundRectangle { CornerRadius = 15 },
-                    Content = stack
+                    Content = grid
                 };
             });
 
@@ -913,6 +977,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             LocalNotificationCenter.Current.Show(request);
         }
+        
         DateTime FindNextTriggerDay(Alarm alarm, DateTime now)
         {
             bool[] days = new bool[]
@@ -930,7 +995,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             for (int offset = 0; offset < 7; offset++)
             {
-                int checkIndex = (todayIndex + offset) % 7;
+                int checkIndex = (todayIndex + offset) % 7; 
 
                 if (days[checkIndex])
                 {

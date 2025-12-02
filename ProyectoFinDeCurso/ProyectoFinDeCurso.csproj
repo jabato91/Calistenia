@@ -14,7 +14,7 @@
     <Nullable>enable</Nullable>
 
     <!-- Información de la aplicación -->
-    <ApplicationTitle>ProyectoFinDeCurso</ApplicationTitle>
+    <ApplicationTitle>Calisapp</ApplicationTitle>
     <ApplicationId>com.companyname.proyectofindecurso</ApplicationId>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>

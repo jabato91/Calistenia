@@ -103,7 +103,7 @@
                                     <!--Define el color de los ejercicios dependiendo de su dificultad-->
 
                                     <!-- Imagen de fondo -->
-                                    <Image Source="{Binding image}"
+                                    <Image Source="{Binding ImageSourcePath}"
                                    Aspect="AspectFit"
                                    HeightRequest="300"
                                    WidthRequest="200"
