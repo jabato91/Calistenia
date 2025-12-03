@@ -5,18 +5,22 @@ using ProyectoFinDeCurso.Pages;
 using ProyectoFinDeCurso.Pages.Main;
 using ProyectoFinDeCurso.Services;
 using ProyectoFinDeCurso.ViewModels;
+#if ANDROID
+using ProyectoFinDeCurso.Platforms.Android;
+#endif
+
 namespace ProyectoFinDeCurso
 {
     public partial class App : Application
     {
         private readonly DbService _dbService = new DbService();
-        
+
         public App()
         {
             InitializeComponent();
 
-            
-            MainPage = new NavigationPage(new ContentPage// Página temporal mientras cargamos
+            // Pantalla temporal de carga
+            MainPage = new NavigationPage(new ContentPage
             {
                 Content = new ActivityIndicator
                 {
@@ -27,51 +31,55 @@ namespace ProyectoFinDeCurso
                 Title = "Cargando..."
             });
 
-            _ = InitAsync();//ejecuta datos antes de ejecutar la aplicación
+            _ = InitAsync(); // Cargar la app
         }
 
-        private async Task InitAsync()//ejecuta datos antes de ejecutar la aplicación
+        private async Task InitAsync()
         {
             try
             {
+                await _dbService.InitTablesAsync();
+                var userId = await SecureStorage.GetAsync("user_id");
 
-                await _dbService.InitTablesAsync(); //inicia la tabla
-                var userId = await SecureStorage.GetAsync("user_id"); //obtiene la id del usuario
-                
-                if (string.IsNullOrEmpty(userId)) //verifica si es null
+                if (string.IsNullOrEmpty(userId))
                 {
-                    var exercises = await _dbService.GetExercisesAsync(); //obtiene los ejercicios de la base de datos
-                    var routines = await _dbService.GetRoutinesAsync(); //obtiene las rutinas de la base de datos
-                    if (!exercises.Any()) //verifica si contiene datos
+                    var exercises = await _dbService.GetExercisesAsync();
+                    var routines = await _dbService.GetRoutinesAsync();
+
+                    if (!exercises.Any())
                     {
-                        var initializer = new CreateExercises(_dbService); //crea la clase de ejercicios
-                        await initializer.InitAsync(); //ingresa los ejercicios en la base de datos
+                        var initializer = new CreateExercises(_dbService);
+                        await initializer.InitAsync();
                     }
-                    if (!routines.Any())//verifica si contiene datos
+                    if (!routines.Any())
                     {
-                        var initializer = new createRoutine(_dbService); //crea la clase de rutinas
-                        await initializer.InitAsync(); // ingresa las rutinas en la base de datos
+                        var initializer = new createRoutine(_dbService);
+                        await initializer.InitAsync();
                     }
-                    await _dbService.CreateUserAdmin(); //crea el usuario administrador si no existe
-                    
-                    MainPage = new NavigationPage(new LoginPage(_dbService));   // asigna el inicio de la aplicación en la clase LoginPage
+
+                    await _dbService.CreateUserAdmin();
+
+                    MainPage = new NavigationPage(new LoginPage(_dbService));
                 }
                 else
                 {
-                    var user = await _dbService.GetUserById(int.Parse(userId));  //obtiene el usuario de la base de datos
-                    var exercises = await _dbService.GetExercisesAsync(); //obtiene los ejercicios de la base de datos
-                    var routines = await _dbService.GetRoutinesAsync(); //obtiene las rutinas de la base de datos
-                    if (!exercises.Any()) //verifica si contiene datos
+                    Preferences.Set("lastUserId", userId);
+                    var user = await _dbService.GetUserById(int.Parse(userId));
+                    var exercises = await _dbService.GetExercisesAsync();
+                    var routines = await _dbService.GetRoutinesAsync();
+
+                    if (!exercises.Any())
                     {
-                        var initializer = new CreateExercises(_dbService); //crea la clase de ejercicios
-                        await initializer.InitAsync(); //ingresa los ejercicios en la base de datos
+                        var initializer = new CreateExercises(_dbService);
+                        await initializer.InitAsync();
                     }
-                    if (!routines.Any())//verifica si contiene datos
+                    if (!routines.Any())
                     {
-                        var initializer = new createRoutine(_dbService); //crea la clase de rutinas
-                        await initializer.InitAsync(); // ingresa las rutinas en la base de datos
+                        var initializer = new createRoutine(_dbService);
+                        await initializer.InitAsync();
                     }
-                    MainPage = new userFlyoutPage(_dbService, user.userType);// asigna el inicio de la aplicación en la clase userFlyoutPage
+
+                    MainPage = new userFlyoutPage(_dbService, user.userType);
                 }
             }
             catch (Exception ex)
@@ -79,6 +87,16 @@ namespace ProyectoFinDeCurso
                 Console.WriteLine("Error en InitAsync: " + ex.Message);
                 MainPage = new NavigationPage(new LoginPage(_dbService));
             }
+#if ANDROID
+AlarmPermissionService.RequestExactAlarmPermission();
+
+bool allowed = AlarmPermissionService.HasExactAlarmPermission();
+
+
+#endif
+
         }
+
+
     }
 }

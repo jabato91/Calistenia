@@ -89,7 +89,21 @@ namespace ProyectoFinDeCurso.Services
             if (user != null)
                 await _connection.DeleteAsync(user);
         }
+        public class AlarmDatabaseService
+        {
+            private readonly SQLiteConnection _connection;
 
+            public AlarmDatabaseService(string dbPath)
+            {
+                _connection = new SQLiteConnection(dbPath);
+                _connection.CreateTable<Alarm>();
+            }
+
+            public List<Alarm> GetAlarmsSync()
+            {
+                return _connection.Table<Alarm>().ToList();
+            }
+        }
 
 
         public async Task CreateUserAdmin() // Crea un usuario administrador si no existe ya uno

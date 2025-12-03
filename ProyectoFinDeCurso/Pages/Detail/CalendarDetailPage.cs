@@ -7,6 +7,7 @@ using ProyectoFinDeCurso.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -15,10 +16,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
 {
     public class CalendarDetailPage : ContentPage
     {
-        private readonly DbService _dbService;
-        private readonly string _day;
-        private readonly ModeEnum _mode;
-        public CalendarDetailPage(DbService dbService, ModeEnum mode, string? day = null)
+        private readonly DbService _dbService; //acceso a la base de datos
+        private readonly string _day; //identificador del día
+        private readonly ModeEnum _mode; //modo de la página (ver, editar, crear, filtrar)
+        public CalendarDetailPage(DbService dbService, ModeEnum mode, string? day = null) //constructor obtieniendo los datos
         {
             _dbService = dbService;
             _day = day;
@@ -47,17 +48,26 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             }
         }
-        private async Task BuildViewUI()
+        private async Task BuildViewUI() //muestra el contenido del día seleccionado
         {
-            var userId = await SecureStorage.GetAsync("user_id");
-            var user = await _dbService.GetUserById(int.Parse(userId));
+            var userId = await SecureStorage.GetAsync("user_id"); //obtiene la id del usuario
+            if (userId == null) { //verifica si no es nulo
+                await DisplayAlert(
+                                                                 "Usuario No registrado",
+                                                                 "usuario no identificado.",
+                                                                 "Aceptar"
+                                                             );
+                return;
+            }
+    
+            var user = await _dbService.GetUserById(int.Parse(userId)); //obtiene al usuario
 
-            var registerRoutines = await _dbService.GetRegisterLoggingAsync();
+            var registerRoutines = await _dbService.GetRegisterLoggingAsync(); //obtiene los registros de las rutinas acabadas
             var listRegisterRoutinesByUser = registerRoutines
                 .Where(x => x.userID == user.UserID && x.day == _day)
-                .ToList();
+                .ToList(); //filtra por la ip del usuario
 
-            var listRoutines = await _dbService.GetRoutinesAsync();
+            var listRoutines = await _dbService.GetRoutinesAsync(); //obtiene las rutinas
 
             // UNIR REGISTRO + RUTINA
             var routinesData = listRegisterRoutinesByUser
@@ -71,28 +81,26 @@ namespace ProyectoFinDeCurso.Pages.Detail
                           startHour = reg.timeToStart,
                           endHour = reg.timeToEnd
                       })
-                .ToList();
+                .ToList(); //filtra y obtiene los datos necesarios para mostrarlo
 
-            // COLLECTIONVIEW
-            var routinesCollection = new CollectionView
+            var routinesCollection = new CollectionView //lista del registro de ese día
             {
-                ItemsSource = routinesData,
+                ItemsSource = routinesData, //obtiene la lista de rutinas con su hora de comienzo y final
                 SelectionMode = SelectionMode.None,
                 Margin = new Thickness(10, 0, 10, 0),
                 HeightRequest = 220,
 
-                // 👇 ESTA ES LA CLAVE PARA DAR ESPACIO REAL
                 ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Vertical)
                 {
-                    ItemSpacing = 25  // 👈 ahora sí se separan los items
+                    ItemSpacing = 25  //separación entre líneas
                 },
 
-                ItemTemplate = new DataTemplate(() =>
+                ItemTemplate = new DataTemplate(() => //muestra las rutinas
                 {
-                    // ===== ESTILOS GENERALES =====
+                    
 
-                    Color titleColor = Color.FromArgb("#D6A77A");  // Dorado más vivo
-                    Color valueColor = Color.FromArgb("#F0E6DA");  // Beige claro más legible
+                    Color titleColor = Color.FromArgb("#D6A77A");  
+                    Color valueColor = Color.FromArgb("#F0E6DA");  
 
                     double titleSize = 15;
                     double valueSize = 17;
@@ -101,9 +109,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     string valueFont = "Comfortaa";
 
 
-                    // ====== FILA NOMBRE ======
-
-                    var nameTitle = new Label
+                    var nameTitle = new Label //título de la rutina
                     {
                         Text = "Nombre:",
                         FontSize = titleSize,
@@ -117,20 +123,20 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         FontSize = valueSize,
                         FontFamily = valueFont,
                         TextColor = valueColor,
-                        Opacity = 0.95 // efecto elegante
+                        Opacity = 0.95 
                     };
-                    nameValue.SetBinding(Label.TextProperty, "name");
+                    nameValue.SetBinding(Label.TextProperty, "name"); //nombre de la rutina
 
                     var nameRow = new HorizontalStackLayout
                     {
                         Spacing = 8,
-                        Children = { nameTitle, nameValue }
+                        Children = { nameTitle, nameValue }//muestra del nombre en fila
                     };
 
 
                     // ====== FILA DESCRIPCIÓN ======
 
-                    var descTitle = new Label
+                    var descTitle = new Label //título de la rutina
                     {
                         Text = "Descripción:",
                         FontSize = titleSize,
@@ -138,7 +144,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         TextColor = titleColor
                     };
 
-                    var descValue = new Label
+                    var descValue = new Label 
                     {
                         FontSize = valueSize - 1,
                         FontFamily = valueFont,
@@ -146,18 +152,16 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         MaxLines = 2,
                         Opacity = 0.9
                     };
-                    descValue.SetBinding(Label.TextProperty, "description");
+                    descValue.SetBinding(Label.TextProperty, "description"); //descripción de la rutina
 
                     var descRow = new HorizontalStackLayout
                     {
                         Spacing = 8,
-                        Children = { descTitle, descValue }
+                        Children = { descTitle, descValue } //muestra de la descripción en fila
                     };
 
 
-                    // ====== FILA INICIO ======
-
-                    var startTitle = new Label
+                    var startTitle = new Label //título de la hora de inicio
                     {
                         Text = "Inicio:",
                         FontSize = titleSize,
@@ -169,20 +173,18 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     {
                         FontSize = valueSize,
                         FontFamily = valueFont,
-                        TextColor = Color.FromArgb("#E9C68A") // tono dorado para horas
+                        TextColor = Color.FromArgb("#E9C68A") 
                     };
-                    startValue.SetBinding(Label.TextProperty, "startHour");
+                    startValue.SetBinding(Label.TextProperty, "startHour"); //hora de comienzo
 
                     var startRow = new HorizontalStackLayout
                     {
                         Spacing = 8,
-                        Children = { startTitle, startValue }
+                        Children = { startTitle, startValue }//muestra la hora en fila
                     };
 
 
-                    // ====== FILA FIN ======
-
-                    var endTitle = new Label
+                    var endTitle = new Label // título del fin de la rutina
                     {
                         Text = "Fin:",
                         FontSize = titleSize,
@@ -196,33 +198,29 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         FontFamily = valueFont,
                         TextColor = Color.FromArgb("#E9C68A")
                     };
-                    endValue.SetBinding(Label.TextProperty, "endHour");
+                    endValue.SetBinding(Label.TextProperty, "endHour"); // hora del final
 
                     var endRow = new HorizontalStackLayout
                     {
                         Spacing = 8,
-                        Children = { endTitle, endValue }
+                        Children = { endTitle, endValue } //muestra la hora en fila
                     };
 
 
-                    // ====== STACK PRINCIPAL ======
-
-                    var stack = new VerticalStackLayout
+                    var stack = new VerticalStackLayout //muestra todos los horizontalStackLayout en vertical
                     {
                         Spacing = 12,
                         Children =
-        {
-            nameRow,
-            descRow,
-            startRow,
-            endRow
-        }
+                        {
+                            nameRow,
+                            descRow,
+                            startRow,
+                            endRow
+                        }
                     };
 
 
-                    // ====== TARJETA ======
-
-                    return new Border
+                    return new Border //muestra el contenido
                     {
                         Padding = new Thickness(18, 15),
                         BackgroundColor = Color.FromArgb("#3B2523"),
@@ -238,14 +236,13 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             Radius = 8
                         },
 
-                        Content = stack
+                        Content = stack //lo muestra en pantalla
                     };
                 })
             };
 
 
-            // UI COMPLETA (modal)
-            Content = new Border
+            Content = new Border // muestra todo el contenido de la página
             {
                 BackgroundColor = Color.FromArgb("#2E1E1B"),
                 StrokeShape = new RoundRectangle { CornerRadius = 18 },
@@ -259,8 +256,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                     Children =
         {
-            // === TÍTULO PRINCIPAL ===
-            new Label
+            new Label //titulo de la página
             {
                 Text = "Detalles",
                 FontSize = 26,
@@ -269,8 +265,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Center
             },
 
-            // === FECHA ===
-            new Label
+            new Label // día seleccíonado por el usuario
             {
                 Text = _day,
                 FontSize = 18,
@@ -279,8 +274,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Center
             },
 
-            // === NUEVO TÍTULO ENCIMA DE LA LISTA ===
-            new Label
+            new Label //Titulo segundario
             {
                 Text = "Registros del día",
                 FontSize = 20,
@@ -290,103 +284,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 Margin = new Thickness(0, 15, 0, 5)
             },
 
-            // === LISTA DE RUTINAS ===
-            routinesCollection,
-            new Button //botón para empezar el ejercicio
-                    {
-                        BackgroundColor = Color.FromArgb("#3B2523"),
-                        TextColor = Color.FromArgb("#CFC86D"),
-                        HorizontalOptions = LayoutOptions.Fill,
-                        VerticalOptions = LayoutOptions.Fill,
-
-                        FontFamily = "Forresten",
-                        Text = "Alarma",
-                        Command = new Command(async () => {
-                    var alarmaPage = new ContentPage
-        {
-            BackgroundColor = Color.FromRgba(0, 0, 0, 0.6), // fondo transparente
-
-            Content = new Border
-            {
-                BackgroundColor = Color.FromArgb("#2E1E1B"),
-                StrokeShape = new RoundRectangle { CornerRadius = 18 },
-                Stroke = Color.FromArgb("#5A3A35"),
-                StrokeThickness = 1,
-                Margin = new Thickness(20, 80),
-                Padding = new Thickness(20, 25),
-
-                Content = new VerticalStackLayout
-                {
-                    Spacing = 20,
-                    HorizontalOptions = LayoutOptions.Center,
-
-                    Children =
-                    {
-                        // --- TÍTULO ---
-                        new Label
-                        {
-                            Text = "Alarma",
-                            FontSize = 32,
-                            FontFamily = "EatMeAlive",
-                            HorizontalOptions = LayoutOptions.Center,
-                            TextColor = Color.FromArgb("#C77B30"),
-                            Margin = new Thickness(0,0,0,5)
-                        },
-
-                        // --- SUBTÍTULO ---
-                        new Label
-                        {
-                            Text = "Configura tu recordatorio",
-                            FontSize = 17,
-                            FontFamily = "ComfortaaBold",
-                            TextColor = Color.FromArgb("#C49362"),
-                            HorizontalOptions = LayoutOptions.Center
-                        },
-
-                        // --- BOTÓN INTERNO DE ACCIÓN ---
-                        new Button
-                        {
-                            BackgroundColor = Color.FromArgb("#3B2523"),
-                            TextColor = Color.FromArgb("#CFC86D"),
-                            FontFamily = "Forresten",
-                            Text = "Activar Alarma",
-                            CornerRadius = 12,
-                            HeightRequest = 55,
-                            WidthRequest = 220,
-                            Margin = new Thickness(0,20,0,10),
-                            Command = new Command(async () =>
-                            {
-                                
-                            })
-                        },
-
-                        // --- BOTÓN DE SALIR ---
-                        new Button
-                        {
-                            Text = "Salir",
-                            BackgroundColor = Color.FromArgb("ffd700"),
-                            TextColor = Colors.White,
-                            CornerRadius = 10,
-                            HeightRequest = 45,
-                            WidthRequest = 150,
-                            HorizontalOptions = LayoutOptions.Center,
-
-                            Command = new Command(async () =>
-                            {
-                                await Application.Current.MainPage.Navigation.PopModalAsync();
-                            })
-                        }
-                    }
-                }
-            }
-        };
-
-        // ======= MOSTRAR COMO MODAL =========
-        await Navigation.PushModalAsync(alarmaPage);
-                })
-                    },
-            // === BOTÓN SALIR ===
-            new Button
+            routinesCollection, //muestra el registro
+            new Button //botón para salir
             {
                 Text = "Salir",
                 BackgroundColor = Color.FromArgb("ffd700"),
@@ -407,10 +306,21 @@ namespace ProyectoFinDeCurso.Pages.Detail
             BackgroundColor = Color.FromRgba(0, 0, 0, 0.6);
         }
 
-        private async Task BuildCreateAlarmUI()
+        private async Task BuildCreateAlarmUI() //build para crear los avisos al usuario
         {
-            var alarmas = await _dbService.GetAlarmsAsync();
+            var userId = await SecureStorage.GetAsync("user_id"); //obtiene la id del usuario
+            if (userId == null) //verifica si el usuario inició sesion
+            {
+                await DisplayAlert(
+                                                                 "Usuario No registrado",
+                                                                 "usuario no identificado.",
+                                                                 "Aceptar"
+                                                             );
+                return;
+            }
 
+            var alarmas = await _dbService.GetAlarmsAsync(); //obtiene las alarmas
+            var filterAlarm = alarmas.Where(x => x.userID == int.Parse(userId)).ToList();
             // ==== TÍTULO ====
             var titleLabel = new Label
             {
@@ -652,13 +562,12 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     Saturday = saturday,
                                     Sunday = sunday,
 
-                                    IsActive = true,
 
                                     // 👇 Si userID es bool, esto es lo único que puedo poner
                                     userID = user.UserID
                                 };
                                     await _dbService.Create(newAlarm);
-                                    ScheduleAlarm(newAlarm);
+                                    AlarmScheduler.ScheduleAlarm(newAlarm);
                                     await DisplayAlert("Alarma creada", $"Sonará a las {newAlarm.FormattedTime}", "OK");
                                     await Navigation.PopModalAsync();
 
@@ -714,7 +623,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
             // ==== COLLECTIONVIEW ====
             var alarmsCollection = new CollectionView
             {
-                ItemsSource = alarmas,
+                ItemsSource = filterAlarm,
                 SelectionMode = SelectionMode.None,
                 VerticalOptions = LayoutOptions.FillAndExpand,
 
@@ -951,7 +860,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
             Content = mainGrid;
         }
 
-        void ScheduleAlarm(Alarm alarm)
+        public void ScheduleAlarm(Alarm alarm)
         {
             DateTime now = DateTime.Now;
             DateTime nextTrigger = FindNextTriggerDay(alarm, now);

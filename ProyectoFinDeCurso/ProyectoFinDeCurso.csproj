@@ -42,7 +42,7 @@
   <!-- 🔹 Recursos MAUI -->
   <ItemGroup>
     <!-- Icono -->
-    <MauiIcon Include="Resources\AppIcon\dominada.png" Color = "Black" ForegroundScale = "0.65" />
+    <MauiIcon Include="Resources\AppIcon\dominada.png" Color="Black" ForegroundScale="0.65" />
 
     <!-- Splash Screen -->
     <MauiSplashScreen Include="Resources\Splash\splash.png" BaseSize="128,128" Condition="'$(TargetFramework)' == 'net9.0-windows10.0.19041.0'" />

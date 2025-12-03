@@ -9,49 +9,45 @@ using System.Threading.Tasks;
     {
         public class Alarm
         {
-            [PrimaryKey, AutoIncrement, Column("alarmID")]
-            public int AlarmID { get; set; }
+            [PrimaryKey, AutoIncrement, Column("alarmID")] //id de la alarma en la base de datos
+            public int AlarmID { get; set; } //id de la alarma
 
-            // Nombre que ponga el usuario
-            [Column("name")]
-            public string Name { get; set; }
+           
+            [Column("name")] //nombre de la alarma en la base de datos
+            public string Name { get; set; } //nombre de la alarma
 
             // Hora y minutos
-            [Column("hour")]
-            public int Hour { get; set; }   // 0–23
+            [Column("hour")] //nombre de la hora de la alarma en la base de datos
+            public int Hour { get; set; }   //hora de la alarma
 
-            [Column("minute")]
-            public int Minute { get; set; } // 0–59
+            [Column("minute")] // minuto de la alarma en la base de datos
+            public int Minute { get; set; } //minutos de la alarma en la base de datos
 
-            // Días de la semana (true/false)
-            [Column("monday")]
-            public bool Monday { get; set; }
+            [Column("monday")] //condición para activar el dia de la alarma en la base de datos
+            public bool Monday { get; set; } //condición del día
 
-            [Column("tuesday")]
-            public bool Tuesday { get; set; }
+            [Column("tuesday")]//condición para activar el dia de la alarma en la base de datos
+        public bool Tuesday { get; set; }//condición del día
 
-            [Column("wednesday")]
-            public bool Wednesday { get; set; }
+        [Column("wednesday")]//condición para activar el dia de la alarma en la base de datos
+        public bool Wednesday { get; set; }//condición del día
 
-            [Column("thursday")]
-            public bool Thursday { get; set; }
+        [Column("thursday")]//condición para activar el dia de la alarma en la base de datos
+        public bool Thursday { get; set; }//condición del día
 
-            [Column("friday")]
-            public bool Friday { get; set; }
+        [Column("friday")]//condición para activar el dia de la alarma en la base de datos
+        public bool Friday { get; set; }//condición del día
 
-            [Column("saturday")]
-            public bool Saturday { get; set; }
+        [Column("saturday")]//condición para activar el dia de la alarma en la base de datos
+        public bool Saturday { get; set; }//condición del día
 
-            [Column("sunday")]
-            public bool Sunday { get; set; }
+        [Column("sunday")]//condición para activar el dia de la alarma en la base de datos
+        public bool Sunday { get; set; }//condición del día
 
-            // Activada o no
-            [Column("isActive")]
-            public bool IsActive { get; set; } = true;
-            [Column("userID")]
+            [Column("userID")] //asignar alarma al usuario
             public int userID { get; set; } = -1;
 
             [Ignore]
-            public string FormattedTime => $"{Hour:D2}:{Minute:D2}";
+            public string FormattedTime => $"{Hour:D2}:{Minute:D2}"; //muestra la hora en un formato
         }
 }

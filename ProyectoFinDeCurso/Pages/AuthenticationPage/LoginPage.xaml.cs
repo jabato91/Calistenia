@@ -39,7 +39,7 @@ public partial class LoginPage : ContentPage
 
         await SecureStorage.SetAsync("user_email", emailInput); //Guarda el email del usuario en el almacenamiento seguro
         await SecureStorage.SetAsync("user_id", user.UserID.ToString()); //Guarda el id del usuario en el almacenamiento seguro
-
+        Preferences.Set("lastUserId", user.UserID);
         if (Application.Current != null)
         {
             Application.Current.MainPage = new userFlyoutPage(new DbService(),user.userType); //Navega hacia la página Home, permitiendo no volver a la página anterior

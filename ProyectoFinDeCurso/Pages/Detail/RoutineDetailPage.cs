@@ -1724,39 +1724,131 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     };
                 })
             };
-            var modalPage = new ContentPage // contenido de la página modal para crear/modificar la rutina
+            var finishButton = new Button // botón para guardar o modificar la rutina
             {
-                BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
-                Content = new Border
-
+                Command = new Command(async () =>
                 {
-                    BackgroundColor = Color.FromArgb("#2E1E1B"),
-                    Padding = 20,
-                    StrokeShape = new RoundRectangle { CornerRadius = 20 },
-                    Margin = 1,
-                    VerticalOptions = LayoutOptions.Center,
-                    HorizontalOptions = LayoutOptions.Center,
 
-                    WidthRequest = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density * 0.9,
-                    MaximumWidthRequest = 450,
-                    MaximumHeightRequest = 500,
-                    Content = new VerticalStackLayout
+                    if (nameRoutineEntry.Text == null || string.IsNullOrWhiteSpace(nameRoutineEntry.Text) ||
+                    DescriptionRoutineEntry.Text == null || string.IsNullOrWhiteSpace(DescriptionRoutineEntry.Text) ||
+                    !exercisesInRoutine.Any()) //verifica que los campos no estén vacíos y que haya al menos un ejercicio
                     {
-                        Padding = 1, // padding interno mínimo
-                        Spacing = 5, // espacio entre elementos
-                        Children =
+                        await DisplayAlert("Error", "Rellena todos lo campos, y añade por lo menos un ejercicio", "OK");
+                        return; // muestra un error y sale del método
+                    }
+                    else // si los campos están completos
+                    {
+                        if (newRoutine) // si es una nueva rutina
+                        {
+                            //rellena los campos de la rutina
+                            var selectedBodyTranslation = bodyPartEnumPicker.SelectedItem.ToString();
+                            var selectedDificultyTranslation = dificultyPicker.SelectedItem.ToString();
+                            var selectedBodyEnum = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == selectedBodyTranslation).Key;
+                            var selectedDificultyEnum = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == selectedDificultyTranslation).Key;
+                            var userId = await SecureStorage.GetAsync("user_id");
+                            var user = await _dbService.GetUserById(int.Parse(userId));
+                            Routines createRoutine;
+                            if (user.userType.Equals(userTypeEnum.admin)) // crea la rutina según el tipo de usuario
+                            {
+                                createRoutine = new Routines { nameRoutine = nameRoutineEntry.Text, description = DescriptionRoutineEntry.Text, muscleGroup = selectedBodyEnum, typeUser = userTypeEnum.all, userID = 0, difficulty = selectedDificultyEnum };
+                            }
+                            else
+                            {
+                                createRoutine = new Routines { nameRoutine = nameRoutineEntry.Text, description = DescriptionRoutineEntry.Text, muscleGroup = selectedBodyEnum, difficulty = selectedDificultyEnum, typeUser = userTypeEnum.all, userID = user.UserID };
+                            }
+
+                            await _dbService.Create(createRoutine); // crea la rutina en la base de datos
+
+                            foreach (Exercise exercise in exercisesInRoutine) // crea las relaciones entre la rutina y los ejercicios
+                            {
+                                RoutinesExercises routineExercises = new RoutinesExercises { RoutineID = createRoutine.routineID, ExerciseID = exercise.execiseID, sets = exercise.sets, reps = exercise.reps, seconds = exercise.seconds };
+                                await _dbService.Create(routineExercises);
+                            }
+                        }
+                        else
+                        { // si es para modificar una rutina existente
+                            var existingRelations = await _dbService.GetRoutinesExercisesAsync(); // obtiene las relaciones existentes
+
+                            //modifica los campos de la rutina
+                            var selectedBodyTranslation = bodyPartEnumPicker.SelectedItem.ToString();
+                            var selectedTranslation = bodyPartEnumPicker.SelectedItem.ToString();
+                            var selectedBodyEnum = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == selectedBodyTranslation).Key;
+                            var selectedDificultyEnum = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == selectedTranslation).Key;
+                            routine.nameRoutine = nameRoutineEntry.Text;
+                            routine.description = DescriptionRoutineEntry.Text;
+                            routine.muscleGroup = selectedBodyEnum;
+                            routine.difficulty = selectedDificultyEnum;
+                            routine.Exercises = exercisesInRoutine;
+
+
+                            var eliminateExercises = existingRelations.Where(r => r.RoutineID.Equals(routine.routineID)).ToList(); // obtiene las relaciones a eliminar
+
+                            foreach (var relation in eliminateExercises) // elimina las relaciones si exisitieran
+                            {
+                                if (relation.RoutineID.Equals(routine.routineID))
+                                {
+                                    await _dbService.Delete(relation);
+                                }
+                            }
+                            foreach (Exercise exercise in routine.Exercises) // crea las nuevas relaciones entre la rutina y los ejercicios
+                            {
+                                await _dbService.Create(new RoutinesExercises { RoutineID = routine.routineID, ExerciseID = exercise.execiseID, sets = exercise.sets, reps = exercise.reps, seconds = exercise.seconds });
+                            }
+                            await _dbService.Update(_routine); //actualiza la rutina en la base de datos
+
+                        }
+                    }
+                    await _filterViewModel.LoadRoutinesAsync(); // recarga las rutinas
+                    _filterViewModel.UpdateFilteredRoutines(); //actualiza las rutinas filtradas
+
+                    await Navigation.PopModalAsync(); // cierra el modal
+
+                })
+            };
+            var Tittle = new Label //titulo de la página
+            {
+                FontSize = 24,
+
+                TextColor = Color.FromArgb("#C77B30"),
+
+                HorizontalOptions = LayoutOptions.Fill,
+                HorizontalTextAlignment = TextAlignment.Center,
+                FontFamily = "EatMeAlive"
+            };
+            if (newRoutine) //verifica si es nueva la rutina
+            {
+                Tittle.Text = "Crear Rutina";
+                finishButton.Text = "Crear";
+            }
+            else
+            {
+                Tittle.Text = "Modificar Rutina";
+                finishButton.Text = "Modificar";
+            }
+                var modalPage = new ContentPage // contenido de la página modal para crear/modificar la rutina
                 {
-                    new Label
+                    BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
+                    Content = new Border
+
                     {
-                        Text = "Crear Rutina",
-                        FontSize = 24,
+                        BackgroundColor = Color.FromArgb("#2E1E1B"),
+                        Padding = 20,
+                        StrokeShape = new RoundRectangle { CornerRadius = 20 },
+                        Margin = 1,
+                        VerticalOptions = LayoutOptions.Center,
+                        HorizontalOptions = LayoutOptions.Center,
 
-                        TextColor = Color.FromArgb("#C77B30"),
+                        WidthRequest = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density * 0.9,
+                        MaximumWidthRequest = 450,
+                        MaximumHeightRequest = 500,
+                        Content = new VerticalStackLayout
+                        {
+                            Padding = 1, // padding interno mínimo
+                            Spacing = 5, // espacio entre elementos
+                            Children =
+                {
+                    Tittle,
 
-                        HorizontalOptions = LayoutOptions.Fill,
-                        HorizontalTextAlignment = TextAlignment.Center,
-                        FontFamily="EatMeAlive"
-                    },
                     nameRoutineEntry,
                     DescriptionRoutineEntry,
                     dificultyPicker,
@@ -1768,86 +1860,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         Spacing = 10,
                         Children =
                         {
-                             new Button // botón para guardar o modificar la rutina
-                        {
-                            Text = "Modificar",
-                            Command = new Command(async () =>
-                            {
+                            finishButton,
 
-                                if(nameRoutineEntry.Text == null || string.IsNullOrWhiteSpace(nameRoutineEntry.Text) || 
-                                DescriptionRoutineEntry.Text == null || string.IsNullOrWhiteSpace(DescriptionRoutineEntry.Text) ||
-                                !exercisesInRoutine.Any()) //verifica que los campos no estén vacíos y que haya al menos un ejercicio
-                                {
-                                    await DisplayAlert("Error", "Rellena todos lo campos, y añade por lo menos un ejercicio", "OK");
-                                    return; // muestra un error y sale del método
-                                }
-                                else // si los campos están completos
-                                {
-                                    if(newRoutine) // si es una nueva rutina
-                                    {
-                                        //rellena los campos de la rutina
-                                        var selectedBodyTranslation = bodyPartEnumPicker.SelectedItem.ToString();
-                                        var selectedDificultyTranslation = dificultyPicker.SelectedItem.ToString();
-                                        var selectedBodyEnum = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == selectedBodyTranslation).Key;
-                                        var selectedDificultyEnum = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == selectedDificultyTranslation).Key;
-                                        var userId = await SecureStorage.GetAsync("user_id");
-                                        var user = await _dbService.GetUserById(int.Parse(userId));
-                                        Routines createRoutine;
-                                        if (user.userType.Equals(userTypeEnum.admin)) // crea la rutina según el tipo de usuario
-                                        {
-                                            createRoutine = new Routines{nameRoutine = nameRoutineEntry.Text,description = DescriptionRoutineEntry.Text,muscleGroup = selectedBodyEnum,typeUser = userTypeEnum.all,userID = 0,difficulty = selectedDificultyEnum};
-                                        }
-                                        else
-                                        {
-                                            createRoutine = new Routines{nameRoutine = nameRoutineEntry.Text,description = DescriptionRoutineEntry.Text,muscleGroup = selectedBodyEnum,difficulty = selectedDificultyEnum,typeUser = userTypeEnum.all,userID = user.UserID};
-                                        }
-
-                                        await _dbService.Create(createRoutine); // crea la rutina en la base de datos
-
-                                        foreach (Exercise exercise in exercisesInRoutine) // crea las relaciones entre la rutina y los ejercicios
-                                        {
-                                            RoutinesExercises routineExercises = new RoutinesExercises{RoutineID = createRoutine.routineID,ExerciseID = exercise.execiseID, sets = exercise.sets, reps = exercise.reps, seconds = exercise.seconds};
-                                            await _dbService.Create(routineExercises);
-                                        }
-                                    }else{ // si es para modificar una rutina existente
-                                        var existingRelations = await _dbService.GetRoutinesExercisesAsync(); // obtiene las relaciones existentes
-
-                                        //modifica los campos de la rutina
-                                        var selectedBodyTranslation = bodyPartEnumPicker.SelectedItem.ToString();
-                                        var selectedTranslation = bodyPartEnumPicker.SelectedItem.ToString();
-                                        var selectedBodyEnum = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == selectedBodyTranslation).Key;
-                                        var selectedDificultyEnum = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == selectedTranslation).Key;
-                                        routine.nameRoutine = nameRoutineEntry.Text;
-                                        routine.description = DescriptionRoutineEntry.Text;
-                                        routine.muscleGroup = selectedBodyEnum;
-                                        routine.difficulty = selectedDificultyEnum;
-                                        routine.Exercises = exercisesInRoutine;
-
-
-                                        var eliminateExercises = existingRelations.Where(r => r.RoutineID.Equals(routine.routineID)).ToList(); // obtiene las relaciones a eliminar
-
-                                        foreach (var relation in eliminateExercises) // elimina las relaciones si exisitieran
-                                        {
-                                            if (relation.RoutineID.Equals(routine.routineID))
-                                            {
-                                                await _dbService.Delete(relation);
-                                            }
-                                        }
-                                        foreach (Exercise exercise in routine.Exercises) // crea las nuevas relaciones entre la rutina y los ejercicios
-                                        {
-                                             await _dbService.Create(new RoutinesExercises {RoutineID = routine.routineID,ExerciseID = exercise.execiseID,sets = exercise.sets, reps = exercise.reps,seconds = exercise.seconds});
-                                        }
-                                        await _dbService.Update(_routine); //actualiza la rutina en la base de datos
-                                        
-                                    }
-                                }
-                                await _filterViewModel.LoadRoutinesAsync(); // recarga las rutinas
-                                _filterViewModel.UpdateFilteredRoutines(); //actualiza las rutinas filtradas
-
-                                await Navigation.PopModalAsync(); // cierra el modal
-
-                            })
-                        },
                         new Button // botón para cancelar y cerrar el modal
                         {
                             Text = "Cancelar",
@@ -1856,14 +1870,14 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         }
                     }
                 }
+                        }
                     }
-                }
-            };
+                };
             Content = modalPage.Content; // muestra el contenido del modal
             BackgroundColor = modalPage.BackgroundColor; // muestra el color de fondo del modal
         }
        
-        private async Task RegisterInCalendar()
+        private async Task RegisterInCalendar() //registra la rutina en el calendario
         {
             var userId = await SecureStorage.GetAsync("user_id"); //obtiene la id del usuario
             if(userId == null)
@@ -1879,8 +1893,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
             string fecha = DateTime.Today.ToString("dd/MM/yyyy");
             if (_routine != null)
             {
-                var regiter = new RegisterLogging { routineID = _routine.routineID, userID = user.UserID,  day = fecha, timeToStart = timeToStart, timeToEnd = timeToEnd};
-                _dbService.Create(regiter);
+                var regiter = new RegisterLogging { routineID = _routine.routineID, userID = user.UserID,  day = fecha, timeToStart = timeToStart, timeToEnd = timeToEnd}; //crea el registro
+                await _dbService.Create(regiter); //guarda el registro
             }
         }
     }

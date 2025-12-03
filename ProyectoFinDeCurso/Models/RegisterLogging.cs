@@ -11,10 +11,10 @@ namespace ProyectoFinDeCurso.Models
     {
         [PrimaryKey, AutoIncrement, Column("registerID")]
         public int registerID { get; set; }// Identificador único del registro de rutinas en la base de datos
-        [Column("routineID")]
-        public int routineID { get; set; }
-        [Column("userID")]
-        public int userID { get; set; }
+        [Column("routineID")] // identificador de la rutina en la base de datos
+        public int routineID { get; set; } //identificador de la rutina
+        [Column("userID")] //identificador del usuario en la base de datos
+        public int userID { get; set; } //identificador del usuario
         [Column("day")]
         public string day { get; set; } = string.Empty; // Día del registro de la rutina en la base de datos
         [Column("TimeToStart")]

@@ -3,19 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ProyectoFinDeCurso"
              x:Class="ProyectoFinDeCurso.App">
+
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
-                
             </ResourceDictionary.MergedDictionaries>
+
             <Style TargetType="NavigationPage">
                 <Setter Property="BarBackgroundColor" Value="#242424"/>
-                <!-- color de fondo -->
                 <Setter Property="BarTextColor" Value="White"/>
-                <!-- color del texto -->
             </Style>
+
         </ResourceDictionary>
     </Application.Resources>
+
 </Application>

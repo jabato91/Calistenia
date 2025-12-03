@@ -309,6 +309,15 @@ namespace ProyectoFinDeCurso.Pages.Detail
         }
         private void ModifyOrCreateExercise(Exercise exercise = null) //modifica o crea un ejercicio
         {
+
+            Label Tittle = new Label
+            {
+                FontSize = 24,
+                TextColor = Color.FromArgb("#C49362"),
+                HorizontalOptions = LayoutOptions.Fill,
+                HorizontalTextAlignment = TextAlignment.Center,
+                FontFamily = "EatMeAlive"
+            };
             bool newExercise = false;
             if (exercise == null) //verifica si el ejercicio es nulo
             {
@@ -320,16 +329,22 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     muscleGroupId = bodyPartEnum.nothing,
                     dificulty = dificultyEnum.nothing
                 };
+                Tittle.Text = "Crear Ejercicio";
+                
+            }
+            else
+            {
+                Tittle.Text = "Modificar Ejercio";
             }
 
-            var nameEntry = new Entry//entrada para el nombre del ejercicio
-            {
-                Text = exercise.name,
-                Placeholder = "Nombre",
-                TextColor = Color.FromArgb("#C49362"),
-                BackgroundColor = Color.FromArgb("#3B2523"),
-                HorizontalOptions = LayoutOptions.Fill
-            };
+                var nameEntry = new Entry//entrada para el nombre del ejercicio
+                {
+                    Text = exercise.name,
+                    Placeholder = "Nombre",
+                    TextColor = Color.FromArgb("#C49362"),
+                    BackgroundColor = Color.FromArgb("#3B2523"),
+                    HorizontalOptions = LayoutOptions.Fill
+                };
 
             var descEntry = new Entry //entrada para la descripción del ejercicio
             {
@@ -491,7 +506,98 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 BackgroundColor = Color.FromArgb("#3B2523"),
                 HorizontalOptions = LayoutOptions.Fill
             };
+            Button FinishButton = new Button //botón para crear o modificar el ejercicio
+            {
+                BackgroundColor = Color.FromArgb("ffd700"),
+                TextColor = Colors.White,
+                CornerRadius = 3,
+                Command = new Command(async () =>
+                {
+                    try
+                    {
 
+                        if (string.IsNullOrWhiteSpace(nameEntry.Text)) //verifica que se haya ingresado un nombre
+                        {
+                            await DisplayAlert("Aviso", "Debes ingresar un nombre.", "OK");
+                            return;
+                        }
+                        if (newExercise)
+                        { //si es un nuevo ejercicio
+                            var createExercise = new Exercise //crea un nuevo ejercicio con los datos ingresados
+                            {
+                                name = nameEntry.Text,
+                                description = descEntry.Text,
+                                muscleGroupId = enumExtension.BodyTranslations.First(x => x.Value == bodyPartEnumPicker.SelectedItem.ToString()).Key,
+                                dificulty = enumExtension.DifficultyTranslations.First(x => x.Value == dificultyEnumPicker.SelectedItem.ToString()).Key,
+                                typeUser = userTypeEnum.admin,
+                                video = selectedVideoName //guarda el nombre del video seleccionado
+                            };
+
+                            // Guardar imagen
+                            if (imageButton.BindingContext is string rutaImg && File.Exists(rutaImg)) //verifica que se haya seleccionado una imagen
+                            {
+                                string fileName = IOPath.GetFileName(rutaImg); //obtiene el nombre del archivo de la imagen
+                                createExercise.image = fileName;
+                            }
+
+                            await _dbService.Create(createExercise); //crea el ejercicio en la base de datos
+                            _filter.Exercises.Add(createExercise); //agrega el nuevo ejercicio a la lista de ejercicios filtrados
+                            await DisplayAlert("Éxito", "Ejercicio creado correctamente", "OK");
+                        }
+                        else //si es una modificación de un ejercicio existente
+                        {
+                            exercise.name = nameEntry.Text ?? ""; //actualiza los datos del ejercicio con los datos ingresados
+                            exercise.description = descEntry.Text ?? "";
+                            exercise.dificulty = enumExtension.DifficultyTranslations.First(x => x.Value == dificultyEnumPicker.SelectedItem.ToString()).Key;
+                            exercise.muscleGroupId = enumExtension.BodyTranslations.First(x => x.Value == bodyPartEnumPicker.SelectedItem.ToString()).Key;
+
+                            if (imageButton.BindingContext is string rutaNueva && File.Exists(rutaNueva)) //verifica que se haya seleccionado una nueva imagen
+                            {
+                                string nombreArchivo = IOPath.GetFileName(rutaNueva);
+                                exercise.image = nombreArchivo;
+                            }
+                            if (!string.IsNullOrEmpty(selectedVideoName))
+                            {
+                                exercise.video = selectedVideoName; // 🔥 AHORA SÍ CAMBIA EL NOMBRE DEL VIDEO
+                            }
+                            await _dbService.Update(exercise); //actualiza el ejercicio en la base de datos
+
+                            var index = _filter.Exercises.IndexOf(_selectedExercise); //busca el índice del ejercicio modificado en la lista de ejercicios filtrados
+                            if (index >= 0) //si se encuentra el ejercicio
+                            {
+                                var ex = _filter.Exercises[index]; //obtiene el ejercicio de la lista y actualiza sus datos
+
+                                ex.name = exercise.name;
+                                ex.description = exercise.description;
+                                ex.image = exercise.image;
+                                ex.muscleGroupId = exercise.muscleGroupId;
+                                ex.dificulty = exercise.dificulty;
+                                ex.video = exercise.video;
+                            }
+
+                            await DisplayAlert("Éxito", "Ejercicio actualizado correctamente", "OK");
+                        }
+                        _filter.UpdateFilteredExercises();
+
+                        await Navigation.PopModalAsync();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        await DisplayAlert("Error", ex.Message, "OK");
+                    }
+                })
+            };
+            if (newExercise) //verifica si el ejercicio es nulo
+            {
+
+                FinishButton.Text = "Crear";
+
+            }
+            else
+            {
+                FinishButton.Text = "Modificar";
+            }
             var modalPage = new ContentPage //crea la página modal para modificar o crear un ejercicio
             {
                 BackgroundColor = Color.FromRgba(0, 0, 0, 0.6),
@@ -509,15 +615,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         Spacing = 5,
                         Children =
                 {
-                    new Label
-                    {
-                        Text = "Crear ejercicio",
-                        FontSize = 24,
-                        TextColor = Color.FromArgb("#C49362"),
-                        HorizontalOptions = LayoutOptions.Fill,
-                        HorizontalTextAlignment = TextAlignment.Center,
-                        FontFamily = "EatMeAlive"
-                    },
+                    Tittle,
+                    
                     nameEntry,
                     descEntry,
                     imageButton,
@@ -530,88 +629,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         Spacing = 10,
                         Children =
                         {
-                            new Button //botón para crear o modificar el ejercicio
-                            {
-                                Text = "Crear",
-                                BackgroundColor = Color.FromArgb("ffd700"),
-                                TextColor = Colors.White,
-                                CornerRadius = 3,
-                                Command = new Command(async () =>
-                                {
-                                    try
-                                    {
-
-                                        if (string.IsNullOrWhiteSpace(nameEntry.Text)) //verifica que se haya ingresado un nombre
-                                        {
-                                            await DisplayAlert("Aviso", "Debes ingresar un nombre.", "OK");
-                                            return;
-                                        }
-                                        if(newExercise){ //si es un nuevo ejercicio
-                                            var createExercise = new Exercise //crea un nuevo ejercicio con los datos ingresados
-                                            {
-                                                name = nameEntry.Text,
-                                                description = descEntry.Text,
-                                                muscleGroupId = enumExtension.BodyTranslations.First(x => x.Value == bodyPartEnumPicker.SelectedItem.ToString()).Key,
-                                                dificulty = enumExtension.DifficultyTranslations.First(x => x.Value == dificultyEnumPicker.SelectedItem.ToString()).Key,
-                                                typeUser = userTypeEnum.admin,
-                                                video = selectedVideoName //guarda el nombre del video seleccionado
-                                            };
-
-                                            // Guardar imagen
-                                            if (imageButton.BindingContext is string rutaImg && File.Exists(rutaImg)) //verifica que se haya seleccionado una imagen
-                                            {
-                                                string fileName = IOPath.GetFileName(rutaImg); //obtiene el nombre del archivo de la imagen
-                                                createExercise.image = fileName;
-                                            }
-
-                                            await _dbService.Create(createExercise); //crea el ejercicio en la base de datos
-                                            _filter.Exercises.Add(createExercise); //agrega el nuevo ejercicio a la lista de ejercicios filtrados
-                                            await DisplayAlert("Éxito", "Ejercicio creado correctamente", "OK");
-                                        }
-                                        else //si es una modificación de un ejercicio existente
-                                        {
-                                            exercise.name = nameEntry.Text ?? ""; //actualiza los datos del ejercicio con los datos ingresados
-                                            exercise.description = descEntry.Text ?? ""; 
-                                            exercise.dificulty = enumExtension.DifficultyTranslations.First(x => x.Value == dificultyEnumPicker.SelectedItem.ToString()).Key;
-                                            exercise.muscleGroupId = enumExtension.BodyTranslations.First(x => x.Value == bodyPartEnumPicker.SelectedItem.ToString()).Key;
-                                            
-                                            if (imageButton.BindingContext is string rutaNueva && File.Exists(rutaNueva)) //verifica que se haya seleccionado una nueva imagen
-                                            {
-                                                string nombreArchivo = IOPath.GetFileName(rutaNueva);
-                                                exercise.image = nombreArchivo;
-                                            }
-                                            if (!string.IsNullOrEmpty(selectedVideoName))
-                                            {
-                                                exercise.video = selectedVideoName; // 🔥 AHORA SÍ CAMBIA EL NOMBRE DEL VIDEO
-                                            }
-                                            await _dbService.Update(exercise); //actualiza el ejercicio en la base de datos
-
-                                            var index = _filter.Exercises.IndexOf(_selectedExercise); //busca el índice del ejercicio modificado en la lista de ejercicios filtrados
-                                            if (index >= 0) //si se encuentra el ejercicio
-                                            {
-                                                var ex = _filter.Exercises[index]; //obtiene el ejercicio de la lista y actualiza sus datos
-
-                                                ex.name = exercise.name;
-                                                ex.description = exercise.description;
-                                                ex.image = exercise.image;
-                                                ex.muscleGroupId = exercise.muscleGroupId;
-                                                ex.dificulty = exercise.dificulty;
-                                                ex.video = exercise.video;
-                                            }
-
-                                            await DisplayAlert("Éxito", "Ejercicio actualizado correctamente", "OK");
-                                        }
-                                        _filter.UpdateFilteredExercises();
-
-                                        await Navigation.PopModalAsync();
-
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        await DisplayAlert("Error", ex.Message, "OK");
-                                    }
-                                })
-                            },
+                            FinishButton,
+                            
                             new Button
                             {
                                 Text = "Cancelar",
