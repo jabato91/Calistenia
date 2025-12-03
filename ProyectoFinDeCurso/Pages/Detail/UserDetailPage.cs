@@ -93,7 +93,6 @@ namespace ProyectoFinDeCurso.Pages.Detail
             var emailField = CreateField("Email", user.Email);//crea el campo de email
             var typeField = CreateField("Tipo de usuario", user.userType.ToString());//crea el campo de tipo de usuario
 
-            // ---------- Botón cancelar ----------
             var cancelButton = new Button//botón para salir de la vista
             {
                 Text = "Salir",
@@ -141,8 +140,8 @@ namespace ProyectoFinDeCurso.Pages.Detail
             };
 
 
-            Content = modalPage.Content;
-            BackgroundColor = modalPage.BackgroundColor;
+            Content = modalPage.Content; //establece el contenido de la página
+            BackgroundColor = modalPage.BackgroundColor; //establece el color de fondo de la página
         }
         private void BuildEditUI()//Permite editar los detalles del usuario
         {

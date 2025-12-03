@@ -4,8 +4,6 @@ using ProyectoFinDeCurso.Pages;
 using ProyectoFinDeCurso.Pages.Authentication;
 using ProyectoFinDeCurso.Services;
 using SQLitePCL;
-using Syncfusion.Maui.Core.Hosting;
-using Syncfusion.Licensing;
 using Plugin.LocalNotification;
 
 namespace ProyectoFinDeCurso
@@ -16,15 +14,13 @@ namespace ProyectoFinDeCurso
         {
             Batteries_V2.Init(); //inicia sqlite antes de culquier uso
 
-            var builder = MauiApp.CreateBuilder();
-            SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JFaF1cXGFCf1FpQ3xbf1x1ZFBMYlhbR3FPMyBoS35Rc0RiW3ZedXZRRWdfU0Z2VEFc");
+            var builder = MauiApp.CreateBuilder(); //crea el constructor de la app
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()                    // llama a la librería de herramientas
-                .UseMauiCommunityToolkitMediaElement()        // llama a la librería de video
-                .ConfigureSyncfusionCore()
-                .UseLocalNotification()
-                .ConfigureFonts(fonts =>
+                .UseMauiCommunityToolkitMediaElement()        // llama a la librería de video //
+                .UseLocalNotification()                       // llama a la librería de notificaciones locales
+                .ConfigureFonts(fonts => //configura las fuentes de la app
                 {
                     
                     //
@@ -49,15 +45,14 @@ namespace ProyectoFinDeCurso
                 });
 
             // 🔹 Inyección de dependencias
-            builder.Services.AddSingleton<DbService>();
-            builder.Services.AddTransient<LoginPage>();
-            builder.Services.AddTransient<RegisterPage>();
+            builder.Services.AddSingleton<DbService>(); // Servicio de base de datos como singleton
+            
 
-#if DEBUG
-            builder.Logging.AddDebug();
+#if DEBUG 
+            builder.Logging.AddDebug(); //
 #endif
 
-            return builder.Build();
+            return builder.Build(); 
         }
     }
 }

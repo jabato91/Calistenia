@@ -16,42 +16,6 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
         private readonly ModeEnum _mode; //modo de la página (ver, editar, crear, filtrar)
 
-
-
-
-        private async void editImage(object sender, EventArgs e) //método para editar la imagen del ejercicio
-        {
-            try
-            {
-                var result = await FilePicker.Default.PickAsync(new PickOptions //abre el explorador de archivos para seleccionar una imagen
-                {
-                    PickerTitle = "Selecciona una imagen",
-                    FileTypes = FilePickerFileType.Images
-                });
-
-                if (result != null && sender is ImageButton btn) //verifica que se haya seleccionado una imagen y que el remitente sea un ImageButton
-                {
-                    string nombreArchivo = IOPath.GetFileName(result.FullPath); //obtiene el nombre del archivo seleccionado
-                    string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images"); //ruta de la carpeta donde se guardarán las imágenes
-
-                    if (!Directory.Exists(carpetaImagenes)) //verifica si la carpeta no existe
-                        Directory.CreateDirectory(carpetaImagenes); //crea la carpeta
-
-                    string rutaDestino = IOPath.Combine(carpetaImagenes, nombreArchivo); //ruta completa del archivo destino
-                    File.Copy(result.FullPath, rutaDestino, true); //copia el archivo seleccionado a la carpeta destino
-
-                    btn.Source = ImageSource.FromFile(rutaDestino); //actualiza la fuente de la imagen del botón
-                    btn.BindingContext = rutaDestino; // guardamos la ruta
-                }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", $"No se pudo abrir el archivo: {ex.Message}", "OK");
-            }
-        } 
-
-
-
         public ExerciseDetailPage(DbService? dbService = null,ExerciseFilterViewModel? filter = null,Exercise? exercise = null, ModeEnum mode = ModeEnum.nothing, userTypeEnum typeUser = userTypeEnum.nothing)
         {
             _dbService = dbService;
@@ -117,9 +81,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
             };
 
 
-            var video = new MediaElement
+            var video = new MediaElement //video del ejercicio
             {
-                Source = _selectedExercise.VideoMediaSource,
+                Source = _selectedExercise.VideoMediaSource, //obtiene la fuente del video del ejercicio
                 ShouldShowPlaybackControls = true,
                 Aspect = Aspect.AspectFit,
                 HeightRequest = 250,
@@ -127,7 +91,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 VerticalOptions = LayoutOptions.Center
             };
 
-            var videoContainer = new Grid
+            var videoContainer = new Grid //contenedor del video
             {
                 BackgroundColor = Colors.Black,
                 HeightRequest = 300,
@@ -135,10 +99,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 Margin = new Thickness(0, 10)
             };
 
-            videoContainer.Children.Add(video);
+            videoContainer.Children.Add(video); //agrega el video al contenedor
 
 
-            var exitButton = new Button
+            var exitButton = new Button //botón para salir de la vista del ejercicio
             {
                 Text = "Salir",
                 BackgroundColor = Color.FromArgb("ffd700"),
@@ -151,20 +115,20 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 Command = new Command(async () => await Navigation.PopModalAsync())
             };
 
-            Content = new Grid
+            Content = new Grid //interfaz final de la vista del ejercicio
             {
                 VerticalOptions = LayoutOptions.Center,
                 HorizontalOptions = LayoutOptions.Center,
                 Children =
     {
-        new Border
+        new Border //borde que contiene toda la interfaz
         {
             BackgroundColor = Color.FromArgb("#251A18"),
                                     StrokeShape = new RoundRectangle { CornerRadius = 25 },
                                     Stroke = Colors.Orange,
                                     StrokeThickness = 2,
                                     Padding = 20,
-            Content = new VerticalStackLayout
+            Content = new VerticalStackLayout //diseño vertical que contiene todos los elementos
             {
                 Spacing = 15,
                 HorizontalOptions = LayoutOptions.Center,
@@ -363,51 +327,45 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 BackgroundColor = Color.FromArgb("#3B2523")
             };
 
-            imageButton.Clicked += async (s, e) =>
+            imageButton.Clicked += async (s, e) => //evento al hacer clic en el botón de imagen
             {
                 try
                 {
-                    var result = await FilePicker.Default.PickAsync(new PickOptions
+                    var result = await FilePicker.Default.PickAsync(new PickOptions //abre el explorador de archivos para seleccionar una imagen
                     {
-                        PickerTitle = "Selecciona una imagen",
-                        FileTypes = FilePickerFileType.Images
+                        PickerTitle = "Selecciona una imagen", //título del explorador de archivos
+                        FileTypes = FilePickerFileType.Images //tipo de archivo permitido (imágenes)
                     });
 
-                    if (result != null)
+                    if (result != null) //verifica que se haya seleccionado un archivo
                     {
-                        string nombreOriginal = IOPath.GetFileName(result.FullPath);
+                        string nombreOriginal = IOPath.GetFileName(result.FullPath); //obtiene el nombre original del archivo seleccionado
 
-                        string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images");
-                        Directory.CreateDirectory(carpetaImagenes);
+                        string carpetaImagenes = IOPath.Combine(FileSystem.AppDataDirectory, "Images"); //ruta de la carpeta donde se guardarán las imágenes
+                        Directory.CreateDirectory(carpetaImagenes); //crea la carpeta si no existe
 
-                        string rutaDestinoOriginal = IOPath.Combine(carpetaImagenes, nombreOriginal);
+                        string rutaDestinoOriginal = IOPath.Combine(carpetaImagenes, nombreOriginal); //ruta completa del archivo destino
 
-                        // Copiar archivo original
-                        using (var origen = await result.OpenReadAsync())
-                        using (var destino = File.Create(rutaDestinoOriginal))
-                            await origen.CopyToAsync(destino);
+                        using (var origen = await result.OpenReadAsync()) //abre el archivo seleccionado para lectura
+                        using (var destino = File.Create(rutaDestinoOriginal)) //crea el archivo destino para escritura
+                            await origen.CopyToAsync(destino); //copia el contenido del archivo seleccionado al archivo destino
 
-                        // ⬇ NORMALIZAR (quitar espacios y mayúsculas)
-                        string nombreLimpio = nombreOriginal
+                        string nombreLimpio = nombreOriginal //crea una versión limpia del nombre del archivo
                                                 .ToLower()
                                                 .Replace(" ", "_");
 
-                        string rutaDestinoLimpia = IOPath.Combine(carpetaImagenes, nombreLimpio);
+                        string rutaDestinoLimpia = IOPath.Combine(carpetaImagenes, nombreLimpio); //ruta completa del archivo con el nombre limpio
 
-                        // Renombrar archivo físico si el nombre cambió
-                        if (rutaDestinoOriginal != rutaDestinoLimpia)
+                        if (rutaDestinoOriginal != rutaDestinoLimpia) //verifica si el nombre original es diferente al nombre limpio
                         {
-                            File.Move(rutaDestinoOriginal, rutaDestinoLimpia, true);
+                            File.Move(rutaDestinoOriginal, rutaDestinoLimpia, true); //renombra el archivo al nombre limpio
                         }
 
-                        // Guardar nombre limpio en el Exercise
-                        exercise.image = nombreLimpio;
+                        exercise.image = nombreLimpio; //guarda el nombre limpio en la propiedad de imagen del ejercicio
 
-                        // Actualizar Binding
-                        imageButton.BindingContext = rutaDestinoLimpia;
+                        imageButton.BindingContext = rutaDestinoLimpia; // guardamos la ruta
 
-                        // Mostrar imagen
-                        imageButton.Source = ImageSource.FromFile(rutaDestinoLimpia);
+                        imageButton.Source = ImageSource.FromFile(rutaDestinoLimpia); //actualiza la fuente de la imagen del botón
                     }
                 }
                 catch (Exception ex)
@@ -438,48 +396,41 @@ namespace ProyectoFinDeCurso.Pages.Detail
             string selectedVideoName = null; //variable para almacenar el nombre del video seleccionado
 
             var videoTap = new TapGestureRecognizer();//gesto para detectar el toque en el marco de video
-            videoTap.Tapped += async (s, e) =>
+            videoTap.Tapped += async (s, e) => //evento al tocar el marco de video
             {
-                var result = await FilePicker.PickAsync(new PickOptions
+                var result = await FilePicker.PickAsync(new PickOptions //abre el explorador de archivos para seleccionar un video
                 {
-                    PickerTitle = "Seleccionar video",
-                    FileTypes = FilePickerFileType.Videos
+                    PickerTitle = "Seleccionar video", //título del explorador de archivos
+                    FileTypes = FilePickerFileType.Videos //tipo de archivo permitido (videos)
                 });
 
-                if (result != null)
+                if (result != null) //verifica que se haya seleccionado un archivo
                 {
-                    string folder = IOPath.Combine(FileSystem.AppDataDirectory, "Videos");
-                    Directory.CreateDirectory(folder);
+                    string folder = IOPath.Combine(FileSystem.AppDataDirectory, "Videos"); //ruta de la carpeta donde se guardarán los videos
+                    Directory.CreateDirectory(folder); //crea la carpeta si no existe
 
-                    // Nombre original
-                    string nombreOriginal = result.FileName;
+                    string nombreOriginal = result.FileName; //obtiene el nombre original del archivo seleccionado
 
-                    // Crear versión limpia del nombre
-                    string nombreLimpio = nombreOriginal
+                    string nombreLimpio = nombreOriginal //crea una versión limpia del nombre del archivo
                                             .ToLower()
                                             .Replace(" ", "_");
 
-                    // Rutas
-                    string rutaDestinoOriginal = IOPath.Combine(folder, nombreOriginal);
-                    string rutaDestinoLimpia = IOPath.Combine(folder, nombreLimpio);
+                    string rutaDestinoOriginal = IOPath.Combine(folder, nombreOriginal); //ruta completa del archivo destino
+                    string rutaDestinoLimpia = IOPath.Combine(folder, nombreLimpio); //ruta completa del archivo con el nombre limpio
 
-                    // 1️⃣ Copiar el archivo original
-                    using (var src = await result.OpenReadAsync())
-                    using (var dest = File.Create(rutaDestinoOriginal))
-                        await src.CopyToAsync(dest);
+                    using (var src = await result.OpenReadAsync()) //abre el archivo seleccionado para lectura
+                    using (var dest = File.Create(rutaDestinoOriginal)) //crea el archivo destino para escritura
+                        await src.CopyToAsync(dest); //copia el contenido del archivo seleccionado al archivo destino
 
-                    // 2️⃣ Renombrar si es necesario
-                    if (rutaDestinoOriginal != rutaDestinoLimpia)
+                    if (rutaDestinoOriginal != rutaDestinoLimpia) //verifica si el nombre original es diferente al nombre limpio
                     {
-                        File.Move(rutaDestinoOriginal, rutaDestinoLimpia, true);
+                        File.Move(rutaDestinoOriginal, rutaDestinoLimpia, true); //renombra el archivo al nombre limpio
                     }
 
-                    // 3️⃣ Guardar solo el nombre limpio en tu variable o BD
-                    selectedVideoName = nombreLimpio;
+                    selectedVideoName = nombreLimpio; // guarda el nombre limpio del video seleccionado
 
-                    // 4️⃣ Mostrar feedback
-                    videoLabel.Text = "Cambiar video";
-                    await DisplayAlert("Video añadido", "El video se ha guardado correctamente.", "OK");
+                    videoLabel.Text = "Cambiar video"; //actualiza el texto de la etiqueta del botón de video
+                    await DisplayAlert("Video añadido", "El video se ha guardado correctamente.", "OK"); //muestra una alerta indicando que el video se ha guardado correctamente
                 }
             };
 
@@ -577,9 +528,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                             await DisplayAlert("Éxito", "Ejercicio actualizado correctamente", "OK");
                         }
-                        _filter.UpdateFilteredExercises();
+                        _filter.UpdateFilteredExercises(); //actualiza la lista de ejercicios filtrados
 
-                        await Navigation.PopModalAsync();
+                        await Navigation.PopModalAsync(); //cierra la página modal
 
                     }
                     catch (Exception ex)
@@ -649,33 +600,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
             Content = modalPage.Content;
             BackgroundColor = modalPage.BackgroundColor;
         }
-        private MediaSource GetVideoSource(string videoName) //método para obtener la fuente del video
-        {
-            if (string.IsNullOrWhiteSpace(videoName)) //verifica si el nombre del video es nulo o vacío
-                return null; //devuelve nulo si no hay video
-
-            
-            string path = IOPath.Combine(FileSystem.AppDataDirectory, "Videos", videoName); //optiene la ruta completa del video en la carpeta de videos
-
-            if (File.Exists(path)) //verifica si el archivo de video existe en la ruta especificada
-            {
-                return MediaSource.FromFile(path); //devuelve la fuente del video desde el archivo
-            }
-
-            
-            try
-            {
-                var rawSource = MediaSource.FromResource(videoName); //intenta obtener la fuente del video desde los recursos incrustados
-                return rawSource; //devuelve la fuente del video desde los recursos
-            }
-            catch
-            {
-                Console.WriteLine("[VIDEO ERROR] No existe en RAW → " + videoName);
-            }
-
-            Console.WriteLine("[VIDEO ERROR] No existe el video → " + videoName);
-            return null; //si no se encuentra el video, devuelve nulo
-        }
+        
         
     }
 

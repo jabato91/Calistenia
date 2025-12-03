@@ -5,38 +5,33 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:viewmodels="clr-namespace:ProyectoFinDeCurso.ViewModels">
 
-
-    <!-- FONDO OSCURO CON DEGRADADO -->
     <ContentPage.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#1A1A1A" Offset="0" />
             <GradientStop Color="#2E1E1B" Offset="1" />
-        </LinearGradientBrush>
+        </LinearGradientBrush> <!-- fondo de la página -->
     </ContentPage.Background>
 
-    <VerticalStackLayout Padding="20" Spacing="20" x:Name="CalendarRoot">
+    <VerticalStackLayout Padding="20" Spacing="20" x:Name="CalendarRoot"> <!--Contenido principal-->
 
         <Label Text="Calendario"
                FontSize="28"
                TextColor="White"
-               HorizontalOptions="Center" />
+               HorizontalOptions="Center" /><!--Titulo de la página-->
 
-        <!-- CONTENEDOR PRINCIPAL CON BORDER -->
         <Border Background="#3B2523"
                 Stroke="#D4A857"
-                StrokeThickness="2">
+                StrokeThickness="2"><!--Borde del calendario-->
 
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="20" />
-            </Border.StrokeShape>
+            </Border.StrokeShape><!--Ridio del borde-->
 
-            <!-- CONTENIDO DEL CALENDARIO -->
             <VerticalStackLayout Spacing="10">
 
-                <!-- Header Mes / Año -->
-                <Grid ColumnDefinitions="50,*,50">
+                <Grid ColumnDefinitions="50,*,50"><!-- grid mes y año -->
 
-                    <!-- Flecha atrás -->
+                    <!-- Flecha para cambiar de mes  -->
                     <Button Grid.Column="0"
                             Text="◀"
                             BackgroundColor="#2E1E1B"
@@ -57,7 +52,7 @@
                                HorizontalTextAlignment="Center" />
                     </StackLayout>
 
-                    <!-- Flecha adelante -->
+                    <!-- Flecha para cambiar de mes  -->
                     <Button Grid.Column="2"
                             Text="▶"
                             BackgroundColor="#2E1E1B"
@@ -66,7 +61,7 @@
                             Command="{Binding NextMonthCommand}" />
                 </Grid>
 
-                <!-- CABECERA DE DÍAS -->
+                <!-- Título de los dias de de la semana -->
                 <Grid ColumnDefinitions="*,*,*,*,*,*,*" Padding="0,5,0,5">
                     <Label Grid.Column="0" Text="L" TextColor="#E0E0E0" HorizontalTextAlignment="Center" />
                     <Label Grid.Column="1" Text="M" TextColor="#E0E0E0" HorizontalTextAlignment="Center" />
@@ -77,13 +72,13 @@
                     <Label Grid.Column="6" Text="D" TextColor="#E0E0E0" HorizontalTextAlignment="Center" />
                 </Grid>
 
-                <!-- GRID DE LOS DÍAS DEL MES -->
+                <!-- Días del mes -->
                 <CollectionView ItemsSource="{Binding Days}"
                                 SelectionMode="None">
                     <CollectionView.ItemsLayout>
                         <GridItemsLayout Orientation="Vertical" Span="7" />
                     </CollectionView.ItemsLayout>
-
+                    <!--Plantilla para cada dia-->
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Grid Padding="2">
@@ -96,7 +91,7 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="10" />
                                     </Border.StrokeShape>
-
+                                    <!--Creación de los días de la semana-->
                                     <Border.Triggers>
                                         <!-- Día fuera del mes -->
                                         <DataTrigger TargetType="Border"
@@ -105,7 +100,7 @@
                                             <Setter Property="Background" Value="#2A1A18" />
                                         </DataTrigger>
 
-                                        <!-- Hoy -->
+                                        <!-- Borde del día de hoy -->
                                         <DataTrigger TargetType="Border"
                                                      Binding="{Binding IsToday}"
                                                      Value="True">
@@ -113,15 +108,14 @@
                                             <Setter Property="StrokeThickness" Value="2" />
                                         </DataTrigger>
 
-                                        <!-- Seleccionado -->
+                                        <!-- Cambio de fondo al día seleccionado -->
                                         <DataTrigger TargetType="Border"
                                                      Binding="{Binding IsSelected}"
                                                      Value="True">
                                             <Setter Property="Background" Value="#D4A857" />
                                         </DataTrigger>
                                     </Border.Triggers>
-
-                                    <!-- Botón que recibe la pulsación -->
+                                        <!--Botón para cada día-->
                                     <Button
                                         Command="{Binding BindingContext.DayTappedCommand, Source={x:Reference CalendarRoot}}"
                                         CommandParameter="{Binding}"
@@ -130,7 +124,7 @@
                                         Text="{Binding Date.Day}"
                                         HorizontalOptions="Center"
                                         VerticalOptions="Center">
-
+                                        <!--Estilos del texto del día-->
                                         <Button.Triggers>
                                             <!-- Texto de días del mes -->
                                             <DataTrigger TargetType="Button"
@@ -164,6 +158,7 @@
                 </CollectionView>
 
             </VerticalStackLayout>
+            <!-- Creación del botón para crear, modificar o eliminar alarmas-->
         </Border>
         <Button Text="Agregar Alarma"
         BackgroundColor="#3B2523"

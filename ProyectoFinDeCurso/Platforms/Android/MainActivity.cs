@@ -13,26 +13,24 @@ namespace ProyectoFinDeCurso
                             | ConfigChanges.UiMode
                             | ConfigChanges.ScreenLayout
                             | ConfigChanges.SmallestScreenSize
-                            | ConfigChanges.Density)]
-    public class MainActivity : MauiAppCompatActivity
+                            | ConfigChanges.Density)] // Configuraciones para evitar reinicios innecesarios
+    public class MainActivity : MauiAppCompatActivity 
     {
-        protected override void OnCreate(Bundle savedInstanceState)
+        protected override void OnCreate(Bundle savedInstanceState) // Método que se llama al crear la actividad
         {
-            base.OnCreate(savedInstanceState);
+            base.OnCreate(savedInstanceState); // Llama al método base OnCreate
 
-            // 🔒 BLOQUEAR ORIENTACIÓN A VERTICAL (PORTRAIT)
-            RequestedOrientation = ScreenOrientation.Portrait;
+            RequestedOrientation = ScreenOrientation.Portrait; // Fija la orientación de la pantalla en modo retrato
 
-            // 🔔 Permiso notificaciones Android 13+
-            if (OperatingSystem.IsAndroidVersionAtLeast(33))
+            if (OperatingSystem.IsAndroidVersionAtLeast(33)) // Verifica si la versión de Android es al menos 33 (Android 13)
             {
-                if (CheckSelfPermission(Android.Manifest.Permission.PostNotifications)
-                    != Permission.Granted)
+                if (CheckSelfPermission(Android.Manifest.Permission.PostNotifications) // Verifica si el permiso de notificaciones está concedido
+                    != Permission.Granted) // Si el permiso no está concedido
                 {
                     RequestPermissions(
                         new[] { Android.Manifest.Permission.PostNotifications },
                         0
-                    );
+                    ); // Solicita el permiso de notificaciones al usuario
                 }
             }
         }

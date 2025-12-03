@@ -10,12 +10,12 @@ namespace ProyectoFinDeCurso.ViewModels
     public class CalendarViewModel : INotifyPropertyChanged
     {
 
-        public ObservableCollection<CalendarDay> Days { get; } = new();
+        public ObservableCollection<CalendarDay> Days { get; } = new(); //obtiene los días del mes en curso
 
-        private DateTime _displayMonth;
-        private CalendarDay _selectedDay;
+        private DateTime _displayMonth;//almacena el mes que se está mostrando
+        private CalendarDay _selectedDay; //almacena el día seleccionado
 
-        public DateTime DisplayMonth
+        public DateTime DisplayMonth //propiedad que obtiene o establece el mes que se está mostrando
         {
             get => _displayMonth;
             set
@@ -23,13 +23,13 @@ namespace ProyectoFinDeCurso.ViewModels
                 if (_displayMonth != value)
                 {
                     _displayMonth = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisplayMonth)));
-                    GenerateDays();
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisplayMonth))); //notifica el cambio de propiedad
+                    GenerateDays(); //genera los días del mes
                 }
             }
         }
 
-        public CalendarDay SelectedDay
+        public CalendarDay SelectedDay //propiedad que obtiene o establece el día seleccionado
         {
             get => _selectedDay;
             set
@@ -44,63 +44,63 @@ namespace ProyectoFinDeCurso.ViewModels
                     if (_selectedDay != null)
                         _selectedDay.IsSelected = true;
 
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedDay)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedDay))); //notifica el cambio de propiedad
                 }
             }
         }
 
-        public ICommand NextMonthCommand { get; }
-        public ICommand PreviousMonthCommand { get; }
-        public ICommand DayTappedCommand { get; }
-        private readonly Action<CalendarDay> _onDaySelected;
-        public CalendarViewModel(Action<CalendarDay> onDaySelected)
+        public ICommand NextMonthCommand { get; } //comando para ir al siguiente mes
+        public ICommand PreviousMonthCommand { get; } //comando para ir al mes anterior
+        public ICommand DayTappedCommand { get; } //comando para seleccionar un día
+        private readonly Action<CalendarDay> _onDaySelected; //acción que se ejecuta al seleccionar un día
+        public CalendarViewModel(Action<CalendarDay> onDaySelected) //constructor que inicializa el ViewModel
         {
-            _onDaySelected = onDaySelected;
-            DisplayMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            _onDaySelected = onDaySelected; //asigna la acción al campo privado
+            DisplayMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1); //inicializa el mes que se está mostrando al mes actual
 
-            NextMonthCommand = new Command(() =>
+            NextMonthCommand = new Command(() => //inicializa el comando para ir al siguiente mes
             {
-                DisplayMonth = DisplayMonth.AddMonths(1);
+                DisplayMonth = DisplayMonth.AddMonths(1); //incrementa el mes en uno
             });
 
-            PreviousMonthCommand = new Command(() =>
+            PreviousMonthCommand = new Command(() => //inicializa el comando para ir al mes anterior
             {
-                DisplayMonth = DisplayMonth.AddMonths(-1);
+                DisplayMonth = DisplayMonth.AddMonths(-1); //decrementa el mes en uno
             });
 
-            DayTappedCommand = new Command<CalendarDay>(day =>
+            DayTappedCommand = new Command<CalendarDay>(day => //inicializa el comando para seleccionar un día
             {
-                if (day == null) return;
+                if (day == null) return; //verifica que el día no sea nulo
 
-                if (!day.IsCurrentMonth)
+                if (!day.IsCurrentMonth) //si el día no pertenece al mes actual
                 {
-                    DisplayMonth = new DateTime(day.Date.Year, day.Date.Month, 1);
+                    DisplayMonth = new DateTime(day.Date.Year, day.Date.Month, 1); //cambia el mes que se está mostrando al mes del día seleccionado
                 }
 
-                SelectedDay = day;
+                SelectedDay = day; //establece el día seleccionado
 
-                _onDaySelected?.Invoke(day); 
+                _onDaySelected?.Invoke(day);  //ejecuta la acción al seleccionar un día
             });
 
-            GenerateDays();
+            GenerateDays(); //genera los días del mes
         }
 
-        private void GenerateDays()
+        private void GenerateDays() //método que genera los días del mes
         {
-            Days.Clear();
+            Days.Clear(); //limpia la colección de días
 
-            var firstOfMonth = new DateTime(DisplayMonth.Year, DisplayMonth.Month, 1);
+            var firstOfMonth = new DateTime(DisplayMonth.Year, DisplayMonth.Month, 1); //obtiene el primer día del mes
 
-            int diff = ((int)firstOfMonth.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
-            var startDate = firstOfMonth.AddDays(-diff);
+            int diff = ((int)firstOfMonth.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7; //calcula el desfase para que la semana comience en lunes
+            var startDate = firstOfMonth.AddDays(-diff); //obtiene la fecha de inicio para mostrar en el calendario
 
-            var today = DateTime.Today;
+            var today = DateTime.Today; //obtiene la fecha actual
 
-            for (int i = 0; i < 42; i++)
+            for (int i = 0; i < 42; i++) //itera 42 veces para cubrir 6 semanas
             {
-                var date = startDate.AddDays(i);
+                var date = startDate.AddDays(i); //obtiene la fecha correspondiente al día actual en la iteración
 
-                Days.Add(new CalendarDay
+                Days.Add(new CalendarDay //añade un nuevo día a la colección
                 {
                     Date = date,
                     IsCurrentMonth = date.Month == DisplayMonth.Month,
@@ -110,6 +110,6 @@ namespace ProyectoFinDeCurso.ViewModels
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged; //evento que notifica cambios en las propiedades
     }
 }

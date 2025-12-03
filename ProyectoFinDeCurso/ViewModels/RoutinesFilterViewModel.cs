@@ -8,19 +8,19 @@ namespace ProyectoFinDeCurso.ViewModels
 {
     public class RoutinesFilterViewModel : INotifyPropertyChanged
     {
-        private readonly DbService _dbService;
-        private readonly userTypeEnum _userType;
+        private readonly DbService _dbService; // Servicio de base de datos
+        private readonly userTypeEnum _userType; // Tipo de usuario (admin, user, etc.)
 
-        private string _nameRoutineFilter = string.Empty;
-        private bodyPartEnum _bodyPartFilter = bodyPartEnum.nothing;
-        private dificultyEnum _dificultyFilter = dificultyEnum.nothing;
+        private string _nameRoutineFilter = string.Empty; // Filtro por nombre de rutina
+        private bodyPartEnum _bodyPartFilter = bodyPartEnum.nothing; // Filtro por grupo muscular
+        private dificultyEnum _dificultyFilter = dificultyEnum.nothing; // Filtro por dificultad
 
-        private IEnumerable<RoutineGroup> _filteredRoutines = new List<RoutineGroup>();
+        private IEnumerable<RoutineGroup> _filteredRoutines = new List<RoutineGroup>(); // Rutinas filtradas agrupadas por grupo muscular
 
-        public ObservableCollection<Routines> Routines { get; } = new();
+        public ObservableCollection<Routines> Routines { get; } = new(); // Colección de todas las rutinas
 
-        public bool Initialized { get; private set; } = false;
-        public RoutinesFilterViewModel(DbService dbService, userTypeEnum userType)
+        public bool Initialized { get; private set; } = false; // Indica si el ViewModel ha sido inicializado
+        public RoutinesFilterViewModel(DbService dbService, userTypeEnum userType) // Constructor
         {
             _dbService = dbService;
             _userType = userType;

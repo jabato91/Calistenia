@@ -9,30 +9,25 @@ namespace ProyectoFinDeCurso.Pages.Main;
 public partial class CalendarPage : ContentPage
 {
     private readonly DbService _dbService;
-    public CalendarPage(DbService dbService)
+    public CalendarPage(DbService dbService) //Inyección de dependencia
     {
         InitializeComponent();
-        BindingContext = new CalendarViewModel(DaySelected);
-        _dbService = dbService;
+        BindingContext = new CalendarViewModel(DaySelected); //Pasamos el método DaySelected al ViewModel
+        _dbService = dbService; //Asignamos el servicio de base de datos a una variable local
     }
-    private async void DaySelected(CalendarDay day)
+    private async void DaySelected(CalendarDay day) //Método que se ejecuta al seleccionar un día en el calendario
     {
-        DateTime fecha = day.Date;
+        DateTime fecha = day.Date; //Obtenemos la fecha seleccionada
 
-        await DisplayAlert(
-            "Día seleccionado",
-            $"Fecha creada: {fecha:dd/MM/yyyy}",
-            "OK"
-        );
-        string fechaTexto = fecha.ToString("dd/MM/yyyy");
+        string fechaTexto = fecha.ToString("dd/MM/yyyy"); //Convertimos la fecha a texto en formato dd/MM/yyyy
         await Navigation.PushModalAsync(
-                new CalendarDetailPage(_dbService,ModeEnum.View, fechaTexto)
+                new CalendarDetailPage(_dbService,ModeEnum.View, fechaTexto) //Navegamos y creamos la página de detalle del calendario pasando la fecha seleccionada
             );
     }
-    private async void OnAddAlarm(object sender, EventArgs e)
+    private async void OnAddAlarm(object sender, EventArgs e) //Método que se ejecuta al pulsar el botón de añadir alarma
     {
         await Navigation.PushModalAsync(
                 new CalendarDetailPage(_dbService, ModeEnum.create)
-            );
+            ); //Navegamos y creamos la página de detalle del calendario en modo creación
     }
 }

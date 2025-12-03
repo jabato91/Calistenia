@@ -582,7 +582,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     Radius = 12,
                                 },
 
-                                Content = new ScrollView
+                                Content = new ScrollView //contenedor desplazable para el contenido del ejercicio
                                 {
                                     Content = new VerticalStackLayout
                                     {

@@ -320,9 +320,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
             }
 
             var alarmas = await _dbService.GetAlarmsAsync(); //obtiene las alarmas
-            var filterAlarm = alarmas.Where(x => x.userID == int.Parse(userId)).ToList();
-            // ==== TÍTULO ====
-            var titleLabel = new Label
+            var filterAlarm = alarmas.Where(x => x.userID == int.Parse(userId)).ToList(); //filtra las alarmas por la id del usuario
+         
+            var titleLabel = new Label //título de la página
             {
                 Text = "Alarmas",
                 FontSize = 28,
@@ -330,7 +330,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 TextColor = Color.FromArgb("#C77B30"),
                 HorizontalOptions = LayoutOptions.Start
             };
-            VerticalStackLayout CreateDay(string text)
+            VerticalStackLayout CreateDay(string text) //crea los días de la semana con su checkbox
             {
                 return new VerticalStackLayout
                 {
@@ -338,14 +338,14 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     HorizontalOptions = LayoutOptions.Center,
                     Children =
         {
-            new Label
+            new Label //asigna el texto del día
             {
                 Text = text,
                 TextColor = Color.FromArgb("#CFC86D"),
                 FontFamily = "ComfortaaBold",
                 HorizontalOptions = LayoutOptions.Center
             },
-            new CheckBox
+            new CheckBox //asigna el checkbox
             {
                 Color = Color.FromArgb("#CFC86D"),
                 HorizontalOptions = LayoutOptions.Center
@@ -353,8 +353,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
         }
                 };
             }
-            // ==== BOTÓN "+" ====
-            var addButton = new Button
+            var addButton = new Button //botón para añadir nuevas alarmas
             {
                 Text = "+",
                 FontSize = 28,
@@ -364,11 +363,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 CornerRadius = 10,
                 WidthRequest = 50,
                 HeightRequest = 50,
-                 Command = new Command(async () =>
+                 Command = new Command(async () => //acción al pulsar el botón
                  {
-                     // ---- CONTROLES QUE QUEREMOS RECUPERAR ----
 
-                     Entry entryName = new Entry
+                     Entry entryName = new Entry //entrada del nombre de la alarma
                      {
                          Placeholder = "Ejemplo: Despertar",
                          FontFamily = "Comfortaa",
@@ -376,53 +374,26 @@ namespace ProyectoFinDeCurso.Pages.Detail
                          PlaceholderColor = Color.FromArgb("#C49362")
                      };
 
-                     TimePicker timePicker = new TimePicker
+                     TimePicker timePicker = new TimePicker //selector de la hora
                      {
                          TextColor = Color.FromArgb("#E9C68A"),
                          FontFamily = "Comfortaa"
                      };
-                     timePicker.Time = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, 0);
-                     // Lista donde guardaremos TODOS los checkboxes
-                     List<CheckBox> dayCheckboxes = new List<CheckBox>();
+                     timePicker.Time = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, 0); //inicializa con la hora actual
+                     
+                     List<CheckBox> dayCheckboxes = new List<CheckBox>(); //lista para almacenar los checkboxes de los días
 
-                     // Crea cada día con su checkbox
-                     VerticalStackLayout CreateDay(string text)
+                     
+                     var scrollView = new ScrollView //contenido scrollable
                      {
-                         var check = new CheckBox
-                         {
-                             Color = Color.FromArgb("#CFC86D"),
-                             HorizontalOptions = LayoutOptions.Center
-                         };
-
-                         dayCheckboxes.Add(check);
-
-                         return new VerticalStackLayout
-                         {
-                             Spacing = 3,
-                             HorizontalOptions = LayoutOptions.Center,
-                             Children =
-                            {
-                                new Label
-                                {
-                                    Text = text,
-                                    TextColor = Color.FromArgb("#CFC86D"),
-                                    FontFamily = "ComfortaaBold",
-                                    HorizontalOptions = LayoutOptions.Center
-                                },
-                                check
-                            }
-                         };
-                     }
-                     var scrollView = new ScrollView
-                     {
-                         Content = new VerticalStackLayout
+                         Content = new VerticalStackLayout //contenido vertical
                          {
                              Padding = 20,
                              Spacing = 20,
 
                              Children =
         {
-            new Label
+            new Label //título del modal
             {
                 Text = "Nueva alarma",
                 FontSize = 28,
@@ -431,7 +402,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 HorizontalOptions = LayoutOptions.Start
             },
 
-            new Border
+            new Border //border que contiene el formulario
             {
                 BackgroundColor = Color.FromArgb("#3B2523"),
                 Stroke = Color.FromArgb("#D4A857"),
@@ -444,7 +415,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     Spacing = 15,
                     Children =
                     {
-                        new Label
+                        new Label //etiqueta del nombre
                         {
                             Text = "Nombre",
                             FontSize = 18,
@@ -454,7 +425,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                         entryName,
 
-                        new Label
+                        new Label //etiqueta de la hora
                         {
                             Text = "Hora",
                             FontSize = 18,
@@ -462,9 +433,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             TextColor = Color.FromArgb("#CFC86D")
                         },
 
-                        timePicker,
+                        timePicker, //selector de la hora
 
-                        new Label
+                        new Label //titulo de los días
                         {
                             Text = "Repetir",
                             FontSize = 18,
@@ -472,7 +443,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             TextColor = Color.FromArgb("#CFC86D")
                         },
 
-                        new HorizontalStackLayout
+                        new HorizontalStackLayout //días de la semana
                         {
                             Spacing = 3,
                             Children =
@@ -493,14 +464,14 @@ namespace ProyectoFinDeCurso.Pages.Detail
                          }
                      };
 
-                     var buttonBar = new HorizontalStackLayout
+                     var buttonBar = new HorizontalStackLayout //barra de botones inferior
                      {
                          Spacing = 10,
                          Padding = 20,
                          BackgroundColor = Color.FromArgb("#1A1A1A"),
                          Children =
                         {
-                            new Button
+                            new Button //botón para cerrar el modal
                             {
                                 Text = "Cerrar",
                                 BackgroundColor = Color.FromArgb("#CFC86D"),
@@ -515,7 +486,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 })
                             },
 
-                            new Button
+                            new Button //botón para crear la alarma
                             {
                                 Text = "Crear",
                                 BackgroundColor = Color.FromArgb("#CFC86D"),
@@ -536,11 +507,11 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                                          );
                                         return;
                                     }
-                                     var user = await _dbService.GetUserById(int.Parse(userId));
-                                     string name = entryName.Text;
-                                TimeSpan time = timePicker.Time;
+                                     var user = await _dbService.GetUserById(int.Parse(userId)); //obtiene al usuario
+                                     string name = entryName.Text; //obtiene el nombre de la alarma
+                                TimeSpan time = timePicker.Time; //obtiene la hora seleccionada
 
-                                bool monday = dayCheckboxes[0].IsChecked;
+                                bool monday = dayCheckboxes[0].IsChecked; //obtiene los días seleccionados
                                 bool tuesday = dayCheckboxes[1].IsChecked;
                                 bool wednesday = dayCheckboxes[2].IsChecked;
                                 bool thursday = dayCheckboxes[3].IsChecked;
@@ -548,7 +519,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 bool saturday = dayCheckboxes[5].IsChecked;
                                 bool sunday = dayCheckboxes[6].IsChecked;
 
-                                Alarm newAlarm = new Alarm
+                                Alarm newAlarm = new Alarm //crea la nueva alarma
                                 {
                                     Name = name,
                                     Hour = time.Hours,
@@ -561,22 +532,18 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     Friday = friday,
                                     Saturday = saturday,
                                     Sunday = sunday,
-
-
-                                    // 👇 Si userID es bool, esto es lo único que puedo poner
                                     userID = user.UserID
                                 };
-                                    await _dbService.Create(newAlarm);
-                                    AlarmScheduler.ScheduleAlarm(newAlarm);
-                                    await DisplayAlert("Alarma creada", $"Sonará a las {newAlarm.FormattedTime}", "OK");
-                                    await Navigation.PopModalAsync();
+                                    await _dbService.Create(newAlarm); //la guarda en la base de datos
+                                    AlarmScheduler.ScheduleAlarm(newAlarm); //la programa
+                                    await DisplayAlert("Alarma creada", $"Sonará a las {newAlarm.FormattedTime}", "OK"); //confirma la creación
+                                    await Navigation.PopModalAsync(); //cierra el modal
 
-                                await Navigation.PopModalAsync();
                                 })
                             }
                         }
                      };
-                     var modalPage = new ContentPage
+                     var modalPage = new ContentPage //página modal
                      {
                          BackgroundColor = Color.FromArgb("#1A1A1A"),
                          Content = new Grid
@@ -588,24 +555,21 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             },
                             Children =
                             {
-                                scrollView,
-                                buttonBar
+                                scrollView, //contenido scrollable
+                                buttonBar //barra de botones
                             }
                          }
                      };
 
-                     // ASIGNAR FILAS
-                     Grid.SetRow(scrollView, 0);
+                     Grid.SetRow(scrollView, 0); //posición en la cuadrícula
                      Grid.SetRow(buttonBar, 1);
 
-                     await Navigation.PushModalAsync(modalPage);
+                     await Navigation.PushModalAsync(modalPage); //muestra el modal
 
                  })
             };
 
-
-            // ==== HEADER ====
-            var headerGrid = new Grid
+            var headerGrid = new Grid //grid del encabezado
             {
                 ColumnDefinitions =
         {
@@ -614,25 +578,24 @@ namespace ProyectoFinDeCurso.Pages.Detail
         }
             };
 
-            headerGrid.Children.Add(titleLabel);
-            Grid.SetColumn(titleLabel, 0);
+            headerGrid.Children.Add(titleLabel); //añade el título
+            Grid.SetColumn(titleLabel, 0); //posición en la cuadrícula
 
-            headerGrid.Children.Add(addButton);
-            Grid.SetColumn(addButton, 1);
+            headerGrid.Children.Add(addButton); //añade el botón de añadir
+            Grid.SetColumn(addButton, 1); //posición en la cuadrícula
 
-            // ==== COLLECTIONVIEW ====
-            var alarmsCollection = new CollectionView
+            var alarmsCollection = new CollectionView //lista de las alarmas
             {
                 ItemsSource = filterAlarm,
                 SelectionMode = SelectionMode.None,
                 VerticalOptions = LayoutOptions.FillAndExpand,
 
-                ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Vertical)
+                ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Vertical) //disposición vertical
                 {
-                    ItemSpacing = 25
+                    ItemSpacing = 25 //separación entre líneas
                 },
 
-                EmptyView = new Label
+                EmptyView = new Label //mensaje si no hay alarmas
                 {
                     Text = "No hay alarmas aún",
                     TextColor = Color.FromArgb("#CFC86D"),
@@ -643,10 +606,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 }
             };
 
-            alarmsCollection.ItemTemplate = new DataTemplate(() =>
+            alarmsCollection.ItemTemplate = new DataTemplate(() => //plantilla para cada alarma
             {
-                // ===== LABEL NOMBRE =====
-                var nameLabel = new Label
+                var nameLabel = new Label//nombre de la alarma
                 {
                     FontSize = 18,
                     FontFamily = "ComfortaaBold",
@@ -654,23 +616,21 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 };
                 nameLabel.SetBinding(Label.TextProperty, "Name");
 
-                // ===== LABEL HORA =====
-                var hourLabel = new Label
+                var hourLabel = new Label //hora de la alarma
                 {
                     FontSize = 16,
                     FontFamily = "Comfortaa",
                     TextColor = Color.FromArgb("#E9C68A")
                 };
-                hourLabel.SetBinding(Label.TextProperty, "FormattedTime");
+                hourLabel.SetBinding(Label.TextProperty, "FormattedTime"); //propiedad formateada de la hora
 
-                // ===== DÍAS =====
-                var weekLayout = new HorizontalStackLayout
+                var weekLayout = new HorizontalStackLayout //días de la semana
                 {
                     Spacing = 12,
                     HorizontalOptions = LayoutOptions.Start
                 };
 
-                VerticalStackLayout CreateDay(string text, string binding)
+                VerticalStackLayout CreateDay(string text, string binding) //crea cada día con su checkbox enlazado
                 {
                     var check = new CheckBox
                     {
@@ -679,9 +639,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         Scale = 0.9,
                         HorizontalOptions = LayoutOptions.Center
                     };
-                    check.SetBinding(CheckBox.IsCheckedProperty, binding);
+                    check.SetBinding(CheckBox.IsCheckedProperty, binding); //enlaza con la propiedad del modelo
 
-                    return new VerticalStackLayout
+                    return new VerticalStackLayout //muestra del día
                     {
                         Spacing = 1,
                         Children =
@@ -697,7 +657,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     };
                 }
 
-                weekLayout.Children.Add(CreateDay("L", "Monday"));
+                weekLayout.Children.Add(CreateDay("L", "Monday")); //añade los días a la vista
                 weekLayout.Children.Add(CreateDay("M", "Tuesday"));
                 weekLayout.Children.Add(CreateDay("X", "Wednesday"));
                 weekLayout.Children.Add(CreateDay("J", "Thursday"));
@@ -706,8 +666,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 weekLayout.Children.Add(CreateDay("D", "Sunday"));
 
 
-                // ===== BOTÓN EDITAR =====
-                var editButton = new ImageButton
+                var editButton = new ImageButton //botón para editar la alarma
                 {
                     Source = "editar.png",
                     WidthRequest = 30,
@@ -716,11 +675,10 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     HorizontalOptions = LayoutOptions.End,
                     Margin = new Thickness(0, 0, 8, 0)
                 };
-                editButton.SetBinding(ImageButton.CommandParameterProperty, ".");
-                
+                editButton.SetBinding(ImageButton.CommandParameterProperty, "."); //enlaza con la alarma actual
 
-                // ===== BOTÓN ELIMINAR =====
-                var deleteButton = new ImageButton
+
+                var deleteButton = new ImageButton //botón para eliminar la alarma
                 {
                     Source = "papelera.png",
                     WidthRequest = 30,
@@ -729,55 +687,51 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     HorizontalOptions = LayoutOptions.End,
                     
                 };
-                deleteButton.SetBinding(ImageButton.CommandParameterProperty, ".");
-                deleteButton.Command = new Command<Alarm>(async (alarm) =>
+                deleteButton.SetBinding(ImageButton.CommandParameterProperty, "."); //enlaza con la alarma actual
+                deleteButton.Command = new Command<Alarm>(async (alarm) => //acción al pulsar el botón
                 {
                     bool confirm = await Application.Current.MainPage.DisplayAlert(
                         "Eliminar alarma",
                         $"¿Eliminar la alarma \"{alarm.Name}\"?",
                         "Sí",
                         "No"
-                    );
+                    ); //confirma la eliminación
 
                     if (confirm)
                     {
-                        LocalNotificationCenter.Current.Cancel(alarm.AlarmID);
-                        await _dbService.Delete(alarm);
+                        LocalNotificationCenter.Current.Cancel(alarm.AlarmID); //cancela la notificación programada
+                        await _dbService.Delete(alarm); //eliminación de la alarma en la base de datos
                     }
                 });
 
 
-                // ===== GRID PARA ALINEAR TODO =====
-                var grid = new Grid
+                var grid = new Grid //grid para organizar los elementos
                 {
                     ColumnDefinitions =
-        {
-            new ColumnDefinition { Width = GridLength.Star },  // texto y días
-            new ColumnDefinition { Width = GridLength.Auto },  // editar
-            new ColumnDefinition { Width = GridLength.Auto }   // eliminar
-        }
+                    {
+                        new ColumnDefinition { Width = GridLength.Star },  // texto y días
+                        new ColumnDefinition { Width = GridLength.Auto },  // editar
+                        new ColumnDefinition { Width = GridLength.Auto }   // eliminar
+                    }
                 };
 
-                // SUBSTACK IZQUIERDO (nombre, hora, días)
-                var dataStack = new VerticalStackLayout
+                var dataStack = new VerticalStackLayout //stack para los datos de la alarma
                 {
                     Spacing = 10,
                     Children = { nameLabel, hourLabel, weekLayout }
                 };
 
-                // AGREGAR A CELDAS
-                Grid.SetColumn(dataStack, 0);
-                grid.Children.Add(dataStack);
+                Grid.SetColumn(dataStack, 0); //posición en la cuadrícula
+                grid.Children.Add(dataStack);// añade los datos
 
-                Grid.SetColumn(editButton, 1);
-                grid.Children.Add(editButton);
+                Grid.SetColumn(editButton, 1);//posición en la cuadrícula
+                grid.Children.Add(editButton);// añade los datos
 
-                Grid.SetColumn(deleteButton, 2);
-                grid.Children.Add(deleteButton);
+                Grid.SetColumn(deleteButton, 2);//posición en la cuadrícula
+                grid.Children.Add(deleteButton);// añade los datos
 
 
-                // ===== BORDER EXTERNO =====
-                return new Border
+                return new Border //muestra el contenido de la alarma
                 {
                     BackgroundColor = Color.FromArgb("#2E1E1B"),
                     Stroke = Color.FromArgb("#6A463F"),
@@ -788,9 +742,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     Content = grid
                 };
             });
-
-            // ==== CONTENEDOR DE LISTA ====
-            var listContainer = new Border
+            var listContainer = new Border //contenedor de la lista de alarmas
             {
                 BackgroundColor = Color.FromArgb("#3B2523"),
                 Stroke = Color.FromArgb("#D4A857"),
@@ -801,8 +753,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 Content = alarmsCollection
             };
 
-            // ==== BOTÓN SALIR (FIJO ABAJO) ====
-            var exitButton = new Button
+            var exitButton = new Button //botón para salir de la página
             {
                 Text = "Salir",
                 BackgroundColor = Color.FromArgb("#CFC86D"),
@@ -814,126 +765,50 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 Margin = new Thickness(0, 10, 0, 20)
             };
 
-            exitButton.Clicked += async (s, e) =>
+            exitButton.Clicked += async (s, e) => //acción al pulsar el botón
             {
-                await Navigation.PopModalAsync();
+                await Navigation.PopModalAsync(); //cierra la página modal
             };
 
 
-            var mainGrid = new Grid
+            var mainGrid = new Grid //grid principal de la página
             {
                 RowDefinitions =
-    {
-        new RowDefinition { Height = GridLength.Star },   // contenido scrollable
-        new RowDefinition { Height = GridLength.Auto }    // botón salir fijo
-    },
+                {
+                    new RowDefinition { Height = GridLength.Star },   // contenido scrollable
+                    new RowDefinition { Height = GridLength.Auto }    // botón salir fijo
+                },
                 Padding = new Thickness(20),
                 BackgroundColor = Color.FromArgb("#1A1A1A")
             };
 
-            // Fila 0 → contenido dentro de ScrollView
-            var contentLayout = new VerticalStackLayout
+            var contentLayout = new VerticalStackLayout //contenido principal
             {
                 Spacing = 20,
                 Children =
     {
-        headerGrid,
-        listContainer
+        headerGrid, //encabezado
+        listContainer //lista de alarmas
     }
             };
 
-            // Scroll externo
-            var scrollContent = new ScrollView
+            
+            var scrollContent = new ScrollView// Scroll externo
             {
-                Content = contentLayout
+                Content = contentLayout //contenido principal
             };
 
-            // Añadir a la fila 0
-            mainGrid.Children.Add(scrollContent);
-            Grid.SetRow(scrollContent, 0);
+            
+            mainGrid.Children.Add(scrollContent);// Añadir a la fila 0
+            Grid.SetRow(scrollContent, 0); //posición en la cuadrícula
 
-            // Fila 1 → botón salir fijo
-            mainGrid.Children.Add(exitButton);
-            Grid.SetRow(exitButton, 1);
+            mainGrid.Children.Add(exitButton); // Añadir a la fila 1
+            Grid.SetRow(exitButton, 1); //posición en la cuadrícula
 
-            // Establecer contenido final
-            Content = mainGrid;
+            Content = mainGrid; //asigna el contenido a la página
         }
 
-        public void ScheduleAlarm(Alarm alarm)
-        {
-            DateTime now = DateTime.Now;
-            DateTime nextTrigger = FindNextTriggerDay(alarm, now);
-
-            var request = new NotificationRequest
-            {
-                NotificationId = alarm.AlarmID,
-                Title = "CalisSAPP",
-                Description = "Es Hora de Entrenar!!!!",
-
-                Android =
-        {
-            ChannelId = "alarm_channel",
-            AutoCancel = false
-        },
-
-                Schedule = new NotificationRequestSchedule
-                {
-                    NotifyTime = nextTrigger,
-                    RepeatType = NotificationRepeat.Weekly
-                }
-            };
-
-            LocalNotificationCenter.Current.Show(request);
-        }
-        
-        DateTime FindNextTriggerDay(Alarm alarm, DateTime now)
-        {
-            bool[] days = new bool[]
-            {
-                alarm.Monday,
-                alarm.Tuesday,
-                alarm.Wednesday,
-                alarm.Thursday,
-                alarm.Friday,
-                alarm.Saturday,
-                alarm.Sunday
-            };
-
-            int todayIndex = ConvertToLunesIndex(now.DayOfWeek);
-
-            for (int offset = 0; offset < 7; offset++)
-            {
-                int checkIndex = (todayIndex + offset) % 7; 
-
-                if (days[checkIndex])
-                {
-                    DateTime candidate = now.Date
-                        .AddDays(offset)
-                        .AddHours(alarm.Hour)
-                        .AddMinutes(alarm.Minute);
-
-                    if (candidate > now)
-                        return candidate;
-                }
-            }
-
-            return now.AddMinutes(1);
-        }
-        int ConvertToLunesIndex(DayOfWeek day)
-        {
-            return day switch
-            {
-                DayOfWeek.Monday => 0,
-                DayOfWeek.Tuesday => 1,
-                DayOfWeek.Wednesday => 2,
-                DayOfWeek.Thursday => 3,
-                DayOfWeek.Friday => 4,
-                DayOfWeek.Saturday => 5,
-                DayOfWeek.Sunday => 6,
-                _ => 0
-            };
-        }
+       
        
     }
 }
