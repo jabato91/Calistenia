@@ -114,7 +114,7 @@ public partial class userFlyoutPage : FlyoutPage
     {
         await NavigateToAsync(
          "Calendar",
-         () => new CalendarPage(_dbService)
+         () => new CalendarPage(_dbService, _userType)
      );
     }
     private async void UsersBottonAdmin(object sender, EventArgs e)

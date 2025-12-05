@@ -31,7 +31,8 @@ namespace ProyectoFinDeCurso.Models
         public ObservableCollection<Exercise> Exercises { get; set; } = new(); //obtiene los ejercicios de la rutina
         [Ignore]
         public int IsAdmin { get; set; } = -1; // Indica si el ejercicio está siendo visto en modo administrador
-
+        [Ignore]
+        public string TitleSetsOrTime { get; set; } = string.Empty; //título de la primera página de rutinas
         public bool IsAdminMode //tipos de acceso para cada tipo de usuario
         {
             get

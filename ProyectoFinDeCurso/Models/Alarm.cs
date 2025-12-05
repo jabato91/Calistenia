@@ -24,27 +24,27 @@ using System.Threading.Tasks;
             public int Minute { get; set; } //minutos de la alarma en la base de datos
 
             [Column("monday")] //condición para activar el dia de la alarma en la base de datos
-            public bool Monday { get; set; } //condición del día
+            public bool Monday { get; set; } = false; //condición del día
 
-            [Column("tuesday")]//condición para activar el dia de la alarma en la base de datos
-        public bool Tuesday { get; set; }//condición del día
+        [Column("tuesday")]//condición para activar el dia de la alarma en la base de datos
+        public bool Tuesday { get; set; } = false;//condición del día
 
         [Column("wednesday")]//condición para activar el dia de la alarma en la base de datos
-        public bool Wednesday { get; set; }//condición del día
+        public bool Wednesday { get; set; } = false;//condición del día
 
         [Column("thursday")]//condición para activar el dia de la alarma en la base de datos
-        public bool Thursday { get; set; }//condición del día
+        public bool Thursday { get; set; } = false;//condición del día
 
         [Column("friday")]//condición para activar el dia de la alarma en la base de datos
-        public bool Friday { get; set; }//condición del día
+        public bool Friday { get; set; } = false;//condición del día
 
         [Column("saturday")]//condición para activar el dia de la alarma en la base de datos
-        public bool Saturday { get; set; }//condición del día
+        public bool Saturday { get; set; } = false;//condición del día
 
         [Column("sunday")]//condición para activar el dia de la alarma en la base de datos
-        public bool Sunday { get; set; }//condición del día
+        public bool Sunday { get; set; } = false;//condición del día
 
-            [Column("userID")] //asignar alarma al usuario
+        [Column("userID")] //asignar alarma al usuario
             public int userID { get; set; } = -1;
 
             [Ignore]

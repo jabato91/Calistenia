@@ -11,12 +11,47 @@ namespace ProyectoFinDeCurso.ViewModels
     public class ExerciseGroup : List<Exercise>
     {
         public bodyPartEnum MuscleGroupId { get; set; } // Identificador del grupo muscular
-        public string DisplayName => MuscleGroupId.ToFriendlyName(); // Nombre amigable del grupo muscular
+
+        public string DisplayName
+        {
+            get
+            {
+                try
+                {
+                    return MuscleGroupId.ToFriendlyName(); // Nombre amigable del grupo muscular
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[ERROR DisplayName] " + ex.Message);
+                    return string.Empty;
+                }
+            }
+        }
 
         public ExerciseGroup(bodyPartEnum muscleGroupId, IEnumerable<Exercise> exercises)
-            : base(exercises) // ordena los ejercicios por grupo muscular
+            : base(SafeEnumerable(exercises)) // ordena los ejercicios por grupo muscular
         {
-            MuscleGroupId = muscleGroupId;
+            try
+            {
+                MuscleGroupId = muscleGroupId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[ERROR constructor ExerciseGroup] " + ex.Message);
+            }
+        }
+
+        private static IEnumerable<Exercise> SafeEnumerable(IEnumerable<Exercise> exercises)
+        {
+            try
+            {
+                return exercises ?? Enumerable.Empty<Exercise>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[ERROR SafeEnumerable] " + ex.Message);
+                return Enumerable.Empty<Exercise>();
+            }
         }
     }
 }

@@ -12,18 +12,35 @@ namespace ProyectoFinDeCurso.ViewModels
     public class CreateExercises
     {
         public DbService _dbService;
+
         public CreateExercises(DbService dbService)
         {
-            _dbService = dbService;
+            try
+            {
+                _dbService = dbService;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[ERROR Constructor CreateExercises] " + ex.Message);
+            }
         }
 
         public async Task InitAsync() // Llamar a este método para iniciar la creación de ejercicios
         {
-            await CreateExercise();
+            try
+            {
+                await CreateExercise();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[ERROR InitAsync] " + ex.Message);
+            }
         }
         public List<Exercise> createExerciseList() // Lista de ejercicios a crear
         {
-            List<Exercise> exerciseNames = new List<Exercise>
+            try
+            {
+                List<Exercise> exerciseNames = new List<Exercise>
             {
                 new Exercise { name = "Flexiones con Rodillas", description = "Las flexiones son un ejercicio de fuerza que trabaja pecho, brazos y hombros usando el peso corporal.\r\nSe realizan apoyando manos y pies en el suelo, bajando el pecho y extendiendo los brazos.\r\nMejoran la resistencia y fortalecen el core sin necesidad de equipamiento.", image = "flexiones_con_rodillas.png", muscleGroupId = Enums.bodyPartEnum.chest, dificulty = Enums.dificultyEnum.easy, typeUser = userTypeEnum.admin, video = "flexiones.mp4", materials = "Necesario: Peso corporal" },
                 new Exercise { name = "Flexiones", description = "Las flexiones son un ejercicio de fuerza que trabaja pecho, brazos y hombros usando el peso corporal.\r\nSe realizan apoyando manos y pies en el suelo, bajando el pecho y extendiendo los brazos.\r\nMejoran la resistencia y fortalecen el core sin necesidad de equipamiento.", image = "flexiones.png", muscleGroupId = Enums.bodyPartEnum.chest, dificulty = Enums.dificultyEnum.easy, typeUser = userTypeEnum.admin, video = "flexiones.mp4",materials = "Necesario: Peso corporal" },
@@ -52,23 +69,36 @@ namespace ProyectoFinDeCurso.ViewModels
                 new Exercise { name = "Full Planche", description = "Los escaladores (mountain climbers) trabajan core, brazos y piernas de forma dinámica.\r\nSe realizan en posición de plancha llevando las rodillas al pecho de manera alterna y rápida.\r\nMejoran la resistencia, la coordinación y la fuerza del core.", image = "escaladores.png", muscleGroupId = Enums.bodyPartEnum.isometric,dificulty =  Enums.dificultyEnum.extreme, typeUser = userTypeEnum.admin, video = "flexiones.mp4", materials = "Opcional: Paralelas bajas" },
             };
             return exerciseNames;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[ERROR createExerciseList] " + ex.Message);
+                return new List<Exercise>(); // devuelve vacío si falla
+            }
         }
         
         public async Task CreateExercise() // Lógica para crear ejercicios si no existen
         {
-            List<Exercise> existing = await _dbService.GetExercisesAsync(); // obtengo los ejercicios existentes
-            var newExercises = createExerciseList(); // ejercicios que quiero crear
-            var existingNames = existing.Select(e => e.name).ToList(); // nombres de ejercicios existentes
-            if (existing.Count.Equals(0))
-            { // si no hay ejercicios, los creo todos
-                foreach (var exercise in newExercises)
+            try
             {
-                if (!existingNames.Contains(exercise.name))
-                {
-                    await _dbService.Create(exercise);
+                List<Exercise> existing = await _dbService.GetExercisesAsync(); // obtengo los ejercicios existentes
+                var newExercises = createExerciseList(); // ejercicios que quiero crear
+                var existingNames = existing.Select(e => e.name).ToList(); // nombres de ejercicios existentes
+                if (existing.Count.Equals(0))
+                { // si no hay ejercicios, los creo todos
+                    foreach (var exercise in newExercises)
+                    {
+                        if (!existingNames.Contains(exercise.name))
+                        {
+                            await _dbService.Create(exercise);
+                        }
+                    }
                 }
             }
-             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[ERROR CreateExercise] " + ex.Message);
+            }
         }
         
     }

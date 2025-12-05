@@ -37,7 +37,16 @@ namespace ProyectoFinDeCurso.Pages.Main{
         protected override async void OnAppearing() // Método que se llama cuando la página aparece
         {
             base.OnAppearing(); // Llama al método base OnAppearing
-            await _filter.LoadExercisesAsync(); // Carga los ejercicios utilizando el ViewModel
+            try
+            {
+                await _filter.LoadExercisesAsync();// Carga los ejercicios utilizando el ViewModel
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al cargar ejercicios: {ex.Message}");
+                await DisplayAlert("Error", "No se pudieron cargar los ejercicios.", "OK");
+            }
+            
         }
         private async void OnExerciseTapped(object sender, EventArgs e) // Maneja el evento de toque en un ejercicio
         {
@@ -58,51 +67,87 @@ namespace ProyectoFinDeCurso.Pages.Main{
 
         private async void eliminateExercise(object sender, EventArgs e) // Maneja el evento de eliminación de un ejercicio
         {
-            if ((sender as ImageButton)?.BindingContext is not Exercise exercise) // Obtiene el ejercicio a eliminar
-                return;
+            try
+            {
+                if ((sender as ImageButton)?.BindingContext is not Exercise exercise) // Obtiene el ejercicio a eliminar
+                    return;
 
-            bool confirm = await DisplayAlert(
-                "Confirmar",
-                $"¿Seguro deseas eliminar '{exercise.name}'?",
-                "Sí",
-                "No"
-            ); // Solicita confirmación al usuario
+                bool confirm = await DisplayAlert(
+                    "Confirmar",
+                    $"¿Seguro deseas eliminar '{exercise.name}'?",
+                    "Sí",
+                    "No"
+                ); // Solicita confirmación al usuario
 
-            if (!confirm) return; // Si no se confirma, sale del método
+                if (!confirm) return; // Si no se confirma, sale del método
 
-            await _dbService.DeleteExerciseById(exercise.execiseID); // Elimina el ejercicio de la base de datos
+                await _dbService.DeleteExerciseById(exercise.execiseID); // Elimina el ejercicio de la base de datos
 
-            await _filter.LoadExercisesAsync(); // Recarga la lista de ejercicios
+                await _filter.LoadExercisesAsync(); // Recarga la lista de ejercicios
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error eliminando ejercicio: {ex.Message}");
+                await DisplayAlert("Error", "No se pudo eliminar el ejercicio.", "OK");
+            }
         }
         private async void modifyExercise(object sender, EventArgs e) // Maneja el evento de modificación de un ejercicio
         {
-            if ((sender as ImageButton)?.BindingContext is not Exercise selectedExercise) // Obtiene el ejercicio a modificar
-                return;
+            try
+            {
+                if ((sender as ImageButton)?.BindingContext is not Exercise selectedExercise) // Obtiene el ejercicio a modificar
+                    return;
 
-            await Navigation.PushModalAsync(
-                new ExerciseDetailPage(_dbService, _filter, selectedExercise, ModeEnum.Edit)
-            ); // Navega a la página de detalles del ejercicio en modo edición
+                await Navigation.PushModalAsync(
+                    new ExerciseDetailPage(_dbService, _filter, selectedExercise, ModeEnum.Edit)
+                ); // Navega a la página de detalles del ejercicio en modo edición
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", "No se pudo abrir la edición del ejercicio.", "OK");
+            }
         }
 
         private async void createExercise(object sender, TappedEventArgs e) // Maneja el evento de creación de un nuevo ejercicio
         {
-            await Navigation.PushModalAsync(
+            try
+            {
+                await Navigation.PushModalAsync(
                 new ExerciseDetailPage(_dbService, _filter, null, ModeEnum.create)
             ); // Navega a la página de detalles del ejercicio en modo creación
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", "No se pudo crear un nuevo ejercicio.", "OK");
+            }
         }
 
         private async void filterExercises(object sender, EventArgs e) // Maneja el evento de filtrado de ejercicios
         {
-            await Navigation.PushModalAsync(
-                new ExerciseDetailPage(filter: _filter, mode: ModeEnum.filter)
-            ); // Navega a la página de detalles del ejercicio en modo filtrado
+            try
+            {
+                    await Navigation.PushModalAsync(
+                    new ExerciseDetailPage(filter: _filter, mode: ModeEnum.filter)
+                ); // Navega a la página de detalles del ejercicio en modo filtrado
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", "No se pudo abrir el filtro de ejercicios.", "OK");
+            }
         }
 
         private async void profile(object sender, EventArgs e) // Maneja el evento de perfil de usuario
         {
-            await Navigation.PushModalAsync(
-               new UserDetailPage(null,_dbService, _userType, ModeEnum.View)
-           ); // Navega a la página de detalles del usuario en modo vista
+            try
+            {
+                    await Navigation.PushModalAsync(
+                   new UserDetailPage(null,_dbService, _userType, ModeEnum.View)
+               ); // Navega a la página de detalles del usuario en modo vista
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", "No se pudo abrir el perfil del usuario.", "OK");
+            }
         }
         private View BuildTitleView() // Construye la vista personalizada del título
         {
@@ -120,7 +165,7 @@ namespace ProyectoFinDeCurso.Pages.Main{
 
             var titleLabel = new Label // titulo
             {
-                Text = "Ejercicios",
+                Text = "Calendario",
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center,
                 FontSize = 22,

@@ -8,7 +8,9 @@ namespace ProyectoFinDeCurso.Services
     {
         public static void ScheduleAlarm(Alarm alarm) //programa la alarma semanal
         {
-            DateTime now = DateTime.Now; //obtiene la hora y fecha actual
+            try
+            {
+                DateTime now = DateTime.Now; //obtiene la hora y fecha actual
             DateTime nextTrigger = FindNextTriggerDay(alarm, now); // calcula la próxima vez que deba sonar la alarma
 
             var request = new NotificationRequest //crea la notificación programada
@@ -31,11 +33,21 @@ namespace ProyectoFinDeCurso.Services
             };
 
             LocalNotificationCenter.Current.Show(request); //muestra la notificación
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ScheduleAlarm ERROR] {ex.Message}");
+
+                Console.WriteLine(ex);
+
+            }
         }
 
         private static DateTime FindNextTriggerDay(Alarm alarm, DateTime now) //encuentra la próxima vez que sonará la alarma
         {
-            bool[] days =
+            try
+            {
+                bool[] days =
             {
                 alarm.Monday,
                 alarm.Tuesday,
@@ -64,6 +76,12 @@ namespace ProyectoFinDeCurso.Services
             }
 
             return now.AddMinutes(1);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[FindNextTriggerDay ERROR] {ex.Message}");
+                return now.AddMinutes(1); // fallback seguro
+            }
         }
     }
 }

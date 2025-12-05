@@ -25,16 +25,25 @@ namespace ProyectoFinDeCurso.Pages.Detail
         private static String timeToEnd;
 
         public RoutineDetailPage(DbService? dbService = null,RoutinesFilterViewModel? filterViewModel = null,userTypeEnum userType = userTypeEnum.user ,Routines? routine = null, ModeEnum mode = ModeEnum.nothing) {
-            _userType = userType;
+            try
+            {
+                _userType = userType;
             _filterViewModel = filterViewModel;
             _routine = routine;
             _mode = mode;
             _dbService = dbService;
 
             BuildUI();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se pudo cargar la página de rutina.", "OK");
+            }
         }
         private void BuildUI()// Construye la interfaz de usuario según el modo
         {
+            try { 
             switch (_mode)
             {
                 case ModeEnum.create:
@@ -48,10 +57,16 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     BuildFilterRoutineUI();
                     break;
             }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Error", ex.Message, "OK");
+            }
         }
 
         private async void BuildViewUI() // Construye la interfaz de usuario para ver los detalles de la rutina
         {
+            try { 
             ObservableCollection<Exercise> exercisesInRoutine = new ObservableCollection<Exercise>(); // Lista de ejercicios en la rutina
             var nameRoutine = new Label //nombre de la rutina
             {
@@ -482,7 +497,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         timeButton.Command = new Command(async () => //comando para manejar el botón de tiempo
                         {
                             if (timeBetweenReps.TotalSeconds > 0) //verifica si hay tiempo entre repeticiones
-                                await ShowCountdown(TimeSpan.FromMinutes(exercise.seconds)); //muestra la cuenta regresiva del tiempo del ejercicio isométrico
+                                await ShowCountdown(TimeSpan.FromSeconds(exercise.seconds)); //muestra la cuenta regresiva del tiempo del ejercicio isométrico
 
                             timeButton.IsVisible = false; //oculta el botón de tiempo
                             exerciseCompleted = true; //marca el ejercicio como completado
@@ -558,6 +573,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                     if (exercise.muscleGroupId.Equals(bodyPartEnum.isometric))//si el ejercicio es isométrico
                                     { 
                                         timeButton.IsVisible = true; //muestra el botón de tiempo
+                                        exerciseCompleted = false;
                                     }
                                 }
                                 if (timeBetweenReps.TotalSeconds > 0) //verifica si hay tiempo entre repeticiones
@@ -819,16 +835,30 @@ namespace ProyectoFinDeCurso.Pages.Detail
             };
             Content = routine.Content; //muestra el contenido de la rutina
             BackgroundColor = routine.BackgroundColor; //asigna el color de fondo de la rutina
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se puedo mostrar la página.", "OK");
+            }
 
         }
 
 
         private void BuildCreateUI() //crea una nueva rutina
         {
+            try { 
             ModifyOrCreateRoutine();  //llama al método para modificar o crear la rutina
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se puedo mostrar la página.", "OK");
+            }
         }
         private void BuildFilterRoutineUI() //filtro de rutinas
         {
+            try { 
             var filterBodyPartEntry = new Picker //crea el picker para seleccionar la parte del cuerpo
             {
                 Title = "Tipo Cuerpo",
@@ -950,10 +980,17 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             Content = modalPage.Content; //muestra el contenido del modal
             BackgroundColor = modalPage.BackgroundColor; //muestra el color de fondo del modal
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se puedo mostrar la página.", "OK");
+            }
         }
 
         private async Task ShowCountdown(TimeSpan time) //crea una cuenta regresiva
         {
+            try { 
             var tcs = new TaskCompletionSource<bool>(); // para esperar hasta que se complete la cuenta regresiva
             int segundosRestantes = (int)time.TotalSeconds; // segundos totales de la cuenta regresiva
             bool cerrado = false; // para evitar cierres múltiples
@@ -1032,10 +1069,17 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             timer.Start(); // inicia el temporizador
             await tcs.Task; // espera hasta que la cuenta regresiva termine o se cancele
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se puedo mostrar la alarma.", "OK");
+            }
         }
        
         private void ModifyOrCreateRoutine(Routines routine = null) //método para modificar o crear una rutina
         {
+            try { 
             bool newRoutine = false; // indica si es una nueva rutina
             if (routine == null)// si no se proporciona una rutina, se crea una nueva
             {  
@@ -1771,9 +1815,9 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                             //modifica los campos de la rutina
                             var selectedBodyTranslation = bodyPartEnumPicker.SelectedItem.ToString();
-                            var selectedTranslation = bodyPartEnumPicker.SelectedItem.ToString();
+                            var selectedDificultyTranslation = dificultyPicker.SelectedItem.ToString();
                             var selectedBodyEnum = enumExtension.BodyTranslations.FirstOrDefault(x => x.Value == selectedBodyTranslation).Key;
-                            var selectedDificultyEnum = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == selectedTranslation).Key;
+                            var selectedDificultyEnum = enumExtension.DifficultyTranslations.FirstOrDefault(x => x.Value == selectedDificultyTranslation).Key;
                             routine.nameRoutine = nameRoutineEntry.Text;
                             routine.description = DescriptionRoutineEntry.Text;
                             routine.muscleGroup = selectedBodyEnum;
@@ -1794,7 +1838,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                             {
                                 await _dbService.Create(new RoutinesExercises { RoutineID = routine.routineID, ExerciseID = exercise.execiseID, sets = exercise.sets, reps = exercise.reps, seconds = exercise.seconds });
                             }
-                            await _dbService.Update(_routine); //actualiza la rutina en la base de datos
+                            await _dbService.Update(routine); //actualiza la rutina en la base de datos
 
                         }
                     }
@@ -1875,10 +1919,17 @@ namespace ProyectoFinDeCurso.Pages.Detail
                 };
             Content = modalPage.Content; // muestra el contenido del modal
             BackgroundColor = modalPage.BackgroundColor; // muestra el color de fondo del modal
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se puedo crear o modifica la rutina.", "OK");
+            }
         }
        
         private async Task RegisterInCalendar() //registra la rutina en el calendario
         {
+            try { 
             var userId = await SecureStorage.GetAsync("user_id"); //obtiene la id del usuario
             if(userId == null)
             {
@@ -1895,6 +1946,12 @@ namespace ProyectoFinDeCurso.Pages.Detail
             {
                 var regiter = new RegisterLogging { routineID = _routine.routineID, userID = user.UserID,  day = fecha, timeToStart = timeToStart, timeToEnd = timeToEnd}; //crea el registro
                 await _dbService.Create(regiter); //guarda el registro
+            }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se puedo guardar el registro.", "OK");
             }
         }
     }

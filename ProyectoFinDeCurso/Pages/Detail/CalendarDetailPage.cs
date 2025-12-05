@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.Controls.Shapes;
+﻿
+using Microsoft.Maui.Controls.Shapes;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
 using ProyectoFinDeCurso.Enums;
@@ -21,86 +22,123 @@ namespace ProyectoFinDeCurso.Pages.Detail
         private readonly ModeEnum _mode; //modo de la página (ver, editar, crear, filtrar)
         public CalendarDetailPage(DbService dbService, ModeEnum mode, string? day = null) //constructor obtieniendo los datos
         {
-            _dbService = dbService;
-            _day = day;
-            _mode = mode;
+            try
+            {
+                _dbService = dbService;
+                _day = day;
+                _mode = mode;
             BuildUI();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se pudo cargar la página del calendario.", "OK");
+            }
         }
 
         private void BuildUI() // Construye la interfaz de ejercicios según el modo
         {
-            switch (_mode)
+            try
             {
-                case ModeEnum.create:
-                    BuildCreateAlarmUI();
-                    break;
+                switch (_mode)
+                {
+                    case ModeEnum.create:
+                        BuildCreateAlarmUI();
+                        break;
 
-                case ModeEnum.Edit:
-                    
-                    break;
+                    case ModeEnum.Edit:
+                        break;
 
-                case ModeEnum.View:
-                    BuildViewUI();
-                    break;
-                case ModeEnum.filter:
-                    
-                    break;
+                    case ModeEnum.View:
+                        BuildViewUI();
+                        break;
 
+                    case ModeEnum.filter:
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(_mode), $"Modo no soportado: {_mode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error construyendo UI en CalendarDetailPage: {ex.Message}");
+                DisplayAlert("Error", "No se pudo cargar la interfaz correctamente.", "OK");
             }
         }
         private async Task BuildViewUI() //muestra el contenido del día seleccionado
         {
-            var userId = await SecureStorage.GetAsync("user_id"); //obtiene la id del usuario
-            if (userId == null) { //verifica si no es nulo
-                await DisplayAlert(
-                                                                 "Usuario No registrado",
-                                                                 "usuario no identificado.",
-                                                                 "Aceptar"
-                                                             );
-                return;
-            }
-    
-            var user = await _dbService.GetUserById(int.Parse(userId)); //obtiene al usuario
-
-            var registerRoutines = await _dbService.GetRegisterLoggingAsync(); //obtiene los registros de las rutinas acabadas
-            var listRegisterRoutinesByUser = registerRoutines
-                .Where(x => x.userID == user.UserID && x.day == _day)
-                .ToList(); //filtra por la ip del usuario
-
-            var listRoutines = await _dbService.GetRoutinesAsync(); //obtiene las rutinas
-
-            // UNIR REGISTRO + RUTINA
-            var routinesData = listRegisterRoutinesByUser
-                .Join(listRoutines,
-                      reg => reg.routineID,
-                      rt => rt.routineID,
-                      (reg, rt) => new
-                      {
-                          name = rt.nameRoutine,
-                          description = rt.description,
-                          startHour = reg.timeToStart,
-                          endHour = reg.timeToEnd
-                      })
-                .ToList(); //filtra y obtiene los datos necesarios para mostrarlo
-
-            var routinesCollection = new CollectionView //lista del registro de ese día
+            try
             {
-                ItemsSource = routinesData, //obtiene la lista de rutinas con su hora de comienzo y final
-                SelectionMode = SelectionMode.None,
-                Margin = new Thickness(10, 0, 10, 0),
-                HeightRequest = 220,
 
-                ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Vertical)
+                var userId = await SecureStorage.GetAsync("user_id"); //obtiene la id del usuario
+                if (userId == null)
+                { //verifica si no es nulo
+                    await DisplayAlert(
+                                                                     "Usuario No registrado",
+                                                                     "usuario no identificado.",
+                                                                     "Aceptar"
+                                                                 );
+                    return;
+                }
+
+                var user = await _dbService.GetUserById(int.Parse(userId)); //obtiene al usuario
+
+                var registerRoutines = await _dbService.GetRegisterLoggingAsync(); //obtiene los registros de las rutinas acabadas
+                var listRegisterRoutinesByUser = registerRoutines
+                    .Where(x => x.userID == user.UserID && x.day == _day)
+                    .ToList(); //filtra por la ip del usuario
+
+                var listRoutines = await _dbService.GetRoutinesAsync(); //obtiene las rutinas
+
+                // UNIR REGISTRO + RUTINA
+                var routinesData = listRegisterRoutinesByUser
+                    .Join(listRoutines,
+                          reg => reg.routineID,
+                          rt => rt.routineID,
+                          (reg, rt) => new
+                          {
+                              name = rt.nameRoutine,
+                              description = rt.description,
+                              startHour = reg.timeToStart,
+                              endHour = reg.timeToEnd
+                          })
+                    .ToList(); //filtra y obtiene los datos necesarios para mostrarlo
+
+                var routinesCollection = new CollectionView //lista del registro de ese día
                 {
-                    ItemSpacing = 25  //separación entre líneas
-                },
+                    ItemsSource = routinesData, //obtiene la lista de rutinas con su hora de comienzo y final
+                    SelectionMode = SelectionMode.None,
+                    Margin = new Thickness(10, 0, 10, 0),
+                    HeightRequest = 220,
 
-                ItemTemplate = new DataTemplate(() => //muestra las rutinas
+                    ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Vertical)
+                    {
+                        ItemSpacing = 25  //separación entre líneas
+                    },
+                    EmptyView = new Grid
+                    {
+                        VerticalOptions = LayoutOptions.Fill,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        Children =
+                        {
+                            new Label
+                            {
+                                Text = "No hay datos registrados aún",
+                                TextColor = Color.FromArgb("#CFC86D"),
+                                FontSize = 18,
+                                FontFamily = "ComfortaaBold",
+                                HorizontalOptions = LayoutOptions.Center,
+                                VerticalOptions = LayoutOptions.Center
+                            }
+                        }
+                    },
+                    ItemTemplate = new DataTemplate(() => //muestra las rutinas
                 {
-                    
 
-                    Color titleColor = Color.FromArgb("#D6A77A");  
-                    Color valueColor = Color.FromArgb("#F0E6DA");  
+
+                    Color titleColor = Color.FromArgb("#D6A77A");
+                    Color valueColor = Color.FromArgb("#F0E6DA");
 
                     double titleSize = 15;
                     double valueSize = 17;
@@ -123,7 +161,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         FontSize = valueSize,
                         FontFamily = valueFont,
                         TextColor = valueColor,
-                        Opacity = 0.95 
+                        Opacity = 0.95
                     };
                     nameValue.SetBinding(Label.TextProperty, "name"); //nombre de la rutina
 
@@ -134,7 +172,6 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     };
 
 
-                    // ====== FILA DESCRIPCIÓN ======
 
                     var descTitle = new Label //título de la rutina
                     {
@@ -144,7 +181,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         TextColor = titleColor
                     };
 
-                    var descValue = new Label 
+                    var descValue = new Label
                     {
                         FontSize = valueSize - 1,
                         FontFamily = valueFont,
@@ -173,7 +210,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     {
                         FontSize = valueSize,
                         FontFamily = valueFont,
-                        TextColor = Color.FromArgb("#E9C68A") 
+                        TextColor = Color.FromArgb("#E9C68A")
                     };
                     startValue.SetBinding(Label.TextProperty, "startHour"); //hora de comienzo
 
@@ -239,7 +276,7 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         Content = stack //lo muestra en pantalla
                     };
                 })
-            };
+                };
 
 
             Content = new Border // muestra todo el contenido de la página
@@ -304,94 +341,395 @@ namespace ProyectoFinDeCurso.Pages.Detail
             };
 
             BackgroundColor = Color.FromRgba(0, 0, 0, 0.6);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Join Error: " + ex.Message);
+                await DisplayAlert("Error", "Error al crear la página.", "OK");
+                return;
+            }
         }
 
         private async Task BuildCreateAlarmUI() //build para crear los avisos al usuario
         {
-            var userId = await SecureStorage.GetAsync("user_id"); //obtiene la id del usuario
-            if (userId == null) //verifica si el usuario inició sesion
+            try
             {
-                await DisplayAlert(
-                                                                 "Usuario No registrado",
-                                                                 "usuario no identificado.",
-                                                                 "Aceptar"
-                                                             );
-                return;
-            }
-
-            var alarmas = await _dbService.GetAlarmsAsync(); //obtiene las alarmas
-            var filterAlarm = alarmas.Where(x => x.userID == int.Parse(userId)).ToList(); //filtra las alarmas por la id del usuario
-         
-            var titleLabel = new Label //título de la página
-            {
-                Text = "Alarmas",
-                FontSize = 28,
-                FontFamily = "EatMeAlive",
-                TextColor = Color.FromArgb("#C77B30"),
-                HorizontalOptions = LayoutOptions.Start
-            };
-            VerticalStackLayout CreateDay(string text) //crea los días de la semana con su checkbox
-            {
-                return new VerticalStackLayout
+                var userId = await SecureStorage.GetAsync("user_id"); //obtiene la id del usuario
+                if (userId == null) //verifica si el usuario inició sesion
                 {
-                    Spacing = 3,
-                    HorizontalOptions = LayoutOptions.Center,
-                    Children =
+                    await DisplayAlert(
+                                                                     "Usuario No registrado",
+                                                                     "usuario no identificado.",
+                                                                     "Aceptar"
+                                                                 );
+                    return;
+                }
+
+                var alarmas = await _dbService.GetAlarmsAsync(); //obtiene las alarmas
+                var filterAlarm = alarmas.Where(x => x.userID == int.Parse(userId)).ToList(); //filtra las alarmas por la id del usuario
+
+                var titleLabel = new Label //título de la página
+                {
+                    Text = "Alarmas",
+                    FontSize = 28,
+                    FontFamily = "EatMeAlive",
+                    TextColor = Color.FromArgb("#C77B30"),
+                    HorizontalOptions = LayoutOptions.Start
+                };
+
+                var addButton = new Button //botón para añadir nuevas alarmas
+                {
+                    Text = "+",
+                    FontSize = 28,
+                    BackgroundColor = Color.FromArgb("#3B2523"),
+                    TextColor = Color.FromArgb("#CFC86D"),
+                    FontFamily = "Forresten",
+                    CornerRadius = 10,
+                    WidthRequest = 50,
+                    HeightRequest = 50,
+                    Command = new Command(async () => //acción al pulsar el botón
+                    {
+                        ModifyOrCreateExercise();
+
+                    })
+                };
+
+                var headerGrid = new Grid //grid del encabezado
+                {
+                    ColumnDefinitions =
         {
-            new Label //asigna el texto del día
-            {
-                Text = text,
-                TextColor = Color.FromArgb("#CFC86D"),
-                FontFamily = "ComfortaaBold",
-                HorizontalOptions = LayoutOptions.Center
-            },
-            new CheckBox //asigna el checkbox
-            {
-                Color = Color.FromArgb("#CFC86D"),
-                HorizontalOptions = LayoutOptions.Center
-            }
+            new ColumnDefinition { Width = GridLength.Star },
+            new ColumnDefinition { Width = 50 }
         }
                 };
+
+                headerGrid.Children.Add(titleLabel); //añade el título
+                Grid.SetColumn(titleLabel, 0); //posición en la cuadrícula
+
+                headerGrid.Children.Add(addButton); //añade el botón de añadir
+                Grid.SetColumn(addButton, 1); //posición en la cuadrícula
+
+                var alarmsCollection = new CollectionView //lista de las alarmas
+                {
+                    ItemsSource = filterAlarm,
+                    SelectionMode = SelectionMode.None,
+                    VerticalOptions = LayoutOptions.FillAndExpand,
+
+                    ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Vertical) //disposición vertical
+                    {
+                        ItemSpacing = 25 //separación entre líneas
+                    },
+
+                    EmptyView = new Label //mensaje si no hay alarmas
+                    {
+                        Text = "No hay alarmas aún",
+                        TextColor = Color.FromArgb("#CFC86D"),
+                        FontSize = 18,
+                        FontFamily = "ComfortaaBold",
+                        HorizontalOptions = LayoutOptions.Center,
+                        VerticalOptions = LayoutOptions.Center
+                    }
+                };
+
+                alarmsCollection.ItemTemplate = new DataTemplate(() => //plantilla para cada alarma
+                {
+                    var nameLabel = new Label//nombre de la alarma
+                    {
+                        FontSize = 18,
+                        FontFamily = "ComfortaaBold",
+                        TextColor = Color.FromArgb("#CFC86D")
+                    };
+                    nameLabel.SetBinding(Label.TextProperty, "Name");
+
+                    var hourLabel = new Label //hora de la alarma
+                    {
+                        FontSize = 16,
+                        FontFamily = "Comfortaa",
+                        TextColor = Color.FromArgb("#E9C68A")
+                    };
+                    hourLabel.SetBinding(Label.TextProperty, "FormattedTime"); //propiedad formateada de la hora
+
+                    var weekLayout = new HorizontalStackLayout //días de la semana
+                    {
+                        Spacing = 12,
+                        HorizontalOptions = LayoutOptions.Start
+                    };
+
+                    VerticalStackLayout CreateDay(string text, string binding) //crea cada día con su checkbox enlazado
+                    {
+                        var check = new CheckBox
+                        {
+                            Color = Color.FromArgb("#CFC86D"),
+                            IsEnabled = false,
+                            Scale = 0.9,
+                            HorizontalOptions = LayoutOptions.Center
+                        };
+                        check.SetBinding(CheckBox.IsCheckedProperty, binding); //enlaza con la propiedad del modelo
+
+                        return new VerticalStackLayout //muestra del día
+                        {
+                            Spacing = 1,
+                            Children =
+                {
+                new Label
+                {
+                    Text = text,
+                    FontFamily = "ComfortaaBold",
+                    TextColor = Color.FromArgb("#CFC86D")
+                },
+                check
+                }
+                        };
+                    }
+
+                    weekLayout.Children.Add(CreateDay("L", "Monday")); //añade los días a la vista
+                    weekLayout.Children.Add(CreateDay("M", "Tuesday"));
+                    weekLayout.Children.Add(CreateDay("X", "Wednesday"));
+                    weekLayout.Children.Add(CreateDay("J", "Thursday"));
+                    weekLayout.Children.Add(CreateDay("V", "Friday"));
+                    weekLayout.Children.Add(CreateDay("S", "Saturday"));
+                    weekLayout.Children.Add(CreateDay("D", "Sunday"));
+
+
+                    var editButton = new ImageButton //botón para editar la alarma
+                    {
+                        Source = "editar.png",
+                        WidthRequest = 30,
+                        HeightRequest = 30,
+                        BackgroundColor = Colors.Transparent,
+                        HorizontalOptions = LayoutOptions.End,
+                        Margin = new Thickness(0, 0, 8, 0)
+                    };
+                    editButton.SetBinding(ImageButton.CommandParameterProperty, "."); //enlaza con la alarma actual
+                    editButton.Command = new Command<Alarm>(async (alarm) => //acción al pulsar el botón
+                    {
+                        ModifyOrCreateExercise(alarm);
+                    });
+
+                    var deleteButton = new ImageButton //botón para eliminar la alarma
+                    {
+                        Source = "papelera.png",
+                        WidthRequest = 30,
+                        HeightRequest = 30,
+                        BackgroundColor = Colors.Transparent,
+                        HorizontalOptions = LayoutOptions.End,
+
+                    };
+                    deleteButton.SetBinding(ImageButton.CommandParameterProperty, "."); //enlaza con la alarma actual
+                    deleteButton.Command = new Command<Alarm>(async (alarm) => //acción al pulsar el botón
+                    {
+                        bool confirm = await Application.Current.MainPage.DisplayAlert(
+                            "Eliminar alarma",
+                            $"¿Eliminar la alarma \"{alarm.Name}\"?",
+                            "Sí",
+                            "No"
+                        ); //confirma la eliminación
+
+                        if (confirm)
+                        {
+                            LocalNotificationCenter.Current.Cancel(alarm.AlarmID); //cancela la notificación programada
+                            await _dbService.Delete(alarm); //eliminación de la alarma en la base de datos
+                        }
+                    });
+
+
+                    var grid = new Grid //grid para organizar los elementos
+                    {
+                        ColumnDefinitions =
+                        {
+                        new ColumnDefinition { Width = GridLength.Star },  // texto y días
+                        new ColumnDefinition { Width = GridLength.Auto },  // editar
+                        new ColumnDefinition { Width = GridLength.Auto }   // eliminar
+                        }
+                    };
+
+                    var dataStack = new VerticalStackLayout //stack para los datos de la alarma
+                    {
+                        Spacing = 10,
+                        Children = { nameLabel, hourLabel, weekLayout }
+                    };
+
+                    Grid.SetColumn(dataStack, 0); //posición en la cuadrícula
+                    grid.Children.Add(dataStack);// añade los datos
+
+                    Grid.SetColumn(editButton, 1);//posición en la cuadrícula
+                    grid.Children.Add(editButton);// añade los datos
+
+                    Grid.SetColumn(deleteButton, 2);//posición en la cuadrícula
+                    grid.Children.Add(deleteButton);// añade los datos
+
+
+                    return new Border //muestra el contenido de la alarma
+                    {
+                        BackgroundColor = Color.FromArgb("#2E1E1B"),
+                        Stroke = Color.FromArgb("#6A463F"),
+                        StrokeThickness = 1.5,
+                        Margin = new Thickness(0, 10),
+                        Padding = new Thickness(15),
+                        StrokeShape = new RoundRectangle { CornerRadius = 15 },
+                        Content = grid
+                    };
+                });
+                var listContainer = new Border //contenedor de la lista de alarmas
+                {
+                    BackgroundColor = Color.FromArgb("#3B2523"),
+                    Stroke = Color.FromArgb("#D4A857"),
+                    StrokeThickness = 2,
+                    Padding = new Thickness(15),
+                    StrokeShape = new RoundRectangle { CornerRadius = 20 },
+                    VerticalOptions = LayoutOptions.FillAndExpand,
+                    Content = alarmsCollection
+                };
+
+                var exitButton = new Button //botón para salir de la página
+                {
+                    Text = "Salir",
+                    BackgroundColor = Color.FromArgb("#CFC86D"),
+                    TextColor = Color.FromArgb("#3B2523"),
+                    CornerRadius = 10,
+                    HeightRequest = 45,
+                    FontFamily = "Forresten",
+                    HorizontalOptions = LayoutOptions.Center,
+                    Margin = new Thickness(0, 10, 0, 20)
+                };
+
+                exitButton.Clicked += async (s, e) => //acción al pulsar el botón
+                {
+                    await Navigation.PopModalAsync(); //cierra la página modal
+                };
+
+
+                var mainGrid = new Grid //grid principal de la página
+                {
+                    RowDefinitions =
+                {
+                    new RowDefinition { Height = GridLength.Star },   // contenido scrollable
+                    new RowDefinition { Height = GridLength.Auto }    // botón salir fijo
+                },
+                    Padding = new Thickness(20),
+                    BackgroundColor = Color.FromArgb("#1A1A1A")
+                };
+
+                var contentLayout = new VerticalStackLayout //contenido principal
+                {
+                    Spacing = 20,
+                    Children =
+    {
+        headerGrid, //encabezado
+        listContainer //lista de alarmas
+    }
+                };
+
+
+                var scrollContent = new ScrollView// Scroll externo
+                {
+                    Content = contentLayout //contenido principal
+                };
+
+
+                mainGrid.Children.Add(scrollContent);// Añadir a la fila 0
+                Grid.SetRow(scrollContent, 0); //posición en la cuadrícula
+
+                mainGrid.Children.Add(exitButton); // Añadir a la fila 1
+                Grid.SetRow(exitButton, 1); //posición en la cuadrícula
+
+                Content = mainGrid; //asigna el contenido a la página
             }
-            var addButton = new Button //botón para añadir nuevas alarmas
+            catch (Exception ex)
             {
-                Text = "+",
-                FontSize = 28,
-                BackgroundColor = Color.FromArgb("#3B2523"),
-                TextColor = Color.FromArgb("#CFC86D"),
-                FontFamily = "Forresten",
-                CornerRadius = 10,
-                WidthRequest = 50,
-                HeightRequest = 50,
-                 Command = new Command(async () => //acción al pulsar el botón
-                 {
+                Console.WriteLine("Join Error: " + ex.Message);
+                await DisplayAlert("Error", "Error al mostrar las alarmas.", "OK");
+                return;
+            }
+        }
 
-                     Entry entryName = new Entry //entrada del nombre de la alarma
-                     {
-                         Placeholder = "Ejemplo: Despertar",
-                         FontFamily = "Comfortaa",
-                         TextColor = Color.FromArgb("#E9C68A"),
-                         PlaceholderColor = Color.FromArgb("#C49362")
-                     };
+        private async void ModifyOrCreateExercise(Alarm alarm = null) //modifica o crea una alarma
+        {
+            try
+            {
+                bool boolNewAlarm = false;
+            if (alarm == null) //verivica si es nueva la rutina
+            {
+                alarm = new Alarm();
 
-                     TimePicker timePicker = new TimePicker //selector de la hora
-                     {
-                         TextColor = Color.FromArgb("#E9C68A"),
-                         FontFamily = "Comfortaa"
-                     };
-                     timePicker.Time = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, 0); //inicializa con la hora actual
-                     
-                     List<CheckBox> dayCheckboxes = new List<CheckBox>(); //lista para almacenar los checkboxes de los días
+                boolNewAlarm = true;
+            }
+            {
+                VerticalStackLayout CreateDay(string text, out CheckBox checkBox, bool isPresed) //crea los checkBox
+                {
+                    checkBox = new CheckBox
+                    {
+                        Color = Color.FromArgb("#CFC86D"),
+                        HorizontalOptions = LayoutOptions.Center,
+                        IsChecked = isPresed
+                    };
 
-                     
-                     var scrollView = new ScrollView //contenido scrollable
-                     {
-                         Content = new VerticalStackLayout //contenido vertical
-                         {
-                             Padding = 20,
-                             Spacing = 20,
+                    return new VerticalStackLayout
+                    {
+                        Spacing = 3,
+                        HorizontalOptions = LayoutOptions.Center,
+                        Children =
+                            {
+                                new Label
+                                {
+                                    Text = text,
+                                    TextColor = Color.FromArgb("#CFC86D"),
+                                    FontFamily = "ComfortaaBold",
+                                    HorizontalOptions = LayoutOptions.Center
+                                },
+                                checkBox
+                            }
+                    };
+                }
+                List<CheckBox> dayCheckboxes = new List<CheckBox>(); //lista para almacenar los checkboxes de los días
+                CheckBox cbL, cbM, cbX, cbJ, cbV, cbS, cbD;
 
-                             Children =
+                var daysLayout = new HorizontalStackLayout
+                {
+                    Children =
+                        {
+                            CreateDay("L", out cbL,alarm.Monday),
+                            CreateDay("M", out cbM, alarm.Tuesday),
+                            CreateDay("X", out cbX, alarm.Wednesday),
+                            CreateDay("J", out cbJ, alarm.Thursday),
+                            CreateDay("V", out cbV, alarm.Friday),
+                            CreateDay("S", out cbS, alarm.Saturday),
+                            CreateDay("D", out cbD, alarm.Sunday)
+                        }
+                };
+
+                dayCheckboxes.AddRange(new[] { cbL, cbM, cbX, cbJ, cbV, cbS, cbD });
+
+                Entry entryName = new Entry //entrada del nombre de la alarma
+                {
+                    Text = alarm.Name,
+                    Placeholder = "Ejemplo: Despertar",
+                    FontFamily = "Comfortaa",
+                    TextColor = Color.FromArgb("#E9C68A"),
+                    PlaceholderColor = Color.FromArgb("#C49362")
+                };
+
+                TimePicker timePicker = new TimePicker //selector de la hora
+                {
+                    TextColor = Color.FromArgb("#E9C68A"),
+                    FontFamily = "Comfortaa"
+                };
+                if (!boolNewAlarm)
+                {
+                    timePicker.Time = new TimeSpan(alarm.Hour, alarm.Minute, 0); //muestra la hora
+                }
+                {
+                    timePicker.Time = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, 0); //inicializa con la hora actual
+                }
+
+                    var scrollView = new ScrollView //contenido scrollable
+                    {
+                        Content = new VerticalStackLayout //contenido vertical
+                        {
+                            Padding = 20,
+                            Spacing = 20,
+
+                            Children =
         {
             new Label //título del modal
             {
@@ -434,42 +772,20 @@ namespace ProyectoFinDeCurso.Pages.Detail
                         },
 
                         timePicker, //selector de la hora
-
-                        new Label //titulo de los días
-                        {
-                            Text = "Repetir",
-                            FontSize = 18,
-                            FontFamily = "ComfortaaBold",
-                            TextColor = Color.FromArgb("#CFC86D")
-                        },
-
-                        new HorizontalStackLayout //días de la semana
-                        {
-                            Spacing = 3,
-                            Children =
-                            {
-                                CreateDay("L"),
-                                CreateDay("M"),
-                                CreateDay("X"),
-                                CreateDay("J"),
-                                CreateDay("V"),
-                                CreateDay("S"),
-                                CreateDay("D")
-                            }
-                        }
+                        daysLayout
                     }
                 }
             }
         }
-                         }
-                     };
+                        }
+                    };
 
-                     var buttonBar = new HorizontalStackLayout //barra de botones inferior
-                     {
-                         Spacing = 10,
-                         Padding = 20,
-                         BackgroundColor = Color.FromArgb("#1A1A1A"),
-                         Children =
+                    var buttonBar = new HorizontalStackLayout //barra de botones inferior
+                    {
+                        Spacing = 10,
+                        Padding = 20,
+                        BackgroundColor = Color.FromArgb("#1A1A1A"),
+                        Children =
                         {
                             new Button //botón para cerrar el modal
                             {
@@ -518,37 +834,57 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 bool friday = dayCheckboxes[4].IsChecked;
                                 bool saturday = dayCheckboxes[5].IsChecked;
                                 bool sunday = dayCheckboxes[6].IsChecked;
+                                    if (boolNewAlarm) // si es nuevo
+                                    {
+                                        Alarm newAlarm = new Alarm //crea la nueva alarma
+                                        {
+                                            Name = name,
+                                            Hour = time.Hours,
+                                            Minute = time.Minutes,
 
-                                Alarm newAlarm = new Alarm //crea la nueva alarma
-                                {
-                                    Name = name,
-                                    Hour = time.Hours,
-                                    Minute = time.Minutes,
+                                            Monday = monday,
+                                            Tuesday = tuesday,
+                                            Wednesday = wednesday,
+                                            Thursday = thursday,
+                                            Friday = friday,
+                                            Saturday = saturday,
+                                            Sunday = sunday,
+                                            userID = user.UserID
+                                        };
+                                        await _dbService.Create(newAlarm); //la guarda en la base de datos
+                                        AlarmScheduler.ScheduleAlarm(newAlarm); //la programa
+                                        await DisplayAlert("Alarma creada", $"Sonará a las {newAlarm.FormattedTime}", "OK"); //confirma la creación
+                                        await Navigation.PopModalAsync(); //cierra el modal
+                                    }
+                                    else
+                                    {
+                                        alarm.Name = name;
+                                        alarm.Hour = time.Hours;
+                                        alarm.Minute = time.Minutes;
+                                        alarm.Monday = monday;
+                                        alarm.Tuesday = tuesday;
+                                        alarm.Wednesday = wednesday;
+                                        alarm.Thursday = thursday;
+                                        alarm.Friday = friday;
+                                        alarm.Saturday = saturday;
+                                        alarm.Sunday = sunday;
+                                        alarm.userID = user.UserID;
 
-                                    Monday = monday,
-                                    Tuesday = tuesday,
-                                    Wednesday = wednesday,
-                                    Thursday = thursday,
-                                    Friday = friday,
-                                    Saturday = saturday,
-                                    Sunday = sunday,
-                                    userID = user.UserID
-                                };
-                                    await _dbService.Create(newAlarm); //la guarda en la base de datos
-                                    AlarmScheduler.ScheduleAlarm(newAlarm); //la programa
-                                    await DisplayAlert("Alarma creada", $"Sonará a las {newAlarm.FormattedTime}", "OK"); //confirma la creación
-                                    await Navigation.PopModalAsync(); //cierra el modal
-
-                                })
+                                        LocalNotificationCenter.Current.Cancel(alarm.AlarmID); //cancela la notificación programada
+                                        await _dbService.Update(alarm);
+                                        await DisplayAlert("Alarma creada", $"Sonará a las {alarm.FormattedTime}", "OK"); //confirma la creación
+                                        await Navigation.PopModalAsync(); //cierra el modal
+                                    }
+                                 })
                             }
                         }
-                     };
-                     var modalPage = new ContentPage //página modal
-                     {
-                         BackgroundColor = Color.FromArgb("#1A1A1A"),
-                         Content = new Grid
-                         {
-                             RowDefinitions =
+                    };
+                    var modalPage = new ContentPage //página modal
+                    {
+                        BackgroundColor = Color.FromArgb("#1A1A1A"),
+                        Content = new Grid
+                        {
+                            RowDefinitions =
                             {
                                 new RowDefinition { Height = GridLength.Star },  // scroll
                                 new RowDefinition { Height = GridLength.Auto }   // botones
@@ -558,257 +894,25 @@ namespace ProyectoFinDeCurso.Pages.Detail
                                 scrollView, //contenido scrollable
                                 buttonBar //barra de botones
                             }
-                         }
-                     };
-
-                     Grid.SetRow(scrollView, 0); //posición en la cuadrícula
-                     Grid.SetRow(buttonBar, 1);
-
-                     await Navigation.PushModalAsync(modalPage); //muestra el modal
-
-                 })
-            };
-
-            var headerGrid = new Grid //grid del encabezado
-            {
-                ColumnDefinitions =
-        {
-            new ColumnDefinition { Width = GridLength.Star },
-            new ColumnDefinition { Width = 50 }
-        }
-            };
-
-            headerGrid.Children.Add(titleLabel); //añade el título
-            Grid.SetColumn(titleLabel, 0); //posición en la cuadrícula
-
-            headerGrid.Children.Add(addButton); //añade el botón de añadir
-            Grid.SetColumn(addButton, 1); //posición en la cuadrícula
-
-            var alarmsCollection = new CollectionView //lista de las alarmas
-            {
-                ItemsSource = filterAlarm,
-                SelectionMode = SelectionMode.None,
-                VerticalOptions = LayoutOptions.FillAndExpand,
-
-                ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Vertical) //disposición vertical
-                {
-                    ItemSpacing = 25 //separación entre líneas
-                },
-
-                EmptyView = new Label //mensaje si no hay alarmas
-                {
-                    Text = "No hay alarmas aún",
-                    TextColor = Color.FromArgb("#CFC86D"),
-                    FontSize = 18,
-                    FontFamily = "ComfortaaBold",
-                    HorizontalOptions = LayoutOptions.Center,
-                    VerticalOptions = LayoutOptions.Center
-                }
-            };
-
-            alarmsCollection.ItemTemplate = new DataTemplate(() => //plantilla para cada alarma
-            {
-                var nameLabel = new Label//nombre de la alarma
-                {
-                    FontSize = 18,
-                    FontFamily = "ComfortaaBold",
-                    TextColor = Color.FromArgb("#CFC86D")
-                };
-                nameLabel.SetBinding(Label.TextProperty, "Name");
-
-                var hourLabel = new Label //hora de la alarma
-                {
-                    FontSize = 16,
-                    FontFamily = "Comfortaa",
-                    TextColor = Color.FromArgb("#E9C68A")
-                };
-                hourLabel.SetBinding(Label.TextProperty, "FormattedTime"); //propiedad formateada de la hora
-
-                var weekLayout = new HorizontalStackLayout //días de la semana
-                {
-                    Spacing = 12,
-                    HorizontalOptions = LayoutOptions.Start
-                };
-
-                VerticalStackLayout CreateDay(string text, string binding) //crea cada día con su checkbox enlazado
-                {
-                    var check = new CheckBox
-                    {
-                        Color = Color.FromArgb("#CFC86D"),
-                        IsEnabled = false,
-                        Scale = 0.9,
-                        HorizontalOptions = LayoutOptions.Center
+                        }
                     };
-                    check.SetBinding(CheckBox.IsCheckedProperty, binding); //enlaza con la propiedad del modelo
 
-                    return new VerticalStackLayout //muestra del día
-                    {
-                        Spacing = 1,
-                        Children =
-            {
-                new Label
-                {
-                    Text = text,
-                    FontFamily = "ComfortaaBold",
-                    TextColor = Color.FromArgb("#CFC86D")
-                },
-                check
+                    Grid.SetRow(scrollView, 0); //posición en la cuadrícula
+                    Grid.SetRow(buttonBar, 1);
+
+                    await Navigation.PushModalAsync(modalPage);
+
+                
             }
-                    };
-                }
-
-                weekLayout.Children.Add(CreateDay("L", "Monday")); //añade los días a la vista
-                weekLayout.Children.Add(CreateDay("M", "Tuesday"));
-                weekLayout.Children.Add(CreateDay("X", "Wednesday"));
-                weekLayout.Children.Add(CreateDay("J", "Thursday"));
-                weekLayout.Children.Add(CreateDay("V", "Friday"));
-                weekLayout.Children.Add(CreateDay("S", "Saturday"));
-                weekLayout.Children.Add(CreateDay("D", "Sunday"));
-
-
-                var editButton = new ImageButton //botón para editar la alarma
-                {
-                    Source = "editar.png",
-                    WidthRequest = 30,
-                    HeightRequest = 30,
-                    BackgroundColor = Colors.Transparent,
-                    HorizontalOptions = LayoutOptions.End,
-                    Margin = new Thickness(0, 0, 8, 0)
-                };
-                editButton.SetBinding(ImageButton.CommandParameterProperty, "."); //enlaza con la alarma actual
-
-
-                var deleteButton = new ImageButton //botón para eliminar la alarma
-                {
-                    Source = "papelera.png",
-                    WidthRequest = 30,
-                    HeightRequest = 30,
-                    BackgroundColor = Colors.Transparent,
-                    HorizontalOptions = LayoutOptions.End,
-                    
-                };
-                deleteButton.SetBinding(ImageButton.CommandParameterProperty, "."); //enlaza con la alarma actual
-                deleteButton.Command = new Command<Alarm>(async (alarm) => //acción al pulsar el botón
-                {
-                    bool confirm = await Application.Current.MainPage.DisplayAlert(
-                        "Eliminar alarma",
-                        $"¿Eliminar la alarma \"{alarm.Name}\"?",
-                        "Sí",
-                        "No"
-                    ); //confirma la eliminación
-
-                    if (confirm)
-                    {
-                        LocalNotificationCenter.Current.Cancel(alarm.AlarmID); //cancela la notificación programada
-                        await _dbService.Delete(alarm); //eliminación de la alarma en la base de datos
-                    }
-                });
-
-
-                var grid = new Grid //grid para organizar los elementos
-                {
-                    ColumnDefinitions =
-                    {
-                        new ColumnDefinition { Width = GridLength.Star },  // texto y días
-                        new ColumnDefinition { Width = GridLength.Auto },  // editar
-                        new ColumnDefinition { Width = GridLength.Auto }   // eliminar
-                    }
-                };
-
-                var dataStack = new VerticalStackLayout //stack para los datos de la alarma
-                {
-                    Spacing = 10,
-                    Children = { nameLabel, hourLabel, weekLayout }
-                };
-
-                Grid.SetColumn(dataStack, 0); //posición en la cuadrícula
-                grid.Children.Add(dataStack);// añade los datos
-
-                Grid.SetColumn(editButton, 1);//posición en la cuadrícula
-                grid.Children.Add(editButton);// añade los datos
-
-                Grid.SetColumn(deleteButton, 2);//posición en la cuadrícula
-                grid.Children.Add(deleteButton);// añade los datos
-
-
-                return new Border //muestra el contenido de la alarma
-                {
-                    BackgroundColor = Color.FromArgb("#2E1E1B"),
-                    Stroke = Color.FromArgb("#6A463F"),
-                    StrokeThickness = 1.5,
-                    Margin = new Thickness(0, 10),
-                    Padding = new Thickness(15),
-                    StrokeShape = new RoundRectangle { CornerRadius = 15 },
-                    Content = grid
-                };
-            });
-            var listContainer = new Border //contenedor de la lista de alarmas
+            }
+            catch (Exception ex)
             {
-                BackgroundColor = Color.FromArgb("#3B2523"),
-                Stroke = Color.FromArgb("#D4A857"),
-                StrokeThickness = 2,
-                Padding = new Thickness(15),
-                StrokeShape = new RoundRectangle { CornerRadius = 20 },
-                VerticalOptions = LayoutOptions.FillAndExpand,
-                Content = alarmsCollection
-            };
+                Console.WriteLine("Join Error: " + ex.Message);
+                await DisplayAlert("Error", "Error al mostrar las alarmas.", "OK");
+                return;
+            }
 
-            var exitButton = new Button //botón para salir de la página
-            {
-                Text = "Salir",
-                BackgroundColor = Color.FromArgb("#CFC86D"),
-                TextColor = Color.FromArgb("#3B2523"),
-                CornerRadius = 10,
-                HeightRequest = 45,
-                FontFamily = "Forresten",
-                HorizontalOptions = LayoutOptions.Center,
-                Margin = new Thickness(0, 10, 0, 20)
-            };
-
-            exitButton.Clicked += async (s, e) => //acción al pulsar el botón
-            {
-                await Navigation.PopModalAsync(); //cierra la página modal
-            };
-
-
-            var mainGrid = new Grid //grid principal de la página
-            {
-                RowDefinitions =
-                {
-                    new RowDefinition { Height = GridLength.Star },   // contenido scrollable
-                    new RowDefinition { Height = GridLength.Auto }    // botón salir fijo
-                },
-                Padding = new Thickness(20),
-                BackgroundColor = Color.FromArgb("#1A1A1A")
-            };
-
-            var contentLayout = new VerticalStackLayout //contenido principal
-            {
-                Spacing = 20,
-                Children =
-    {
-        headerGrid, //encabezado
-        listContainer //lista de alarmas
-    }
-            };
-
-            
-            var scrollContent = new ScrollView// Scroll externo
-            {
-                Content = contentLayout //contenido principal
-            };
-
-            
-            mainGrid.Children.Add(scrollContent);// Añadir a la fila 0
-            Grid.SetRow(scrollContent, 0); //posición en la cuadrícula
-
-            mainGrid.Children.Add(exitButton); // Añadir a la fila 1
-            Grid.SetRow(exitButton, 1); //posición en la cuadrícula
-
-            Content = mainGrid; //asigna el contenido a la página
         }
-
-       
-       
     }
+     
 }

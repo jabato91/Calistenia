@@ -37,6 +37,9 @@ namespace ProyectoFinDeCurso.Models
         private bool _expaded; // Indica si el ejercicio está expandido en al entrar en la rutina
         private bool _exerciseFinished; // Indica si el ejercicio ha sido completado en la rutina
         [Ignore]
+        public int setsOrTime { get; set; } = -1; //muestra información en la primera pantalla
+        
+        [Ignore]
         public bool expaded // Indica si el ejercicio está expandido en la interfaz de usuario
         {
             get => _expaded;

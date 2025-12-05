@@ -22,11 +22,18 @@ namespace ProyectoFinDeCurso.ViewModels
         public bool Initialized { get; private set; } = false; // Indica si el ViewModel ha sido inicializado
         public RoutinesFilterViewModel(DbService dbService, userTypeEnum userType) // Constructor
         {
-            _dbService = dbService;
-            _userType = userType;
+            try
+            {
+                _dbService = dbService;
+                _userType = userType;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[ERROR Constructor RoutinesFilterViewModel] " + ex.Message);
+            }
         }
 
-        
+
         public string NameRoutineFilter // Filtro por nombre de rutina
         {
             get => _nameRoutineFilter;
@@ -36,7 +43,9 @@ namespace ProyectoFinDeCurso.ViewModels
                 {
                     _nameRoutineFilter = value;
                     OnPropertyChanged(nameof(NameRoutineFilter));
-                    UpdateFilteredRoutines();
+
+                    try { UpdateFilteredRoutines(); }
+                    catch (Exception ex) { Console.WriteLine("[ERROR NameRoutineFilter] " + ex.Message); }
                 }
             }
         }
@@ -50,7 +59,9 @@ namespace ProyectoFinDeCurso.ViewModels
                 {
                     _bodyPartFilter = value;
                     OnPropertyChanged(nameof(BodyPartFilter));
-                    UpdateFilteredRoutines();
+
+                    try { UpdateFilteredRoutines(); }
+                    catch (Exception ex) { Console.WriteLine("[ERROR BodyPartFilter] " + ex.Message); }
                 }
             }
         }
@@ -64,7 +75,9 @@ namespace ProyectoFinDeCurso.ViewModels
                 {
                     _dificultyFilter = value;
                     OnPropertyChanged(nameof(DificultyFilter));
-                    UpdateFilteredRoutines();
+
+                    try { UpdateFilteredRoutines(); }
+                    catch (Exception ex) { Console.WriteLine("[ERROR DificultyFilter] " + ex.Message); }
                 }
             }
         }
@@ -82,91 +95,125 @@ namespace ProyectoFinDeCurso.ViewModels
 
         public async Task LoadRoutinesAsync() // Carga las rutinas desde la base de datos
         {
-            var routines = await _dbService.GetRoutinesAsync(); // Obtiene todas las rutinas
-            var routinesExercises = await _dbService.GetRoutinesExercisesAsync(); // obtiene las rutinas-ejercicios
-            var exercises = await _dbService.GetExercisesAsync(); // obtiene los ejercicios
-
-            var userIdString = await SecureStorage.GetAsync("user_id");//obtiene la id del usuario
-            int userId = int.Parse(userIdString); //combierte la id a una variable entera
-
-            var user = await _dbService.GetUserById(userId); //obtiene el usuario de la base de datos
-
-            var routinesUser = routines
-                .Where(r => r.userID == user.UserID || r.userID == 0)
-                .ToList(); // obtiene la rutiene dependiendo de si la id es igual a la id del usuario o si es 0
-
-            Routines.Clear(); //borra los datos de la routina
-
-            int adminFlag = (_userType == userTypeEnum.admin) ? 1 : 0; // mira si el usuario es admin
-
-            foreach (var routine in routinesUser) //obtiene los ejercicios de las rutinas
+            try
             {
-                routine.IsAdmin = adminFlag; //recoge si es administrador
+                var routines = await _dbService.GetRoutinesAsync(); // Obtiene todas las rutinas
+                var routinesExercises = await _dbService.GetRoutinesExercisesAsync(); // obtiene las rutinas-ejercicios
+                var exercises = await _dbService.GetExercisesAsync(); // obtiene los ejercicios
 
-                routine.Exercises = new ObservableCollection<Exercise>(); //crea una nueva lista de ejercicios
+                var userIdString = await SecureStorage.GetAsync("user_id");//obtiene la id del usuario
+                int userId = int.Parse(userIdString); //combierte la id a una variable entera
 
-                var routineJoins = routinesExercises
-                    .Where(re => re.RoutineID == routine.routineID)
-                    .Join(
-                        exercises,
-                        re => re.ExerciseID,
-                        ex => ex.execiseID,
-                        (re, ex) => new
-                        {
-                            Base = ex,
-                            re.sets,
-                            re.reps,
-                            re.seconds
-                        }
-                    )
-                    .ToList(); // obtiene los ejercicios cuando la id de la rutina es la misma que la del ejercicio
+                var user = await _dbService.GetUserById(userId); //obtiene el usuario de la base de datos
 
-                foreach (var item in routineJoins) //alamacena los ejercicios clonándolos
+                var routinesUser = routines
+                    .Where(r => r.userID == user.UserID || r.userID == 0)
+                    .ToList(); // obtiene la rutina dependiendo si la id es igual a la id del usuario o si es 0
+
+                Routines.Clear(); //borra los datos de la rutina
+
+                int adminFlag = (_userType == userTypeEnum.admin) ? 1 : 0; // mira si el usuario es admin
+
+                foreach (var routine in routinesUser) //obtiene los ejercicios de las rutinas
                 {
-                    var copy = item.Base.Clone();
-                    copy.sets = item.sets;
-                    copy.reps = item.reps;
-                    copy.seconds = item.seconds;
-                    copy.exerciseFinished = false;
-                    copy.expaded = false;
+                    routine.IsAdmin = adminFlag; //recoge si es administrador
 
-                    routine.Exercises.Add(copy);
+                    routine.Exercises = new ObservableCollection<Exercise>(); //crea una nueva lista de ejercicios
+
+                    var routineJoins = routinesExercises
+                        .Where(re => re.RoutineID == routine.routineID)
+                        .Join(
+                            exercises,
+                            re => re.ExerciseID,
+                            ex => ex.execiseID,
+                            (re, ex) => new
+                            {
+                                Base = ex,
+                                re.sets,
+                                re.reps,
+                                re.seconds,
+                                ex.muscleGroupId
+
+                            }
+                        )
+                        .ToList(); // obtiene los ejercicios cuando la id de la rutina es la misma que la del ejercicio
+
+                    foreach (var item in routineJoins) //almacena los ejercicios clonándolos
+                    {
+                        var copy = item.Base.Clone();
+                        if (item.muscleGroupId.Equals(bodyPartEnum.isometric))
+                        {
+                            
+                            copy.setsOrTime = item.seconds;
+
+
+                        }
+                        else
+                        {
+                            copy.setsOrTime = item.sets;
+                        }
+                        copy.sets = item.sets;
+                        copy.reps = item.reps;
+                        copy.seconds = item.seconds;
+                        copy.exerciseFinished = false;
+                        copy.expaded = false;
+                        
+                        routine.Exercises.Add(copy);
+                    }
+                    if (routine.muscleGroup.Equals(bodyPartEnum.isometric))
+                    {
+                        routine.TitleSetsOrTime = "Time";
+                    } else
+                    {
+                        routine.TitleSetsOrTime = "Sets";
+                    }
+                    Routines.Add(routine);
                 }
 
-                Routines.Add(routine);
+                UpdateFilteredRoutines(); //actualiza los datos
             }
-
-            UpdateFilteredRoutines(); //actualiza los datos
+            catch (Exception ex)
+            {
+                Console.WriteLine("[ERROR LoadRoutinesAsync] " + ex.Message);
+            }
         }
 
 
         public void UpdateFilteredRoutines() //filtra las rutinas
         {
-            IEnumerable<Routines> filtered = Routines; 
-
-            if (!string.IsNullOrWhiteSpace(NameRoutineFilter)) //verifica si Name no es null
+            try
             {
-                filtered = filtered.Where(r =>
-                    r.nameRoutine?.Contains(NameRoutineFilter, StringComparison.OrdinalIgnoreCase) == true); //filtra por nombre
-            }
+                IEnumerable<Routines> filtered = Routines;
 
-            if (BodyPartFilter != bodyPartEnum.nothing) //verifica si la parte del cuerpo no es nada
+                if (!string.IsNullOrWhiteSpace(NameRoutineFilter)) //verifica si Name no es null
+                {
+                    filtered = filtered.Where(r =>
+                        r.nameRoutine?.Contains(NameRoutineFilter, StringComparison.OrdinalIgnoreCase) == true); //filtra por nombre
+                }
+
+                if (BodyPartFilter != bodyPartEnum.nothing) //verifica si la parte del cuerpo no es nada
+                {
+                    filtered = filtered.Where(r => r.muscleGroup == BodyPartFilter); //filtra por parte del cuerpo
+                }
+
+                if (DificultyFilter != dificultyEnum.nothing)//verifica si la dificultad no es nada
+                {
+                    filtered = filtered.Where(r => r.difficulty == DificultyFilter); //filtra por dificultad
+                }
+
+                FilteredRoutines =
+                    filtered
+                        .GroupBy(r => r.muscleGroup)
+                        .Select(g => new RoutineGroup(g.Key, g))
+                        .ToList(); //filtra las rutinas
+            }
+            catch (Exception ex)
             {
-                filtered = filtered.Where(r => r.muscleGroup == BodyPartFilter); //filtra por parte del cuerpo
+                Console.WriteLine("[ERROR UpdateFilteredRoutines] " + ex.Message);
+                FilteredRoutines = new List<RoutineGroup>(); // evita crash
             }
-
-            if (DificultyFilter != dificultyEnum.nothing)//verifica si la dificultad no es nada
-            {
-                filtered = filtered.Where(r => r.difficulty == DificultyFilter); //filtra por dificultad
-            }
-
-            FilteredRoutines =
-                filtered
-                    .GroupBy(r => r.muscleGroup)
-                    .Select(g => new RoutineGroup(g.Key, g))
-                    .ToList(); //filtra las rutinas
         }
-        
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private void OnPropertyChanged(string propertyName) =>

@@ -40,7 +40,7 @@ namespace ProyectoFinDeCurso
             {
                 await _dbService.InitTablesAsync(); // Inicializa las tablas de la base de datos
                 var userId = await SecureStorage.GetAsync("user_id"); // Obtiene el ID del usuario almacenado de forma segura
-
+                await _dbService.CreateUserAdmin(); // Crea un usuario administrador por defecto
                 if (string.IsNullOrEmpty(userId)) // Si no hay usuario almacenado, mostrar la página de inicio de sesión
                 {
                     var exercises = await _dbService.GetExercisesAsync(); // Obtiene los ejercicios de la base de datos
@@ -57,7 +57,7 @@ namespace ProyectoFinDeCurso
                         await initializer.InitAsync(); // Ejecuta la inicialización
                     }
 
-                    await _dbService.CreateUserAdmin(); // Crea un usuario administrador por defecto
+                    
 
                     MainPage = new NavigationPage(new LoginPage(_dbService)); // Muestra la página de inicio de sesión
                 }

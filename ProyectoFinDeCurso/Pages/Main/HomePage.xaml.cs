@@ -14,23 +14,47 @@ public partial class HomePage : ContentPage
 	{
         _dbService = dbService;
         _userType = userType;
-        InitializeComponent();
-        
-        NavigationPage.SetTitleView(this, BuildTitleView()); // Establece la vista personalizada del título
+        try
+        {
+            InitializeComponent();
+
+            NavigationPage.SetTitleView(this, BuildTitleView()); // Establece la vista personalizada del título
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al inicializar HomePage: {ex.Message}");
+            Application.Current.MainPage.DisplayAlert("Error", "No se pudo iniciar la página.", "OK");
+        }
     }
 
     
     private async void LogoutButton(object sender, EventArgs e) // Maneja el evento de cierre de sesión
     {
-        SecureStorage.Remove("user_email");
-        SecureStorage.Remove("user_id");
-        await Navigation.PushModalAsync(new LoginPage(new DbService()));
+        try
+        {
+            SecureStorage.Remove("user_email");
+            SecureStorage.Remove("user_id");
+            await Navigation.PushModalAsync(new LoginPage(new DbService()));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error en LogoutButton: {ex.Message}");
+            await DisplayAlert("Error", "No se pudo cerrar la sesión correctamente.", "OK");
+        }
     }
     private async void profile(object sender, EventArgs e) // Maneja el evento del botón de perfil
     {
-        await Navigation.PushModalAsync(
-           new UserDetailPage(null,_dbService, _userType, ModeEnum.View)
-       ); // Navega a la página de detalles del usuario en modo de vista
+        try
+        {
+                await Navigation.PushModalAsync(
+               new UserDetailPage(null, _dbService, _userType, ModeEnum.View)
+           ); // Navega a la página de detalles del usuario en modo de vista
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al abrir el perfil: {ex.Message}");
+            await DisplayAlert("Error", "No se pudo abrir el perfil del usuario.", "OK");
+        }
     }
     private View BuildTitleView() // Construye la vista personalizada del título
     {

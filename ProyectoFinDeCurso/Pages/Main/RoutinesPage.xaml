@@ -136,7 +136,7 @@
                                                         <Label Text=" " 
                                                            Grid.Column="2"/>
 
-                                                        <Label Text="Sets" 
+                                                        <Label Text="{Binding TitleSetsOrTime}"
                                                            Grid.Column="3" 
                                                            FontSize="16"
                                                            TextColor="#E0CFC2" 
@@ -174,7 +174,7 @@
                                                                        Margin="10,0"
                                                                        FontFamily="ComfortaaBold"/>
 
-                                                                    <Label Text="{Binding sets}" 
+                                                                    <Label Text="{Binding setsOrTime}" 
                                                                        FontSize="18"
                                                                        TextColor="#CFC86D" 
                                                                        Grid.Column="3"

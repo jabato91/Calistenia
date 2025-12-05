@@ -14,10 +14,6 @@
 
     <VerticalStackLayout Padding="20" Spacing="20" x:Name="CalendarRoot"> <!--Contenido principal-->
 
-        <Label Text="Calendario"
-               FontSize="28"
-               TextColor="White"
-               HorizontalOptions="Center" /><!--Titulo de la página-->
 
         <Border Background="#3B2523"
                 Stroke="#D4A857"

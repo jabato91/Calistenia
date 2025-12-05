@@ -18,16 +18,26 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
         public ExerciseDetailPage(DbService? dbService = null,ExerciseFilterViewModel? filter = null,Exercise? exercise = null, ModeEnum mode = ModeEnum.nothing, userTypeEnum typeUser = userTypeEnum.nothing)
         {
-            _dbService = dbService;
-            _filter = filter;
-            _selectedExercise = exercise;
-            _mode = mode;
+            try
+            {
+                    _dbService = dbService;
+                _filter = filter;
+                _selectedExercise = exercise;
+                _mode = mode;
 
-            BuildUI();
+                BuildUI();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se pudo cargar la página ejercicios.", "OK");
+            }
         }
         private void BuildUI() // Construye la interfaz de ejercicios según el modo
         {
-            switch (_mode)
+            try
+            {
+                switch (_mode)
             {
                 case ModeEnum.create:
                     ModifyOrCreateExercise();
@@ -45,81 +55,88 @@ namespace ProyectoFinDeCurso.Pages.Detail
                     break;
                 
             }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Error", ex.Message, "OK");
+            }
         }
         
         private void BuildViewUI() //construye la interfaz de visualización del ejercicio
         {
-            BackgroundColor = Color.FromArgb("#80000000");
-
-            var titleLabel = new Label //título del ejercicio
+            try
             {
-                Text = _selectedExercise.name,
-                FontSize = 26,
-                HorizontalOptions = LayoutOptions.Center,
-                TextColor = Color.FromArgb("#C49362"),
-                FontFamily = "EatMeAlive"
-            };
+                BackgroundColor = Color.FromArgb("#80000000");
 
-            var descriptionLabel = new Label //descripción del ejercicio
-            {
-                Text = _selectedExercise.description,
-                FontSize = 16,
-                HorizontalTextAlignment = TextAlignment.Center,
-                TextColor = Colors.White,
-                FontFamily = "ComfortaaBold",
-                Margin = new Thickness(10, 0)
-            };
+                var titleLabel = new Label //título del ejercicio
+                {
+                    Text = _selectedExercise.name,
+                    FontSize = 26,
+                    HorizontalOptions = LayoutOptions.Center,
+                    TextColor = Color.FromArgb("#C49362"),
+                    FontFamily = "EatMeAlive"
+                };
 
-            var materialsLabel = new Label//materiales necesarios para el ejercicio
-            {
-                Text = _selectedExercise.materials,
-                FontSize = 16,
-                HorizontalTextAlignment = TextAlignment.Center,
-                TextColor = Colors.YellowGreen,
-                FontFamily = "ComfortaaBold",
-                Margin = new Thickness(10, 0)
-            };
+                var descriptionLabel = new Label //descripción del ejercicio
+                {
+                    Text = _selectedExercise.description,
+                    FontSize = 16,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    TextColor = Colors.White,
+                    FontFamily = "ComfortaaBold",
+                    Margin = new Thickness(10, 0)
+                };
 
-
-            var video = new MediaElement //video del ejercicio
-            {
-                Source = _selectedExercise.VideoMediaSource, //obtiene la fuente del video del ejercicio
-                ShouldShowPlaybackControls = true,
-                Aspect = Aspect.AspectFit,
-                HeightRequest = 250,
-                HorizontalOptions = LayoutOptions.Fill,
-                VerticalOptions = LayoutOptions.Center
-            };
-
-            var videoContainer = new Grid //contenedor del video
-            {
-                BackgroundColor = Colors.Black,
-                HeightRequest = 300,
-                WidthRequest = 500,
-                Margin = new Thickness(0, 10)
-            };
-
-            videoContainer.Children.Add(video); //agrega el video al contenedor
+                var materialsLabel = new Label//materiales necesarios para el ejercicio
+                {
+                    Text = _selectedExercise.materials,
+                    FontSize = 16,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    TextColor = Colors.YellowGreen,
+                    FontFamily = "ComfortaaBold",
+                    Margin = new Thickness(10, 0)
+                };
 
 
-            var exitButton = new Button //botón para salir de la vista del ejercicio
-            {
-                Text = "Salir",
-                BackgroundColor = Color.FromArgb("ffd700"),
-                TextColor = Colors.White,
-                CornerRadius = 3,
-                FontFamily = "ComfortaaBold",
-                FontSize = 16,
-                Padding = new Thickness(10, 6),
-                HorizontalOptions = LayoutOptions.Fill,
-                Command = new Command(async () => await Navigation.PopModalAsync())
-            };
+                var video = new MediaElement //video del ejercicio
+                {
+                    Source = _selectedExercise.VideoMediaSource, //obtiene la fuente del video del ejercicio
+                    ShouldShowPlaybackControls = true,
+                    Aspect = Aspect.AspectFit,
+                    HeightRequest = 250,
+                    HorizontalOptions = LayoutOptions.Fill,
+                    VerticalOptions = LayoutOptions.Center
+                };
 
-            Content = new Grid //interfaz final de la vista del ejercicio
-            {
-                VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.Center,
-                Children =
+                var videoContainer = new Grid //contenedor del video
+                {
+                    BackgroundColor = Colors.Black,
+                    HeightRequest = 300,
+                    WidthRequest = 500,
+                    Margin = new Thickness(0, 10)
+                };
+
+                videoContainer.Children.Add(video); //agrega el video al contenedor
+
+
+                var exitButton = new Button //botón para salir de la vista del ejercicio
+                {
+                    Text = "Salir",
+                    BackgroundColor = Color.FromArgb("ffd700"),
+                    TextColor = Colors.White,
+                    CornerRadius = 3,
+                    FontFamily = "ComfortaaBold",
+                    FontSize = 16,
+                    Padding = new Thickness(10, 6),
+                    HorizontalOptions = LayoutOptions.Fill,
+                    Command = new Command(async () => await Navigation.PopModalAsync())
+                };
+
+                Content = new Grid //interfaz final de la vista del ejercicio
+                {
+                    VerticalOptions = LayoutOptions.Center,
+                    HorizontalOptions = LayoutOptions.Center,
+                    Children =
     {
         new Border //borde que contiene toda la interfaz
         {
@@ -143,12 +160,19 @@ namespace ProyectoFinDeCurso.Pages.Detail
             }
         }
     }
-            };
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se puedo mostrar la página.", "OK");
+            }
         }
         private void BuildFilterExerciseUI() //filtra los ejercicios según los criterios seleccionados
         {
-            
-            var filterBodyPartEntry = new Picker //filtra por tipo de cuerpo
+            try
+            {
+                var filterBodyPartEntry = new Picker //filtra por tipo de cuerpo
             {
                 Title = "Tipo Cuerpo",
                 TitleColor = Color.FromArgb("#C49362"),
@@ -270,9 +294,16 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             Content = modalPage.Content; //muestra la página modal
             BackgroundColor = modalPage.BackgroundColor; //muestra el fondo de la página modal
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se puedo mostrar la página.", "OK");
+            }
         }
         private void ModifyOrCreateExercise(Exercise exercise = null) //modifica o crea un ejercicio
         {
+            try { 
 
             Label Tittle = new Label
             {
@@ -599,6 +630,12 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             Content = modalPage.Content;
             BackgroundColor = modalPage.BackgroundColor;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se puedo mostrar la página.", "OK");
+            }
         }
         
         

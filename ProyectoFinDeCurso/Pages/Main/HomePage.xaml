@@ -18,7 +18,8 @@
             HorizontalTextAlignment="Center"
             LineHeight="2.3"
             Margin="20,50,20,0"
-            FontSize="15"/>
+            FontSize="15"
+            TextColor = "White"/>
             <!--Texto de presentación-->
     </VerticalStackLayout>
 </ContentPage>

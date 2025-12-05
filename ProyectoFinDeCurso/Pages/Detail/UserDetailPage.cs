@@ -21,20 +21,30 @@ namespace ProyectoFinDeCurso.Pages.Detail
         private readonly ListUsersViewModel? _viewModel;
         public UserDetailPage(User? user, DbService dbService, userTypeEnum userType = userTypeEnum.nothing, ModeEnum mode = ModeEnum.nothing, ListUsersViewModel? viewModel = null)
         {
+            try { 
             _dbService = dbService;
             _userType = userType;
             _mode = mode;
             _user = user;
             _viewModel = viewModel;
             BuildUI();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se pudo cargar la página de usuarios.", "OK");
+            }
         }
 
         private void BuildUI()//elección de la UI según el modo
         {
-            switch (_mode)
+            try
+            {
+
+                switch (_mode)
             {
                 case ModeEnum.create:
-
+                        BuildEditPasswordUI();
                     break;
 
                 case ModeEnum.Edit:
@@ -48,10 +58,17 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
                     break;
             }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Error", ex.Message, "OK");
+            }
         }
         private async void BuildViewUI()//Muestra los detalles del usuario
         {
-            var userId = await SecureStorage.GetAsync("user_id"); //obtiene el id del usuario almacenado de forma segura
+            try
+            {
+                var userId = await SecureStorage.GetAsync("user_id"); //obtiene el id del usuario almacenado de forma segura
             if (string.IsNullOrEmpty(userId)) //si no existe, muestra un error
             {
                 await DisplayAlert("Error", "No se ha encontrado el ID de usuario en el almacenamiento seguro.", "OK");
@@ -142,9 +159,16 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             Content = modalPage.Content; //establece el contenido de la página
             BackgroundColor = modalPage.BackgroundColor; //establece el color de fondo de la página
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se puedo mostrar la página.", "OK");
+            }
         }
         private void BuildEditUI()//Permite editar los detalles del usuario
         {
+            try { 
             
             Entry CreateEntry(string text, string placeholder)//método para crear campos de entrada
             {
@@ -282,6 +306,228 @@ namespace ProyectoFinDeCurso.Pages.Detail
 
             Content = modalPage.Content;//establece el contenido de la página
             BackgroundColor = modalPage.BackgroundColor;//establece el color de fondo de la página
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "No se puedo mostrar la página.", "OK");
+            }
+        }
+
+        private void BuildEditPasswordUI()
+        {
+            try
+            {
+                var emailEntry = new Entry //título de la página
+            {
+                Placeholder = "Correo electrónico",
+                Keyboard = Keyboard.Email,
+                BackgroundColor = Color.FromArgb("#EFEFEF"),
+                HeightRequest = 45,
+                WidthRequest = 280,
+                HorizontalOptions = LayoutOptions.Center,
+                Margin = new Thickness(0, 5)
+            };
+
+            var changeButton = new Button //botón para cambiar la contraseña
+            {
+                Text = "Cambiar contraseña",
+                BackgroundColor = Color.FromArgb("#3B82F6"),
+                TextColor = Colors.White,
+                CornerRadius = 10,
+                HeightRequest = 45,
+                WidthRequest = 280,
+                HorizontalOptions = LayoutOptions.Center,
+                Margin = new Thickness(0, 5)
+            };
+            User correctUser = new User();
+            changeButton.Clicked += async (s, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(emailEntry.Text)) //verifica si tiene contenido
+                {
+                    await DisplayAlert("Error", "Introduce un correo.", "Ok");
+                    return;
+                }
+
+                var users = await _dbService.GetUsersAsync(); //obtiene los usuarios de base de datos
+                bool correctEmail = false; //condicional para verficar si existe el correo
+                foreach (var user in users)
+                {
+                    if (user.Email == emailEntry.Text) {  //verifica si encaja con el correo
+                        correctEmail = true;
+                        correctUser = user;
+                    }
+                }
+                if (!correctEmail) //valida si existe
+                {
+                    await DisplayAlert("Error", "No existe correo.", "Ok");
+                    return;
+                }
+                else
+                {
+                    BuildPasswordChangeUI(correctUser); //crea página para cambiar la contraseña
+                }
+
+            };
+
+            var cancelButton = new Button //botón para salir
+            {
+                Text = "Cancelar",
+                BackgroundColor = Color.FromArgb("#E5E7EB"),
+                TextColor = Color.FromArgb("#333333"),
+                CornerRadius = 10,
+                HeightRequest = 45,
+                WidthRequest = 280,
+                HorizontalOptions = LayoutOptions.Center,
+                Margin = new Thickness(0, 5)
+            };
+
+            cancelButton.Clicked += async (s, e) => await Navigation.PopAsync();
+
+            Content = new VerticalStackLayout //contenido de la página
+            {
+                Padding = 30,
+                Spacing = 20,
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.Center,
+                Children =
+        {
+            new Label //título de la página
+            {
+                Text = "Introduce tu correo para cambiar la contraseña",
+                FontSize = 18,
+                HorizontalOptions = LayoutOptions.Center,
+                WidthRequest = 280,
+                HorizontalTextAlignment = TextAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 10)
+            },
+            emailEntry,
+            changeButton,
+            cancelButton
+        }
+            };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "Error al cargar la página.", "OK");
+            }
+        }
+        private void BuildPasswordChangeUI(User user) //página para cambiar la contraseña
+        {
+            try { 
+            var pass1Entry = new Entry //primera contraseña
+            {
+                Placeholder = "Nueva contraseña",
+                IsPassword = true,
+                BackgroundColor = Color.FromArgb("#EFEFEF"),
+                HeightRequest = 45,
+                WidthRequest = 280,
+                HorizontalOptions = LayoutOptions.Center,
+                Margin = new Thickness(0, 5)
+            };
+
+            var pass2Entry = new Entry //segunda contraseña
+            {
+                Placeholder = "Repite la contraseña",
+                IsPassword = true,
+                BackgroundColor = Color.FromArgb("#EFEFEF"),
+                HeightRequest = 45,
+                WidthRequest = 280,
+                HorizontalOptions = LayoutOptions.Center,
+                Margin = new Thickness(0, 5)
+            };
+
+            var confirmButton = new Button //botón para confirmar
+            {
+                Text = "Cambiar contraseña",
+                BackgroundColor = Color.FromArgb("#3B82F6"),
+                TextColor = Colors.White,
+                CornerRadius = 10,
+                HeightRequest = 45,
+                WidthRequest = 280,
+                HorizontalOptions = LayoutOptions.Center
+            };
+
+            confirmButton.Clicked += async (s, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(pass1Entry.Text) || //verifica si contienen
+                    string.IsNullOrWhiteSpace(pass2Entry.Text))
+                {
+                    await DisplayAlert("Error", "Rellena todos los campos.", "OK");
+                    return;
+                }
+
+                if (pass1Entry.Text != pass2Entry.Text) //verifica si son la misma contraseña
+                {
+                    await DisplayAlert("Error", "Las contraseñas no coinciden.", "OK");
+                    return;
+                }
+                String passwordHash = string.Empty;
+                try
+                {
+                    passwordHash = PasswordHasher.HashPassword(pass1Entry.Text); //incripta la contraseña
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[ERROR HashPassword] " + ex.Message);
+                    await DisplayAlert("Error", "No se pudo procesar la contraseña.", "OK");
+                    return;
+                }
+                user.Password = passwordHash; //ingresa la contraseña
+
+                await _dbService.Update(user); //actualiza el usuario
+
+                await DisplayAlert("Éxito", "La contraseña fue actualizada.", "OK");
+
+                
+                await Navigation.PopAsync(); // Volver a la pantalla original o login
+            };
+
+            var cancelButton = new Button //botón para salir
+            {
+                Text = "Cancelar",
+                BackgroundColor = Color.FromArgb("#E5E7EB"),
+                TextColor = Color.FromArgb("#333333"),
+                CornerRadius = 10,
+                HeightRequest = 45,
+                WidthRequest = 280,
+                HorizontalOptions = LayoutOptions.Center
+            };
+
+            cancelButton.Clicked += async (s, e) =>
+            {
+                await Navigation.PopAsync();
+            };
+
+            Content = new VerticalStackLayout //contenido de la página
+            {
+                Padding = 30,
+                Spacing = 20,
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.Center,
+                Children =
+        {
+            new Label
+            {
+                Text = "Introduce tu nueva contraseña",
+                FontSize = 18,
+                HorizontalOptions = LayoutOptions.Center,
+                HorizontalTextAlignment = TextAlignment.Center,
+                WidthRequest = 280
+            },
+            pass1Entry,
+            pass2Entry,
+            confirmButton,
+            cancelButton
+        }
+            };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando CalendarDetailPage: {ex.Message}");
+                Application.Current?.MainPage?.DisplayAlert("Error", "Error al cargar la página.", "OK");
+            }
         }
     }
 }

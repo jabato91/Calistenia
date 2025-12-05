@@ -22,19 +22,35 @@ public partial class RoutinesPage : ContentPage
 
     public RoutinesPage(DbService dbService, userTypeEnum userType)
     {
-        _dbService = dbService;
-        _userType = userType;
-        _filter = new RoutinesFilterViewModel(_dbService, _userType); // asigno el viewmodel
+        try
+        {
+            _dbService = dbService;
+            _userType = userType;
+            _filter = new RoutinesFilterViewModel(_dbService, _userType); // asigno el viewmodel
 
-        InitializeComponent();
-        BindingContext = _filter; // asigno el bindingcontext
+            InitializeComponent();
+            BindingContext = _filter; // asigno el bindingcontext
 
-        NavigationPage.SetTitleView(this, BuildTitleView()); // Establece la vista personalizada del título
+            NavigationPage.SetTitleView(this, BuildTitleView()); // Establece la vista personalizada del título
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error inicializando RoutinesPage: {ex.Message}");
+            Application.Current.MainPage.DisplayAlert("Error", "No se pudo cargar la página.", "OK");
+        }
     }
     protected override async void OnAppearing() // Carga las rutinas al aparecer la página
     {
         base.OnAppearing(); // Llama al método base OnAppearing
-        await _filter.LoadRoutinesAsync();  // Carga las rutinas desde la base de datos
+        try
+        {
+            await _filter.LoadRoutinesAsync();  // Carga las rutinas desde la base de datos
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error cargando rutinas: {ex.Message}");
+            await DisplayAlert("Error", "No se pudieron cargar las rutinas.", "OK");
+        }
     }
     private async void OnExerciseTapped(object sender, EventArgs e) // Maneja el evento de toque en un ejercicio
     {
@@ -82,13 +98,21 @@ public partial class RoutinesPage : ContentPage
 
     private async void createRoutine(object sender, TappedEventArgs e) // Maneja el evento de creación de una nueva rutina
     {
-        
-        await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, _filter,userType: _userType,mode: ModeEnum.create)); // Navega a la página de detalles de la rutina en modo de creación
+        try
+        {
+            await Navigation.PushModalAsync(new RoutineDetailPage(_dbService, _filter,userType: _userType,mode: ModeEnum.create)); // Navega a la página de detalles de la rutina en modo de creación
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", "No se pudo crear una nueva rutina.", "OK");
+        }
     } 
     
     private async void OnExpanded(object sender, ExpandedChangedEventArgs e) // Maneja el evento de expansión de un Expander
     {
-        if (sender is not Expander expander) // Verifica si el remitente es un Expander
+        try
+        {
+            if (sender is not Expander expander) // Verifica si el remitente es un Expander
             return;
 
         if (expander.Content is not VisualElement content) // Verifica si el contenido es un VisualElement
@@ -103,19 +127,37 @@ public partial class RoutinesPage : ContentPage
                 content.TranslateTo(0, 0, 250, Easing.SinInOut)
             );
         }
-       
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error animando expander: {ex.Message}");
+        }
+
     }
     private async void filterExercises(object sender, EventArgs e) // Maneja el evento de filtrado de ejercicios
     {
-
-        await Navigation.PushModalAsync(new RoutineDetailPage( filterViewModel: _filter, mode: ModeEnum.filter)); // Navega a la página de detalles de la rutina en modo de filtro
+        try
+        {
+            await Navigation.PushModalAsync(new RoutineDetailPage( filterViewModel: _filter, mode: ModeEnum.filter)); // Navega a la página de detalles de la rutina en modo de filtro
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", "No se pudo abrir el filtro de rutinas.", "OK");
+        }
     }
 
     private async void profile(object sender, EventArgs e) // Maneja el evento del botón de perfil
     {
-        await Navigation.PushModalAsync(
-           new UserDetailPage(null, _dbService, _userType, ModeEnum.View)
-       ); // Navega a la página de detalles del usuario en modo de vista
+        try
+        {
+                await Navigation.PushModalAsync(
+               new UserDetailPage(null, _dbService, _userType, ModeEnum.View)
+           ); // Navega a la página de detalles del usuario en modo de vista
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", "No se pudo abrir el perfil.", "OK");
+        }
     }
     private View BuildTitleView() // Construye la vista personalizada del título
     {
