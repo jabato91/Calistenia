@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProyectoFinDeCurso.Flyout.userFlyoutPage"
+            xmlns:pages="clr-namespace:ProyectoFinDeCurso.Pages"
+            xmlns:pages2 ="clr-namespace:ProyectoFinDeCurso.Pages.Main"
+            FlyoutLayoutBehavior="Popover"
+             Title="userFlyoutPage"
+            BackgroundColor="#242424">
+    <FlyoutPage.Flyout BackgroundColor="#242424">
+        <ContentPage Title="Menu"
+                     
+                     BackgroundColor="#242424">
+            <StackLayout BackgroundColor="#242424">
+                <Label Text="Panel" 
+                       FontSize="24"
+                       HorizontalOptions="Center"
+                       Margin="0,40,0,20"
+                       TextColor="#B09D9D"/> <!-- Titulo del desplegable-->
+                <Button Text="Inicio" 
+                    FontSize="18"
+                    Clicked="HomePage"
+                    Margin="30,10"
+                    BorderWidth="4"
+                    BorderColor="#FF542E"
+                    BackgroundColor="#FF4C24"
+                    CharacterSpacing="0.75"
+                    CornerRadius="1"
+                    TextColor="#FFE1D9"
+                    />  <!-- Boton de HomePage-->
+                <Button Text="Ejercicios Sueltos" 
+                        FontSize="18"
+                        Clicked="ExercisePage"
+                        Margin="30,10"
+                        BorderWidth="4"
+                        BorderColor="#FF542E"
+                        BackgroundColor="#FF4C24"
+                        CharacterSpacing="0.75"
+                        CornerRadius="1"
+                        TextColor="#FFE1D9"/><!-- Boton de exercisePage-->
+                <Button Text="Rutinas" 
+                        FontSize="18"
+                        Clicked="RoutinesPage"
+                        Margin="30,10"
+                        BorderWidth="4"
+                        BorderColor="#FF542E"
+                        BackgroundColor="#FF4C24"
+                        CharacterSpacing="0.75"
+                        CornerRadius="1"
+                        TextColor="#FFE1D9"/>
+                <Button Text="Calendario" 
+                        FontSize="18"
+                        Clicked="CalendarPage"
+                        Margin="30,10"
+                        BorderWidth="4"
+                        BorderColor="#FF542E"
+                        BackgroundColor="#FF4C24"
+                        CharacterSpacing="0.75"
+                        CornerRadius="1"
+                        TextColor="#FFE1D9"/> 
+                <Button Text="Cerrar Sesión" 
+                        FontSize="18"
+                        Clicked="LogoutButton"
+                        Margin="30,10"
+                        BorderWidth="4"
+                        BorderColor="#FF542E"
+                        BackgroundColor="#FF4C24"
+                        CharacterSpacing="0.75"
+                        CornerRadius="1"
+                        TextColor="#FFE1D9"/>   <!-- boton para cerrar sesión-->
+                <Button x:Name="listUsers"
+                        FontSize="18"
+                        Text="Usuarios"
+                        Clicked="UsersBottonAdmin"
+                        Margin="30,10"
+                        BorderWidth="4"
+                        BorderColor="#FF542E"
+                        BackgroundColor="#FF4C24"
+                        CharacterSpacing="0.75"
+                        CornerRadius="1"
+                        TextColor="#FFE1D9"/><!--Boton de ListUsers-->
+            </StackLayout>
+        </ContentPage>
+    </FlyoutPage.Flyout>
+    
+</FlyoutPage>

@@ -1,6 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-	<application android:allowBackup="true" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true"></application>
+
+	<!-- Permiso esencial para reprogramar alarmas después de reiniciar el móvil -->
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+	<!-- Necesario para alarmas en Android 12+ -->
+	<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+	<!-- Si usas notificaciones repetidas, se recomienda -->
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
+
+	<!-- TUS PERMISOS EXISTENTES -->
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCEPT_HANDOVER" />
+	<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_BLOBS_ACROSS_USERS" />
+	<uses-permission android:name="android.permission.ACCESS_CHECKIN_PROPERTIES" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_HIDDEN_PROFILES" />
+	<uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+	<uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+	<uses-permission android:name="android.permission.ACCESS_SURFACE_FLINGER" />
+
+	<!-- BOOT RECEIVER PARA REPROGRAMAR ALARMAS -->
+	<application android:allowBackup="true"
+                 android:icon="@mipmap/dominada"
+                 android:supportsRtl="true">
+
+		<receiver android:name="ProyectoFinDeCurso.Platforms.Android.BootReceiver"
+                  android:enabled="true"
+                  android:exported="true">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
+				<action android:name="android.intent.action.REBOOT" />
+			</intent-filter>
+		</receiver>
+
+	</application>
+
 </manifest>
